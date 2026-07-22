@@ -1,0 +1,102 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# 环境变量和密钥（重要！）
+.env
+.env.local
+.env.*.local
+*.key
+*.keystore
+google-services.json
+GoogleService-Info.plist
+
+# Supabase配置（本地开发）
+supabase/.branches/
+supabase/.temp/
+
+# 测试覆盖率
+coverage/
+*.lcov
+
+# 编译输出
+*.aot
+*.dill
+*.class
+
+# Web
+/web/*.js
+/web/*.js.map
+/web/*.part.js
+/web/*.part.js.map
+/web/*.dart.js
+
+# Android
+*.apk
+*.ap_
+*.aab
+*.dex
+local.properties
+.gradle/
+gradle-wrapper.jar
+captures/
+output.json
+
+# iOS
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/*sync/
+.sconsign.dblite
+.tags*
+/build/*
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/ephemeral/
+/ios/Flutter/flutter_export_environment.sh
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/ServiceDefinitions.json
+/ios/Runner/GeneratedPluginRegistrant.*
+
+# macOS
+/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Windows
+windows/flutter/ephemeral/
+
+# Linux
+linux/flutter/ephemeral/
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# 日志
+*.log
+
+# 其他
+.DS_Store
+Thumbs.db
