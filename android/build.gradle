@@ -18,24 +18,23 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
-
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-    
-    project.evaluationDependsOn(':app')
-    
-    // Define flutter extension for plugins
-    afterEvaluate { project ->
-        if (project.plugins.hasPlugin('com.android.library')) {
-            project.android {
-                if (!project.android.hasProperty('compileSdkVersion')) {
-                    compileSdkVersion 34
-                }
-            }
-        }
-    }
+}
+subprojects {
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// Define flutter extension for compatibility
+ext.flutter = [
+    compileSdkVersion: 34,
+    minSdkVersion: 21,
+    targetSdkVersion: 34,
+    ndkVersion: "26.1.10909125",
+    versionCode: 1,
+    versionName: "1.0.0"
+]
