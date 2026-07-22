@@ -206,7 +206,7 @@ class _FlagTableState extends State<FlagTable> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (flag.needsAttention)
-                        const WarningBadge()
+                        const WarningBadge(show: true)
                       else if (flag.priceRmb != null &&
                           flag.targetPrice != null)
                         Icon(

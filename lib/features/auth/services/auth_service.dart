@@ -141,5 +141,16 @@ class AuthService {
   }
 
   /// 监听认证状态变化
+  /// 获取用户每日颜色
+  Future<String?> getDailyColor(String userId) async {
+    final userDoc = await _supabase
+        .from('users')
+        .select('daily_color')
+        .eq('id', userId)
+        .maybeSingle();
+
+    return userDoc?['daily_color'] as String?;
+  }
+
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 }
