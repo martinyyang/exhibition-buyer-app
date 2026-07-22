@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/auth/screens/login_screen.dart';
-import '../features/event/screens/event_selection_screen.dart';
-import '../features/booth/screens/booth_list_screen.dart';
-import '../features/photo/screens/photo_grid_screen.dart';
-import '../features/photo/screens/photo_detail_screen.dart';
-import '../features/auth/providers/auth_provider.dart';
+import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
+import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
+import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.dart';
+import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.dart';
+import 'package:exhibition_buyer_app/features/photo/screens/photo_detail_screen.dart';
+import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
 
 // 路由Provider
 final routerProvider = Provider<GoRouter>((ref) {
