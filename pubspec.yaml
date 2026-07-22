@@ -1,0 +1,52 @@
+name: exhibition_buyer_app
+description: 展会二手奢侈品采购协作App - 现场买手与远程团队实时协作
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 状态管理
+  flutter_riverpod: ^2.4.0
+
+  # Supabase客户端
+  supabase_flutter: ^2.0.0
+
+  # 路由管理
+  go_router: ^13.0.0
+
+  # 图片处理
+  image_picker: ^1.0.0
+  cached_network_image: ^3.3.0
+  flutter_image_compress: ^2.0.0
+  path_provider: ^2.1.0
+
+  # 公式解析
+  math_expressions: ^2.4.0
+
+  # 工具类
+  uuid: ^4.0.0
+  intl: ^0.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # E2E测试
+  integration_test:
+    sdk: flutter
+
+  # Mock测试
+  mocktail: ^1.0.0
+  mockito: ^5.4.0
+  build_runner: ^2.4.0
+
+  # 代码检查
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
