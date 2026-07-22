@@ -55,22 +55,56 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Version: $VERSION"
 
-    - name: Upload APK artifact
+    - name: Rename APK with version
+      run: |
+        cp build/app/outputs/flutter-apk/app-release.apk exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk
+
+    - name: Upload APK artifact (backup)
       uses: actions/upload-artifact@v4
       with:
         name: exhibition-buyer-app-v${{ steps.version.outputs.version }}
-        path: build/app/outputs/flutter-apk/app-release.apk
+        path: exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk
 
-    - name: Create Release (on tag)
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
+    - name: Create or Update Latest Release
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v2
       with:
-        files: build/app/outputs/flutter-apk/app-release.apk
+        tag_name: latest
+        name: 最新版本 (Latest Build)
+        files: exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk
+        body: |
+          ## 展会买手协同管理系统 - 最新构建版本
+
+          **版本:** v${{ steps.version.outputs.version }}
+          **构建时间:** ${{ github.event.head_commit.timestamp }}
+          **提交:** ${{ github.sha }}
+
+          ### 📦 安装方式
+          1. 点击下方的 APK 文件直接下载到手机
+          2. 允许安装未知来源应用（设置中开启）
+          3. 点击 APK 文件安装
+
+          ### 📱 直接下载链接
+          [点击下载 APK](https://github.com/${{ github.repository }}/releases/download/latest/exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk)
+
+          ### 🐛 问题反馈
+          如遇到问题，请在 [Issues](https://github.com/${{ github.repository }}/issues) 提交反馈
+        prerelease: false
+        draft: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Tagged Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk
         body: |
           ## 展会买手协同管理系统
 
           ### 📦 安装方式
-          1. 下载下方的 `app-release.apk` 文件
+          1. 下载下方的 APK 文件
           2. 传输到Android手机
           3. 允许安装未知来源应用
           4. 点击APK文件安装
