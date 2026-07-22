@@ -9,6 +9,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -91,7 +94,6 @@ jobs:
           如遇到问题，请在 [Issues](https://github.com/${{ github.repository }}/issues) 提交反馈
         prerelease: false
         draft: false
-        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
