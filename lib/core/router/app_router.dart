@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
+import 'package:exhibition_buyer_app/features/auth/screens/register_screen.dart';
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
 import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.dart';
 import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.dart';
@@ -18,14 +19,15 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isLoggedIn = authState.value != null;
       final isLoggingIn = state.matchedLocation == '/login';
+      final isRegistering = state.matchedLocation == '/register';
 
-      // 未登录且不在登录页 -> 跳转到登录页
-      if (!isLoggedIn && !isLoggingIn) {
+      // 未登录且不在登录页/注册页 -> 跳转到登录页
+      if (!isLoggedIn && !isLoggingIn && !isRegistering) {
         return '/login';
       }
 
       // 已登录且在登录页 -> 跳转到场次选择页
-      if (isLoggedIn && isLoggingIn) {
+      if (isLoggedIn && (isLoggingIn || isRegistering)) {
         return '/events';
       }
 
@@ -37,6 +39,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+      ),
+
+      // 注册页
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const RegisterScreen(),
       ),
 
       // 场次选择页

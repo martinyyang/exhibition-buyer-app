@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
+import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -23,22 +26,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   String? _validateEmail(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return '请输入邮箱';
+      return l10n.pleaseEnterEmail;
     }
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(value)) {
-      return '请输入有效的邮箱地址';
+      return l10n.pleaseEnterValidEmail;
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return '请输入密码';
+      return l10n.pleaseEnterPassword;
     }
     if (value.length < 6) {
-      return '密码至少6位';
+      return l10n.passwordMinLength;
     }
     return null;
   }
@@ -53,22 +58,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     try {
-      // TODO: 实现登录逻辑
-      // final authService = ref.read(authServiceProvider);
-      // await authService.login(_emailController.text, _passwordController.text);
-
-      await Future.delayed(const Duration(seconds: 1)); // 模拟网络请求
+      final authService = ref.read(authServiceProvider);
+      await authService.signIn(_emailController.text, _passwordController.text);
 
       if (mounted) {
-        // TODO: 导航到场次选择页面
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('登录成功')),
+          SnackBar(content: Text(l10n.loginSuccess)),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('登录失败: $e')),
+          SnackBar(content: Text(l10n.loginFailed(e.toString()))),
         );
       }
     } finally {
@@ -81,12 +84,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _navigateToRegister() {
-    // TODO: 导航到注册页面
-    // context.go('/register');
+    context.push('/register');
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -99,7 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '展会采购协作系统',
+                    l10n.appTitle,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -108,10 +112,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 48),
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: '邮箱',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: _validateEmail,
@@ -120,10 +124,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: '密码',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+                    decoration: InputDecoration(
+                      labelText: l10n.password,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock),
                     ),
                     obscureText: true,
                     validator: _validatePassword,
@@ -138,15 +142,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text(
-                        '登录',
-                        style: TextStyle(fontSize: 16),
+                      child: Text(
+                        l10n.login,
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: _isLoading ? null : _navigateToRegister,
-                    child: const Text('注册'),
+                    child: Text(l10n.register),
                   ),
                 ],
               ),

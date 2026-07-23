@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
+import '../providers/auth_provider.dart';
+import '../../team/providers/team_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -14,6 +18,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _teamNameController = TextEditingController();
   String _selectedRole = 'buyer';
   bool _isLoading = false;
 
@@ -22,36 +27,48 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _teamNameController.dispose();
     super.dispose();
   }
 
   String? _validateEmail(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return '请输入邮箱';
+      return l10n.pleaseEnterEmail;
     }
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(value)) {
-      return '请输入有效的邮箱地址';
+      return l10n.pleaseEnterValidEmail;
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return '请输入密码';
+      return l10n.pleaseEnterPassword;
     }
     if (value.length < 6) {
-      return '密码至少6位';
+      return l10n.passwordMinLength;
     }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return '请确认密码';
+      return l10n.pleaseConfirmPassword;
     }
     if (value != _passwordController.text) {
-      return '两次密码不一致';
+      return l10n.passwordsDoNotMatch;
+    }
+    return null;
+  }
+
+  String? _validateTeamName(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    if (value == null || value.isEmpty) {
+      return l10n.pleaseEnterTeamName;
     }
     return null;
   }
@@ -66,27 +83,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     try {
-      // TODO: 实现注册逻辑
-      // final authService = ref.read(authServiceProvider);
-      // await authService.register(
-      //   _emailController.text,
-      //   _passwordController.text,
-      //   _selectedRole,
-      // );
+      final l10n = AppLocalizations.of(context)!;
 
-      await Future.delayed(const Duration(seconds: 1)); // 模拟网络请求
+      // 1. 先创建团队
+      final teamService = ref.read(teamServiceProvider);
+      final team = await teamService.createTeam(name: _teamNameController.text);
+
+      // 2. 使用团队ID注册用户
+      final authService = ref.read(authServiceProvider);
+      await authService.signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+        role: _selectedRole,
+        teamId: team.id,
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('注册成功')),
+          SnackBar(content: Text(l10n.registerSuccess)),
         );
-        // TODO: 导航到场次选择页面
-        Navigator.of(context).pop();
+        // 注册成功后返回登录页
+        context.go('/login');
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('注册失败: $e')),
+          SnackBar(content: Text(l10n.registerFailed(e.toString()))),
         );
       }
     } finally {
@@ -100,9 +123,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('注册账号'),
+        title: Text(l10n.registerAccount),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -114,10 +139,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: '邮箱',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: _validateEmail,
@@ -126,10 +151,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: '密码',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                  decoration: InputDecoration(
+                    labelText: l10n.password,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
                   ),
                   obscureText: true,
                   validator: _validatePassword,
@@ -138,26 +163,39 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: '确认密码',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.confirmPassword,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
                   validator: _validateConfirmPassword,
                   enabled: !_isLoading,
                 ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _teamNameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.teamName,
+                    hintText: l10n.teamNameHint,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.group),
+                  ),
+                  validator: _validateTeamName,
+                  enabled: !_isLoading,
+                ),
                 const SizedBox(height: 24),
-                const Text(
-                  '角色',
-                  style: TextStyle(
+                Text(
+                  l10n.role,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 8),
                 RadioListTile<String>(
-                  title: const Text('买手'),
+                  title: Text(l10n.buyer),
+                  subtitle: Text(l10n.buyerDescription),
                   value: 'buyer',
                   groupValue: _selectedRole,
                   onChanged: _isLoading
@@ -169,7 +207,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         },
                 ),
                 RadioListTile<String>(
-                  title: const Text('远程团队'),
+                  title: Text(l10n.remote),
+                  subtitle: Text(l10n.remoteDescription),
                   value: 'remote',
                   groupValue: _selectedRole,
                   onChanged: _isLoading
@@ -189,9 +228,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text(
-                      '注册',
-                      style: TextStyle(fontSize: 16),
+                    child: Text(
+                      l10n.register,
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
               ],
