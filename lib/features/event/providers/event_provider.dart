@@ -33,10 +33,6 @@ final eventsRealtimeProvider = StreamProvider<void>((ref) {
         callback: (payload) {
           // 当events表有任何变化时，触发刷新
           controller.add(null);
-
-          // 刷新场次相关的所有provider
-          ref.invalidate(eventsProvider);
-          ref.invalidate(activeEventProvider);
         },
       )
       .subscribe();
