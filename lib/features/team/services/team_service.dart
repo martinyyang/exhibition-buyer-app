@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../auth/models/team.dart';
-import '../../auth/models/user.dart';
+import '../../auth/models/user.dart' as models;
 
 class TeamService {
   final SupabaseClient _supabase;
@@ -69,14 +69,14 @@ class TeamService {
   }
 
   /// 获取小组所有成员
-  Future<List<User>> getTeamMembers(String teamId) async {
+  Future<List<models.User>> getTeamMembers(String teamId) async {
     final result = await _supabase
         .from('users')
         .select()
         .eq('team_id', teamId)
         .order('created_at', ascending: true);
 
-    return (result as List).map((json) => User.fromJson(json)).toList();
+    return (result as List).map((json) => models.User.fromJson(json)).toList();
   }
 
   /// 更新用户最后活跃时间（用于在线状态）
