@@ -1,0 +1,237 @@
+{
+  "@@locale": "zh",
+  "appTitle": "展会采购协作",
+  "loginTitle": "展会采购协作系统",
+  "email": "邮箱",
+  "password": "密码",
+  "login": "登录",
+  "register": "注册",
+  "emailRequired": "请输入邮箱",
+  "emailInvalid": "请输入有效的邮箱地址",
+  "passwordRequired": "请输入密码",
+  "passwordMinLength": "密码至少6位",
+  "confirmPassword": "确认密码",
+  "confirmPasswordRequired": "请确认密码",
+  "passwordMismatch": "两次密码不一致",
+  "loginSuccess": "登录成功",
+  "loginFailed": "登录失败: {error}",
+  "@loginFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "registerTitle": "注册账号",
+  "registerSuccess": "注册成功",
+  "registerFailed": "注册失败: {error}",
+  "@registerFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "role": "角色",
+  "roleBuyer": "买手",
+  "roleRemote": "远程团队",
+  "eventSelectionTitle": "选择场次",
+  "createNewEvent": "创建新场次",
+  "eventName": "场次名称",
+  "eventNameHint": "例如：2026春季广交会",
+  "eventNameRequired": "请输入场次名称",
+  "startDate": "开始日期",
+  "selectDate": "点击选择日期",
+  "cancel": "取消",
+  "create": "创建",
+  "save": "保存",
+  "edit": "编辑",
+  "delete": "删除",
+  "ok": "确定",
+  "retry": "重试",
+  "loading": "加载中...",
+  "current": "当前",
+  "noEvents": "暂无场次",
+  "createFirstEvent": "点击右上角+号创建第一个场次",
+  "boothListTitle": "摊位列表",
+  "createNewBooth": "新建摊位",
+  "boothNumber": "摊位号",
+  "boothNumberHint": "例如：B01",
+  "boothNumberRequired": "请输入摊位号",
+  "noBooths": "暂无摊位",
+  "createFirstBooth": "点击右上角+号创建第一个摊位",
+  "photos": "照片",
+  "noPhotos": "暂无照片",
+  "takePhoto": "拍照",
+  "takePhotoHint": "点击右下角相机按钮拍照",
+  "addSupplierInfo": "添加供应商信息",
+  "supplierInfo": "供应商信息",
+  "supplierName": "供应商名称",
+  "supplierNameHint": "例如：LV专柜",
+  "supplierLogoOptional": "供应商Logo（可选）",
+  "uploadLogo": "上传Logo",
+  "annotateProducts": "标注商品",
+  "viewQuotes": "查看报价",
+  "tapToMarkProduct": "点击照片标记商品",
+  "waitingForRemoteMarking": "等待远程团队标记",
+  "deleteFlag": "删除标记",
+  "flagAdded": "标记已添加",
+  "remoteDashboardTitle": "远程审核 - Web端",
+  "buyerList": "买手列表",
+  "annotationDetails": "标注详情",
+  "number": "编号",
+  "priceRmb": "报价(¥)",
+  "sellerPrice": "卖家报价",
+  "convertedPrice": "换算价",
+  "targetPrice": "目标价",
+  "status": "状态",
+  "enterPrice": "输入报价",
+  "error": "错误",
+  "confirmDelete": "确认删除",
+  "setAsActive": "设为活跃场次",
+  "loadFailed": "加载失败: {error}",
+  "@loadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "createFailed": "创建失败: {error}",
+  "@createFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "uploadFailed": "上传失败: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "addFailed": "添加失败: {error}",
+  "@addFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "deleteFailed": "删除失败: {error}",
+  "@deleteFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "setActiveFailed": "设置失败: {error}",
+  "@setActiveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "photoUploadSuccess": "照片上传成功",
+  "supplierInfoUpdated": "供应商信息已更新",
+  "photoDeleted": "照片已删除",
+  "eventCreatedSuccess": "场次创建成功",
+  "boothCreatedSuccess": "摊位 {boothNumber} 创建成功",
+  "@boothCreatedSuccess": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "confirmDeleteEventMessage": "确定要删除\"{eventName}\"吗？\n此操作无法撤销。",
+  "@confirmDeleteEventMessage": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "confirmDeleteBoothMessage": "确定要删除摊位\"{boothNumber}\"吗？\n所有照片和标注也会被删除。",
+  "@confirmDeleteBoothMessage": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "confirmDeletePhotoMessage": "确定要删除这张照片吗？\n所有标注也会被删除。",
+  "confirmDeleteFlagMessage": "确定要删除旗子 #{flagNumber} 吗？",
+  "@confirmDeleteFlagMessage": {
+    "placeholders": {
+      "flagNumber": {"type": "int"}
+    }
+  },
+  "eventDeletedSuccess": "已删除\"{eventName}\"",
+  "@eventDeletedSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "boothDeletedSuccess": "已删除摊位\"{boothNumber}\"",
+  "@boothDeletedSuccess": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "flagDeletedSuccess": "已删除旗子 #{flagNumber}",
+  "@flagDeletedSuccess": {
+    "placeholders": {
+      "flagNumber": {"type": "int"}
+    }
+  },
+  "eventSetActiveSuccess": "已将\"{eventName}\"设为活跃场次",
+  "@eventSetActiveSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "startDateRequired": "请选择开始日期",
+  "boothLabel": "摊位 {boothNumber}",
+  "@boothLabel": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "boothNumberLabel": "摊位号: {boothId}",
+  "@boothNumberLabel": {
+    "placeholders": {
+      "boothId": {"type": "String"}
+    }
+  },
+  "photoCount": "{count, plural, =0{0张照片} =1{1张照片} other{{count}张照片}}",
+  "@photoCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "flagCount": "{count, plural, =0{0个旗子} =1{1个旗子} other{{count}个旗子}}",
+  "@flagCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "annotationCount": "{count} 个标注",
+  "@annotationCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "photoCountLabel": "{count} 张照片",
+  "@photoCountLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "settings": "设置",
+  "language": "语言",
+  "languageEnglish": "English",
+  "languageChinese": "中文",
+  "eventSelection": "选择场次",
+  "pleaseEnterEventName": "请输入场次名称",
+  "tapToSelectDate": "点击选择日期",
+  "pleaseSelectStartDate": "请选择开始日期",
+  "userNotInTeam": "用户未加入团队",
+  "setActiveEventSuccess": "已将\"{eventName}\"设为活跃场次",
+  "@setActiveEventSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "eventDeletedSuccess": "已删除\"{eventName}\"",
+  "@eventDeletedSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "tapToCreateFirst": "点击右上角+号创建第一个场次",
+  "to": "至"
+}

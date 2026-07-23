@@ -1,0 +1,237 @@
+{
+  "@@locale": "en",
+  "appTitle": "Exhibition Buyer Collaboration",
+  "loginTitle": "Exhibition Buyer System",
+  "email": "Email",
+  "password": "Password",
+  "login": "Login",
+  "register": "Register",
+  "emailRequired": "Please enter email",
+  "emailInvalid": "Please enter a valid email address",
+  "passwordRequired": "Please enter password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "confirmPassword": "Confirm Password",
+  "confirmPasswordRequired": "Please confirm password",
+  "passwordMismatch": "Passwords do not match",
+  "loginSuccess": "Login successful",
+  "loginFailed": "Login failed: {error}",
+  "@loginFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "registerTitle": "Register Account",
+  "registerSuccess": "Registration successful",
+  "registerFailed": "Registration failed: {error}",
+  "@registerFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "role": "Role",
+  "roleBuyer": "Buyer",
+  "roleRemote": "Remote Team",
+  "eventSelectionTitle": "Select Event",
+  "createNewEvent": "Create New Event",
+  "eventName": "Event Name",
+  "eventNameHint": "e.g., 2026 Spring Canton Fair",
+  "eventNameRequired": "Please enter event name",
+  "startDate": "Start Date",
+  "selectDate": "Tap to select date",
+  "cancel": "Cancel",
+  "create": "Create",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "ok": "OK",
+  "retry": "Retry",
+  "loading": "Loading...",
+  "current": "Current",
+  "noEvents": "No events",
+  "createFirstEvent": "Tap + in the top right to create your first event",
+  "boothListTitle": "Booth List",
+  "createNewBooth": "Create New Booth",
+  "boothNumber": "Booth Number",
+  "boothNumberHint": "e.g., B01",
+  "boothNumberRequired": "Please enter booth number",
+  "noBooths": "No booths",
+  "createFirstBooth": "Tap + in the top right to create your first booth",
+  "photos": "Photos",
+  "noPhotos": "No photos",
+  "takePhoto": "Take Photo",
+  "takePhotoHint": "Tap the camera button in the bottom right to take a photo",
+  "addSupplierInfo": "Add Supplier Info",
+  "supplierInfo": "Supplier Information",
+  "supplierName": "Supplier Name",
+  "supplierNameHint": "e.g., LV Counter",
+  "supplierLogoOptional": "Supplier Logo (Optional)",
+  "uploadLogo": "Upload Logo",
+  "annotateProducts": "Annotate Products",
+  "viewQuotes": "View Quotes",
+  "tapToMarkProduct": "Tap photo to mark product",
+  "waitingForRemoteMarking": "Waiting for remote team to mark",
+  "deleteFlag": "Delete Flag",
+  "flagAdded": "Flag added",
+  "remoteDashboardTitle": "Remote Review - Web",
+  "buyerList": "Buyer List",
+  "annotationDetails": "Annotation Details",
+  "number": "No.",
+  "priceRmb": "Price (¥)",
+  "sellerPrice": "Seller Price",
+  "convertedPrice": "Converted Price",
+  "targetPrice": "Target Price",
+  "status": "Status",
+  "enterPrice": "Enter price",
+  "error": "Error",
+  "confirmDelete": "Confirm Delete",
+  "setAsActive": "Set as Active Event",
+  "loadFailed": "Load failed: {error}",
+  "@loadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "createFailed": "Create failed: {error}",
+  "@createFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "uploadFailed": "Upload failed: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "addFailed": "Add failed: {error}",
+  "@addFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "deleteFailed": "Delete failed: {error}",
+  "@deleteFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "setActiveFailed": "Set active failed: {error}",
+  "@setActiveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "photoUploadSuccess": "Photo uploaded successfully",
+  "supplierInfoUpdated": "Supplier info updated",
+  "photoDeleted": "Photo deleted",
+  "eventCreatedSuccess": "Event created successfully",
+  "boothCreatedSuccess": "Booth {boothNumber} created successfully",
+  "@boothCreatedSuccess": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "confirmDeleteEventMessage": "Are you sure you want to delete \"{eventName}\"?\nThis action cannot be undone.",
+  "@confirmDeleteEventMessage": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "confirmDeleteBoothMessage": "Are you sure you want to delete booth \"{boothNumber}\"?\nAll photos and annotations will also be deleted.",
+  "@confirmDeleteBoothMessage": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "confirmDeletePhotoMessage": "Are you sure you want to delete this photo?\nAll annotations will also be deleted.",
+  "confirmDeleteFlagMessage": "Are you sure you want to delete flag #{flagNumber}?",
+  "@confirmDeleteFlagMessage": {
+    "placeholders": {
+      "flagNumber": {"type": "int"}
+    }
+  },
+  "eventDeletedSuccess": "Deleted \"{eventName}\"",
+  "@eventDeletedSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "boothDeletedSuccess": "Deleted booth \"{boothNumber}\"",
+  "@boothDeletedSuccess": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "flagDeletedSuccess": "Deleted flag #{flagNumber}",
+  "@flagDeletedSuccess": {
+    "placeholders": {
+      "flagNumber": {"type": "int"}
+    }
+  },
+  "eventSetActiveSuccess": "Set \"{eventName}\" as active event",
+  "@eventSetActiveSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "startDateRequired": "Please select start date",
+  "boothLabel": "Booth {boothNumber}",
+  "@boothLabel": {
+    "placeholders": {
+      "boothNumber": {"type": "String"}
+    }
+  },
+  "boothNumberLabel": "Booth No: {boothId}",
+  "@boothNumberLabel": {
+    "placeholders": {
+      "boothId": {"type": "String"}
+    }
+  },
+  "photoCount": "{count, plural, =0{0 photos} =1{1 photo} other{{count} photos}}",
+  "@photoCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "flagCount": "{count, plural, =0{0 flags} =1{1 flag} other{{count} flags}}",
+  "@flagCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "annotationCount": "{count} annotations",
+  "@annotationCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "photoCountLabel": "{count} photos",
+  "@photoCountLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "settings": "Settings",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageChinese": "中文",
+  "eventSelection": "Select Event",
+  "pleaseEnterEventName": "Please enter event name",
+  "tapToSelectDate": "Tap to select date",
+  "pleaseSelectStartDate": "Please select start date",
+  "userNotInTeam": "User is not part of a team",
+  "setActiveEventSuccess": "Set \"{eventName}\" as active event",
+  "@setActiveEventSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "eventDeletedSuccess": "\"{eventName}\" deleted",
+  "@eventDeletedSuccess": {
+    "placeholders": {
+      "eventName": {"type": "String"}
+    }
+  },
+  "tapToCreateFirst": "Tap + in the top right to create your first event",
+  "to": "to"
+}

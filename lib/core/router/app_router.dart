@@ -6,6 +6,7 @@ import 'package:exhibition_buyer_app/features/event/screens/event_selection_scre
 import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.dart';
 import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.dart';
 import 'package:exhibition_buyer_app/features/photo/screens/photo_detail_screen.dart';
+import 'package:exhibition_buyer_app/features/settings/screens/settings_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
 
 // 路由Provider
@@ -73,6 +74,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           final photoId = state.pathParameters['photoId']!;
           return PhotoDetailScreen(photoId: photoId);
         },
+      ),
+
+      // 设置页
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
 
