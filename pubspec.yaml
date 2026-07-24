@@ -1,7 +1,7 @@
 name: exhibition_buyer_app
 description: 展会二手奢侈品采购协作App - 现场买手与远程团队实时协作
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
