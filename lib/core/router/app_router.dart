@@ -17,7 +17,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     redirect: (context, state) {
-      final isLoggedIn = authState.value != null;
+      // 检查是否有认证用户（Supabase AuthState）
+      final isLoggedIn = authState.asData?.value.session != null;
       final isLoggingIn = state.matchedLocation == '/login';
       final isRegistering = state.matchedLocation == '/register';
 
