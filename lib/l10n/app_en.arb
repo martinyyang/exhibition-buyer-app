@@ -240,5 +240,19 @@
     }
   },
   "tapToCreateFirst": "Tap + in the top right to create your first event",
-  "to": "to"
+  "to": "to",
+  "accountSettings": "Account Settings",
+  "currentUser": "Current User",
+  "userRole": "Role",
+  "teamInfo": "Team Info",
+  "logout": "Logout",
+  "confirmLogout": "Confirm Logout",
+  "confirmLogoutMessage": "Are you sure you want to logout?",
+  "logoutSuccess": "Logged out successfully",
+  "logoutFailed": "Logout failed: {error}",
+  "@logoutFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

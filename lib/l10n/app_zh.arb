@@ -240,5 +240,19 @@
     }
   },
   "tapToCreateFirst": "点击右上角+号创建第一个场次",
-  "to": "至"
+  "to": "至",
+  "accountSettings": "账号设置",
+  "currentUser": "当前用户",
+  "userRole": "用户角色",
+  "teamInfo": "团队信息",
+  "logout": "退出登录",
+  "confirmLogout": "确认退出",
+  "confirmLogoutMessage": "确定要退出登录吗？",
+  "logoutSuccess": "退出登录成功",
+  "logoutFailed": "退出登录失败: {error}",
+  "@logoutFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }
