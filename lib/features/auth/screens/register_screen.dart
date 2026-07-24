@@ -108,8 +108,45 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
+        String errorMessage;
+
+        // 根据错误类型提供更明确的错误信息
+        final errorString = e.toString().toLowerCase();
+        if (errorString.contains('no host') || errorString.contains('socketexception')) {
+          errorMessage = '网络连接失败，请检查网络设置或联系管理员';
+        } else if (errorString.contains('timeout')) {
+          errorMessage = '请求超时，请检查网络连接后重试';
+        } else if (errorString.contains('email')) {
+          errorMessage = '邮箱格式错误或已被使用';
+        } else if (errorString.contains('password')) {
+          errorMessage = '密码格式不正确（至少6位字符）';
+        } else {
+          errorMessage = l10n.registerFailed(e.toString());
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.registerFailed(e.toString()))),
+          SnackBar(
+            content: Text(errorMessage),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: '查看详情',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('错误详情'),
+                    content: Text(e.toString()),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('关闭'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         );
       }
     } finally {

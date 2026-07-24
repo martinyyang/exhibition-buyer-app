@@ -13,10 +13,25 @@ void main() async {
   // 加载环境变量
   await dotenv.load(fileName: '.env');
 
+  // 验证环境变量
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+  if (supabaseUrl == null || supabaseUrl.isEmpty) {
+    throw Exception('SUPABASE_URL not found in .env file. Please check your configuration.');
+  }
+  if (supabaseKey == null || supabaseKey.isEmpty) {
+    throw Exception('SUPABASE_ANON_KEY not found in .env file. Please check your configuration.');
+  }
+
+  print('Initializing Supabase with URL: $supabaseUrl');
+
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? '',
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    url: supabaseUrl,
+    anonKey: supabaseKey,
   );
+
+  print('Supabase initialized successfully');
 
   runApp(
     const ProviderScope(

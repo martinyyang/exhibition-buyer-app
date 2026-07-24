@@ -49,39 +49,69 @@ class AuthService {
     required String role,
     String? teamId,
   }) async {
-    final response = await _supabase.auth.signUp(
-      email: email,
-      password: password,
-    );
+    try {
+      print('Starting user registration for: $email');
+      print('Supabase URL: ${_supabase.supabaseUrl}');
 
-    if (response.user == null) {
-      throw Exception('注册失败');
+      // 添加超时限制
+      final response = await _supabase.auth.signUp(
+        email: email,
+        password: password,
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('注册请求超时，请检查网络连接');
+        },
+      );
+
+      if (response.user == null) {
+        throw Exception('注册失败：未返回用户信息');
+      }
+
+      print('Auth user created: ${response.user!.id}');
+
+      // 创建用户记录
+      final userData = {
+        'id': response.user!.id,
+        'email': email,
+        'role': role,
+        'team_id': teamId,
+      };
+
+      await _supabase.from('users').insert(userData).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('创建用户记录超时');
+        },
+      );
+
+      print('User record created in database');
+
+      final userDoc = await _supabase
+          .from('users')
+          .select()
+          .eq('id', response.user!.id)
+          .single()
+          .timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('获取用户信息超时');
+        },
+      );
+
+      final user = models.User.fromJson(userDoc);
+
+      // 如果是买手，分配每日颜色
+      if (user.isBuyer) {
+        await _assignDailyColorIfNeeded(user);
+      }
+
+      print('Registration completed successfully');
+      return user;
+    } catch (e) {
+      print('Registration error: $e');
+      rethrow;
     }
-
-    // 创建用户记录
-    final userData = {
-      'id': response.user!.id,
-      'email': email,
-      'role': role,
-      'team_id': teamId,
-    };
-
-    await _supabase.from('users').insert(userData);
-
-    final userDoc = await _supabase
-        .from('users')
-        .select()
-        .eq('id', response.user!.id)
-        .single();
-
-    final user = models.User.fromJson(userDoc);
-
-    // 如果是买手，分配每日颜色
-    if (user.isBuyer) {
-      await _assignDailyColorIfNeeded(user);
-    }
-
-    return user;
   }
 
   /// 登出
