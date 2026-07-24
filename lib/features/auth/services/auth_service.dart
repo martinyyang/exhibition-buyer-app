@@ -51,7 +51,6 @@ class AuthService {
   }) async {
     try {
       print('Starting user registration for: $email');
-      print('Supabase URL: ${_supabase.supabaseUrl}');
 
       // 添加超时限制
       final response = await _supabase.auth.signUp(
