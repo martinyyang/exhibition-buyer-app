@@ -73,22 +73,29 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: latest
-        name: 最新版本 (Latest Build)
+        name: 最新版本 v${{ steps.version.outputs.version }} (Latest Build)
         files: exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk
         body: |
           ## 展会买手协同管理系统 - 最新构建版本
 
           **版本:** v${{ steps.version.outputs.version }}
-          **构建时间:** ${{ github.event.head_commit.timestamp }}
-          **提交:** ${{ github.sha }}
+          **构建时间:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **提交:** ${{ github.event.head_commit.message }}
+          **提交 SHA:** `${{ github.sha }}`
 
           ### 📦 安装方式
-          1. 点击下方的 APK 文件直接下载到手机
+          1. 点击下方的 **`exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk`** 文件直接下载到手机
           2. 允许安装未知来源应用（设置中开启）
           3. 点击 APK 文件安装
 
           ### 📱 直接下载链接
-          [点击下载 APK](https://github.com/${{ github.repository }}/releases/download/latest/exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk)
+          [点击下载 v${{ steps.version.outputs.version }} APK](https://github.com/${{ github.repository }}/releases/download/latest/exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk)
+
+          ### ✨ 最新更新内容
+          - 添加账号设置界面（显示用户信息、角色、团队）
+          - 实现退出登录功能
+          - 修复 User 类命名冲突
+          - 实现完整的用户注册登录流程
 
           ### 🐛 问题反馈
           如遇到问题，请在 [Issues](https://github.com/${{ github.repository }}/issues) 提交反馈
