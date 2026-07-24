@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:exhibition_buyer_app/features/splash/screens/splash_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/register_screen.dart';
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
@@ -15,15 +16,26 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(currentUserProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     redirect: (context, state) {
-      // 检查是否有认证用户（Supabase AuthState）
+      final isInitializing = authState.isLoading;
       final isLoggedIn = authState.asData?.value.session != null;
+      final isSplash = state.matchedLocation == '/splash';
       final isLoggingIn = state.matchedLocation == '/login';
       final isRegistering = state.matchedLocation == '/register';
 
+      // 初始化中 -> 显示启动页
+      if (isInitializing && !isSplash) {
+        return '/splash';
+      }
+
+      // 初始化完成但还在启动页 -> 根据登录状态跳转
+      if (!isInitializing && isSplash) {
+        return isLoggedIn ? '/events' : '/login';
+      }
+
       // 未登录且不在登录页/注册页 -> 跳转到登录页
-      if (!isLoggedIn && !isLoggingIn && !isRegistering) {
+      if (!isInitializing && !isLoggedIn && !isLoggingIn && !isRegistering && !isSplash) {
         return '/login';
       }
 
@@ -35,6 +47,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // 启动页
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+
       // 登录页
       GoRoute(
         path: '/login',
