@@ -12,12 +12,32 @@ void main() async {
 
   try {
     // 加载环境变量
-    await dotenv.load(fileName: '.env');
+    String? supabaseUrl;
+    String? supabaseKey;
+
+    try {
+      await dotenv.load(fileName: '.env');
+      print('✓ Loaded .env file successfully');
+
+      supabaseUrl = dotenv.env['SUPABASE_URL'];
+      supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+      print('Environment variables:');
+      print('  SUPABASE_URL: ${supabaseUrl != null ? "✓ found" : "✗ missing"}');
+      print('  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
+      print('  Total keys: ${dotenv.env.keys.length}');
+    } catch (e) {
+      print('⚠ Failed to load .env file: $e');
+      print('Attempting to use hardcoded fallback values...');
+
+      // Fallback to hardcoded values for release builds
+      // TODO: Remove these before production release
+      supabaseUrl = 'https://ppwjblvnixqeympfcqgs.supabase.co';
+      supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwd2pibHZuaXhxZXltcGZjcWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ2MjQsImV4cCI6MjEwMDIyMDYyNH0.LhLw3KUTKrLXry6Qst5nLWKsGCxEewW5XW1Pc6QrzEE';
+      print('✓ Using fallback configuration');
+    }
 
     // 验证环境变量
-    final supabaseUrl = dotenv.env['SUPABASE_URL'];
-    final supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
-
     if (supabaseUrl == null || supabaseUrl.isEmpty) {
       throw Exception('SUPABASE_URL not found in .env file. Please check your configuration.');
     }
@@ -25,14 +45,15 @@ void main() async {
       throw Exception('SUPABASE_ANON_KEY not found in .env file. Please check your configuration.');
     }
 
-    print('Initializing Supabase with URL: $supabaseUrl');
+    print('Initializing Supabase...');
+    print('  URL: ${supabaseUrl.substring(0, 30)}...');
 
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseKey,
     );
 
-    print('Supabase initialized successfully');
+    print('✓ Supabase initialized successfully');
 
     runApp(
       const ProviderScope(
