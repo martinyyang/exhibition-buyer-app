@@ -76,7 +76,7 @@ void main() {
       try {
         await Supabase.initialize(
           url: supabaseUrl,
-          anonKey: supabaseKey,
+          anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
         );
 
         // 验证Supabase客户端可用

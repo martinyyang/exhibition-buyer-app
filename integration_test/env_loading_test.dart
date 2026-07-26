@@ -84,24 +84,24 @@ void main() {
       print('✓ SUPABASE_URL存在: ${supabaseUrl?.substring(0, 30)}...');
     });
 
-    test('验证SUPABASE_ANON_KEY存在', () async {
+    test('验证SUPABASE_PUBLISHABLE_KEY存在', () async {
       await dotenv.load(fileName: '.env');
 
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY'];
 
       expect(
         supabaseKey,
         isNotNull,
-        reason: 'SUPABASE_ANON_KEY必须在.env文件中定义',
+        reason: 'SUPABASE_PUBLISHABLE_KEY必须在.env文件中定义',
       );
 
       expect(
         supabaseKey,
         isNotEmpty,
-        reason: 'SUPABASE_ANON_KEY不能为空',
+        reason: 'SUPABASE_PUBLISHABLE_KEY不能为空',
       );
 
-      print('✓ SUPABASE_ANON_KEY存在: ${supabaseKey?.substring(0, 20)}...');
+      print('✓ SUPABASE_PUBLISHABLE_KEY存在: ${supabaseKey?.substring(0, 20)}...');
     });
   });
 
@@ -133,16 +133,16 @@ void main() {
       print('✓ SUPABASE_URL格式正确: ${uri?.host}');
     });
 
-    test('SUPABASE_ANON_KEY格式正确性', () async {
+    test('SUPABASE_PUBLISHABLE_KEY格式正确性', () async {
       await dotenv.load(fileName: '.env');
 
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       // 验证Key长度（JWT通常很长）
       expect(
         supabaseKey.length,
         greaterThan(100),
-        reason: 'SUPABASE_ANON_KEY应该是一个长JWT token',
+        reason: 'SUPABASE_PUBLISHABLE_KEY应该是一个长JWT token',
       );
 
       // 验证JWT格式 (三段由.分隔)
@@ -150,17 +150,17 @@ void main() {
       expect(
         parts.length,
         equals(3),
-        reason: 'SUPABASE_ANON_KEY应该是标准JWT格式（header.payload.signature）',
+        reason: 'SUPABASE_PUBLISHABLE_KEY应该是标准JWT格式（header.payload.signature）',
       );
 
-      print('✓ SUPABASE_ANON_KEY格式正确 (JWT with ${parts.length} parts)');
+      print('✓ SUPABASE_PUBLISHABLE_KEY格式正确 (JWT with ${parts.length} parts)');
     });
 
     test('没有包含占位符值', () async {
       await dotenv.load(fileName: '.env');
 
       final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       // 验证不是.env.example中的占位符
       expect(
@@ -171,8 +171,8 @@ void main() {
 
       expect(
         supabaseKey,
-        isNot(equals('your-anon-key-here')),
-        reason: 'SUPABASE_ANON_KEY不应该是占位符',
+        isNot(equals('your-publishable-key-here')),
+        reason: 'SUPABASE_PUBLISHABLE_KEY不应该是占位符',
       );
 
       print('✓ 环境变量已正确配置（非占位符）');
@@ -184,13 +184,13 @@ void main() {
       await dotenv.load(fileName: '.env');
 
       final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       // 初始化Supabase
       try {
         await Supabase.initialize(
           url: supabaseUrl,
-          anonKey: supabaseKey,
+          anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
         );
         print('✓ Supabase初始化成功');
       } catch (e) {
@@ -208,11 +208,11 @@ void main() {
       await dotenv.load(fileName: '.env');
 
       final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       await Supabase.initialize(
         url: supabaseUrl,
-        anonKey: supabaseKey,
+        anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
       );
 
       final client = Supabase.instance.client;
@@ -231,7 +231,7 @@ void main() {
       await dotenv.load(fileName: '.env');
 
       final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       // 初始化并验证不会抛出网络权限错误
       bool hasNetworkError = false;
@@ -240,7 +240,7 @@ void main() {
       try {
         await Supabase.initialize(
           url: supabaseUrl,
-          anonKey: supabaseKey,
+          anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
         );
 
         // 尝试访问auth（这会触发网络请求）
@@ -340,10 +340,10 @@ void main() {
         await dotenv.load(fileName: '.env');
 
         final supabaseUrl = dotenv.env['SUPABASE_URL'];
-        final supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+        final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY'];
 
         expect(supabaseUrl, isNotNull, reason: 'CI环境应该注入SUPABASE_URL');
-        expect(supabaseKey, isNotNull, reason: 'CI环境应该注入SUPABASE_ANON_KEY');
+        expect(supabaseKey, isNotNull, reason: 'CI环境应该注入SUPABASE_PUBLISHABLE_KEY');
 
         print('✓ GitHub Secrets正确注入到CI环境');
       } else {
@@ -374,13 +374,13 @@ void main() {
       await dotenv.load(fileName: '.env');
 
       final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       final startTime = DateTime.now();
 
       await Supabase.initialize(
         url: supabaseUrl,
-        anonKey: supabaseKey,
+        anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
       );
 
       final endTime = DateTime.now();
@@ -402,11 +402,11 @@ void main() {
       await dotenv.load(fileName: '.env');
 
       final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-      final supabaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
+      final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY']!;
 
       await Supabase.initialize(
         url: supabaseUrl,
-        anonKey: supabaseKey,
+        anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
       );
 
       final endTime = DateTime.now();

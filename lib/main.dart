@@ -51,6 +51,7 @@ void main() async {
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseKey,
+      // TODO: Update to use 'publishableKey' parameter in future Supabase SDK version
     );
 
     print('✓ Supabase initialized successfully');
