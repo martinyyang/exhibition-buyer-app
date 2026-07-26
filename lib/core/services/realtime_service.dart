@@ -10,7 +10,8 @@ class RealtimeService {
   RealtimeService(this._client);
 
   /// 监听摊位变化（某个场次下的所有摊位）
-  RealtimeChannel subscribeToBooths(String eventId, Function(dynamic) onUpdate) {
+  RealtimeChannel subscribeToBooths(
+      String eventId, Function(dynamic) onUpdate) {
     final channel = _client
         .channel('booths:$eventId')
         .onPostgresChanges(
@@ -33,7 +34,8 @@ class RealtimeService {
   }
 
   /// 监听照片变化（某个摊位下的所有照片）
-  RealtimeChannel subscribeToPhotos(String boothId, Function(dynamic) onUpdate) {
+  RealtimeChannel subscribeToPhotos(
+      String boothId, Function(dynamic) onUpdate) {
     final channel = _client
         .channel('photos:$boothId')
         .onPostgresChanges(
@@ -102,7 +104,8 @@ class RealtimeService {
   }
 
   /// 监听公式历史变化（某个团队的公式历史）
-  RealtimeChannel subscribeToFormulaHistory(String teamId, Function(dynamic) onUpdate) {
+  RealtimeChannel subscribeToFormulaHistory(
+      String teamId, Function(dynamic) onUpdate) {
     final channel = _client
         .channel('formula_history:$teamId')
         .onPostgresChanges(
@@ -125,7 +128,8 @@ class RealtimeService {
   }
 
   /// 监听汇率设置变化（某个团队的汇率设置）
-  RealtimeChannel subscribeToExchangeSettings(String teamId, Function(dynamic) onUpdate) {
+  RealtimeChannel subscribeToExchangeSettings(
+      String teamId, Function(dynamic) onUpdate) {
     final channel = _client
         .channel('exchange_settings:$teamId')
         .onPostgresChanges(

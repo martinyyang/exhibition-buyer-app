@@ -63,7 +63,8 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   if (user.teamId != null)
                     FutureBuilder(
-                      future: ref.read(teamServiceProvider).getTeam(user.teamId!),
+                      future:
+                          ref.read(teamServiceProvider).getTeam(user.teamId!),
                       builder: (context, teamSnapshot) {
                         final team = teamSnapshot.data;
                         if (team == null) {
@@ -104,11 +105,9 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.language),
             title: Text(l10n.language),
-            subtitle: Text(
-              currentLocale.languageCode == 'zh'
+            subtitle: Text(currentLocale.languageCode == 'zh'
                 ? l10n.languageChinese
-                : l10n.languageEnglish
-            ),
+                : l10n.languageEnglish),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               _showLanguageDialog(context, ref, l10n, currentLocale);

@@ -6,8 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder {}
-class MockPostgrestTransformBuilder<T> extends Mock implements PostgrestTransformBuilder<T> {}
+
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder {}
+
+class MockPostgrestTransformBuilder<T> extends Mock
+    implements PostgrestTransformBuilder<T> {}
 
 void main() {
   late MockSupabaseClient mockSupabase;
@@ -26,14 +30,15 @@ void main() {
     test('createTeam 成功创建小组', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('teams')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('teams'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.insert(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'team-123',
-        'name': '小组A',
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'team-123',
+            'name': '小组A',
+            'created_at': now.toIso8601String(),
+          });
 
       final result = await teamService.createTeam(name: '小组A');
 
@@ -45,14 +50,16 @@ void main() {
     test('getTeam 成功获取小组信息', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('teams')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('teams'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'team-123',
-        'name': '小组A',
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'team-123',
+            'name': '小组A',
+            'created_at': now.toIso8601String(),
+          });
 
       final result = await teamService.getTeam('team-123');
 
@@ -62,10 +69,13 @@ void main() {
     });
 
     test('getTeam 小组不存在时返回null', () async {
-      when(() => mockSupabase.from('teams')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('teams'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
-      when(() => mockTransformBuilder.maybeSingle()).thenAnswer((_) async => null);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
+      when(() => mockTransformBuilder.maybeSingle())
+          .thenAnswer((_) async => null);
 
       final result = await teamService.getTeam('non-existent');
 
@@ -75,15 +85,17 @@ void main() {
     test('updateTeam 成功更新小组信息', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('teams')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('teams'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'team-123',
-        'name': '小组A更新',
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'team-123',
+            'name': '小组A更新',
+            'created_at': now.toIso8601String(),
+          });
 
       final result = await teamService.updateTeam(
         teamId: 'team-123',
@@ -98,9 +110,11 @@ void main() {
 
   group('TeamService - 成员管理', () {
     test('addMember 成功添加成员到小组', () async {
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockFilterBuilder);
 
       await teamService.addMember(userId: 'user-123', teamId: 'team-456');
 
@@ -109,9 +123,11 @@ void main() {
     });
 
     test('removeMember 成功从小组移除成员', () async {
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockFilterBuilder);
 
       await teamService.removeMember(userId: 'user-123');
 
@@ -122,33 +138,36 @@ void main() {
     test('getTeamMembers 成功获取小组所有成员', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'user-1',
-          'email': 'buyer1@example.com',
-          'role': 'buyer',
-          'team_id': 'team-123',
-          'daily_color': 'green',
-          'color_assigned_date': '2026-07-22',
-          'last_seen': now.subtract(Duration(minutes: 2)).toIso8601String(),
-          'created_at': now.toIso8601String(),
-        },
-        {
-          'id': 'user-2',
-          'email': 'buyer2@example.com',
-          'role': 'buyer',
-          'team_id': 'team-123',
-          'daily_color': 'blue',
-          'color_assigned_date': '2026-07-22',
-          'last_seen': now.subtract(Duration(minutes: 10)).toIso8601String(),
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'user-1',
+              'email': 'buyer1@example.com',
+              'role': 'buyer',
+              'team_id': 'team-123',
+              'daily_color': 'green',
+              'color_assigned_date': '2026-07-22',
+              'last_seen': now.subtract(Duration(minutes: 2)).toIso8601String(),
+              'created_at': now.toIso8601String(),
+            },
+            {
+              'id': 'user-2',
+              'email': 'buyer2@example.com',
+              'role': 'buyer',
+              'team_id': 'team-123',
+              'daily_color': 'blue',
+              'color_assigned_date': '2026-07-22',
+              'last_seen':
+                  now.subtract(Duration(minutes: 10)).toIso8601String(),
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await teamService.getTeamMembers('team-123');
 
@@ -161,11 +180,13 @@ void main() {
     });
 
     test('getTeamMembers 空小组返回空列表', () async {
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => []);
 
       final result = await teamService.getTeamMembers('empty-team');
@@ -178,21 +199,23 @@ void main() {
     test('getTeamMembers 只返回指定小组的成员', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'user-1',
-          'email': 'buyer1@example.com',
-          'role': 'buyer',
-          'team_id': 'team-A',
-          'daily_color': 'green',
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'user-1',
+              'email': 'buyer1@example.com',
+              'role': 'buyer',
+              'team_id': 'team-A',
+              'daily_color': 'green',
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await teamService.getTeamMembers('team-A');
 

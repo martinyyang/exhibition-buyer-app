@@ -11,22 +11,16 @@ class TeamService {
   Future<Team> createTeam({required String name}) async {
     final teamData = {'name': name};
 
-    final result = await _supabase
-        .from('teams')
-        .insert(teamData)
-        .select()
-        .single();
+    final result =
+        await _supabase.from('teams').insert(teamData).select().single();
 
     return Team.fromJson(result);
   }
 
   /// 获取小组信息
   Future<Team?> getTeam(String teamId) async {
-    final result = await _supabase
-        .from('teams')
-        .select()
-        .eq('id', teamId)
-        .maybeSingle();
+    final result =
+        await _supabase.from('teams').select().eq('id', teamId).maybeSingle();
 
     if (result == null) return null;
     return Team.fromJson(result);
@@ -54,18 +48,12 @@ class TeamService {
     required String userId,
     required String teamId,
   }) async {
-    await _supabase
-        .from('users')
-        .update({'team_id': teamId})
-        .eq('id', userId);
+    await _supabase.from('users').update({'team_id': teamId}).eq('id', userId);
   }
 
   /// 从小组移除成员
   Future<void> removeMember({required String userId}) async {
-    await _supabase
-        .from('users')
-        .update({'team_id': null})
-        .eq('id', userId);
+    await _supabase.from('users').update({'team_id': null}).eq('id', userId);
   }
 
   /// 获取小组所有成员
@@ -81,17 +69,12 @@ class TeamService {
 
   /// 更新用户最后活跃时间（用于在线状态）
   Future<void> updateLastSeen(String userId) async {
-    await _supabase
-        .from('users')
-        .update({'last_seen': DateTime.now().toIso8601String()})
-        .eq('id', userId);
+    await _supabase.from('users').update(
+        {'last_seen': DateTime.now().toIso8601String()}).eq('id', userId);
   }
 
   /// 更新用户的团队ID
   Future<void> updateUserTeam(String userId, String teamId) async {
-    await _supabase
-        .from('users')
-        .update({'team_id': teamId})
-        .eq('id', userId);
+    await _supabase.from('users').update({'team_id': teamId}).eq('id', userId);
   }
 }

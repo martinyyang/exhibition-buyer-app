@@ -116,7 +116,8 @@ final boothsByEventProvider = StateNotifierProvider.family<BoothsNotifier,
 );
 
 // 单个摊位Provider
-final boothProvider = FutureProvider.family<Booth?, String>((ref, boothId) async {
+final boothProvider =
+    FutureProvider.family<Booth?, String>((ref, boothId) async {
   final boothService = ref.watch(boothServiceProvider);
   return await boothService.getBooth(boothId);
 });

@@ -64,7 +64,8 @@ class FormulaHistoryNotifier extends StateNotifier<AsyncValue<List<String>>> {
 }
 
 // 公式历史记录Provider（按团队）
-final formulaHistoryProvider = StateNotifierProvider.family<FormulaHistoryNotifier, AsyncValue<List<String>>, String>(
+final formulaHistoryProvider = StateNotifierProvider.family<
+    FormulaHistoryNotifier, AsyncValue<List<String>>, String>(
   (ref, teamId) {
     final historyService = ref.watch(formulaHistoryServiceProvider);
     final realtimeService = ref.watch(realtimeServiceProvider);
@@ -118,7 +119,8 @@ class CurrentFormulaNotifier extends StateNotifier<AsyncValue<String?>> {
 }
 
 // 当前活跃公式Provider（按团队）
-final currentFormulaProvider = StateNotifierProvider.family<CurrentFormulaNotifier, AsyncValue<String?>, String>(
+final currentFormulaProvider = StateNotifierProvider.family<
+    CurrentFormulaNotifier, AsyncValue<String?>, String>(
   (ref, teamId) {
     final settingsService = ref.watch(exchangeSettingsServiceProvider);
     final realtimeService = ref.watch(realtimeServiceProvider);

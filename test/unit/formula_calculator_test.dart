@@ -32,17 +32,20 @@ void main() {
       });
 
       test('多重运算 - (RMB - 50) * 0.14 + 10', () {
-        final result = FormulaCalculator.calculate('(RMB - 50) * 0.14 + 10', 1000);
+        final result =
+            FormulaCalculator.calculate('(RMB - 50) * 0.14 + 10', 1000);
         expect(result, 143.0);
       });
 
       test('嵌套括号 - ((RMB - 100) / 2) * 0.14', () {
-        final result = FormulaCalculator.calculate('((RMB - 100) / 2) * 0.14', 1000);
+        final result =
+            FormulaCalculator.calculate('((RMB - 100) / 2) * 0.14', 1000);
         expect(result, 63.0);
       });
 
       test('混合运算 - RMB * 0.14 + RMB * 0.01', () {
-        final result = FormulaCalculator.calculate('RMB * 0.14 + RMB * 0.01', 1000);
+        final result =
+            FormulaCalculator.calculate('RMB * 0.14 + RMB * 0.01', 1000);
         expect(result, 150.0);
       });
     });
@@ -72,7 +75,8 @@ void main() {
     group('公式验证', () {
       test('有效公式验证 - 返回true', () {
         expect(FormulaCalculator.validateFormula('RMB * 0.14'), true);
-        expect(FormulaCalculator.validateFormula('(RMB - 50) * 0.14 + 10'), true);
+        expect(
+            FormulaCalculator.validateFormula('(RMB - 50) * 0.14 + 10'), true);
       });
 
       test('无效公式验证 - 返回false', () {
@@ -105,7 +109,8 @@ void main() {
 
       test('预览复杂公式', () {
         final testPrices = [1000.0, 2000.0];
-        final results = FormulaCalculator.preview('(RMB - 50) * 0.14 + 10', testPrices);
+        final results =
+            FormulaCalculator.preview('(RMB - 50) * 0.14 + 10', testPrices);
 
         expect(results[1000.0], 143.0);
         expect(results[2000.0], 283.0);

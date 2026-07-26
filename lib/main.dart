@@ -24,7 +24,8 @@ void main() async {
 
       print('Environment variables:');
       print('  SUPABASE_URL: ${supabaseUrl != null ? "✓ found" : "✗ missing"}');
-      print('  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
+      print(
+          '  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
       print('  Total keys: ${dotenv.env.keys.length}');
     } catch (e) {
       print('⚠ Failed to load .env file: $e');
@@ -33,16 +34,19 @@ void main() async {
       // Fallback to hardcoded values for release builds
       // TODO: Remove these before production release
       supabaseUrl = 'https://ppwjblvnixqeympfcqgs.supabase.co';
-      supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwd2pibHZuaXhxZXltcGZjcWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ2MjQsImV4cCI6MjEwMDIyMDYyNH0.LhLw3KUTKrLXry6Qst5nLWKsGCxEewW5XW1Pc6QrzEE';
+      supabaseKey =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwd2pibHZuaXhxZXltcGZjcWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ2MjQsImV4cCI6MjEwMDIyMDYyNH0.LhLw3KUTKrLXry6Qst5nLWKsGCxEewW5XW1Pc6QrzEE';
       print('✓ Using fallback configuration');
     }
 
     // 验证环境变量
     if (supabaseUrl == null || supabaseUrl.isEmpty) {
-      throw Exception('SUPABASE_URL not found in .env file. Please check your configuration.');
+      throw Exception(
+          'SUPABASE_URL not found in .env file. Please check your configuration.');
     }
     if (supabaseKey == null || supabaseKey.isEmpty) {
-      throw Exception('SUPABASE_ANON_KEY not found in .env file. Please check your configuration.');
+      throw Exception(
+          'SUPABASE_ANON_KEY not found in .env file. Please check your configuration.');
     }
 
     print('Initializing Supabase...');

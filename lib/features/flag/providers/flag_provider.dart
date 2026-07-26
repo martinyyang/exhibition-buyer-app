@@ -57,7 +57,8 @@ class FlagsNotifier extends StateNotifier<AsyncValue<List<Flag>>> {
 }
 
 // 旗子列表Provider（按照片过滤，支持实时同步）
-final flagsProvider = StateNotifierProvider.family<FlagsNotifier, AsyncValue<List<Flag>>, String>(
+final flagsProvider =
+    StateNotifierProvider.family<FlagsNotifier, AsyncValue<List<Flag>>, String>(
   (ref, photoId) {
     final flagService = ref.watch(flagServiceProvider);
     final realtimeService = ref.watch(realtimeServiceProvider);

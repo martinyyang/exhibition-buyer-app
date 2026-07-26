@@ -53,10 +53,12 @@ class AuthService {
       print('Starting user registration for: $email');
 
       // 添加超时限制
-      final response = await _supabase.auth.signUp(
+      final response = await _supabase.auth
+          .signUp(
         email: email,
         password: password,
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
           throw Exception('注册请求超时，请检查网络连接');
@@ -154,7 +156,8 @@ class AuthService {
 
     // 如果今天已分配颜色，直接返回
     if (user.colorAssignedDate != null) {
-      final assignedDate = user.colorAssignedDate!.toIso8601String().split('T')[0];
+      final assignedDate =
+          user.colorAssignedDate!.toIso8601String().split('T')[0];
       if (assignedDate == today) {
         return;
       }

@@ -35,7 +35,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // 未登录且不在登录页/注册页 -> 跳转到登录页
-      if (!isInitializing && !isLoggedIn && !isLoggingIn && !isRegistering && !isSplash) {
+      if (!isInitializing &&
+          !isLoggedIn &&
+          !isLoggingIn &&
+          !isRegistering &&
+          !isSplash) {
         return '/login';
       }
 

@@ -13,7 +13,8 @@ void main() {
 
       test('验证合法的复杂公式', () {
         expect(FormulaCalculator.validateFormula('(RMB - 50) * 0.14'), isTrue);
-        expect(FormulaCalculator.validateFormula('(RMB - 50) * 0.14 + 10'), isTrue);
+        expect(FormulaCalculator.validateFormula('(RMB - 50) * 0.14 + 10'),
+            isTrue);
         expect(FormulaCalculator.validateFormula('RMB * 0.14 / 2'), isTrue);
       });
 
@@ -35,7 +36,8 @@ void main() {
       });
 
       test('拒绝包含非法字符的公式', () {
-        expect(FormulaCalculator.validateFormula('RMB * 0.14; DROP TABLE'), isFalse);
+        expect(FormulaCalculator.validateFormula('RMB * 0.14; DROP TABLE'),
+            isFalse);
         expect(FormulaCalculator.validateFormula('RMB & 100'), isFalse);
       });
     });
@@ -67,7 +69,8 @@ void main() {
       });
 
       test('计算多步骤公式', () {
-        final result = FormulaCalculator.calculate('(RMB - 50) * 0.14 + 10', 1000);
+        final result =
+            FormulaCalculator.calculate('(RMB - 50) * 0.14 + 10', 1000);
         expect(result, 143.0);
       });
 
@@ -98,7 +101,8 @@ void main() {
 
     group('preview', () {
       test('预览多个价格的计算结果', () {
-        final results = FormulaCalculator.preview('RMB * 0.14', [1000, 2000, 5000]);
+        final results =
+            FormulaCalculator.preview('RMB * 0.14', [1000, 2000, 5000]);
 
         expect(results[1000], 140.0);
         expect(results[2000], 280.0);

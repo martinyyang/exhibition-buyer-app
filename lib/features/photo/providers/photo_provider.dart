@@ -57,7 +57,8 @@ class PhotosNotifier extends StateNotifier<AsyncValue<List<Photo>>> {
 }
 
 // 照片列表Provider（按摊位过滤，支持实时同步）
-final photosProvider = StateNotifierProvider.family<PhotosNotifier, AsyncValue<List<Photo>>, String>(
+final photosProvider = StateNotifierProvider.family<PhotosNotifier,
+    AsyncValue<List<Photo>>, String>(
   (ref, boothId) {
     final photoService = ref.watch(photoServiceProvider);
     final realtimeService = ref.watch(realtimeServiceProvider);
@@ -66,7 +67,8 @@ final photosProvider = StateNotifierProvider.family<PhotosNotifier, AsyncValue<L
 );
 
 // 单个照片Provider
-final photoProvider = FutureProvider.family<Photo?, String>((ref, photoId) async {
+final photoProvider =
+    FutureProvider.family<Photo?, String>((ref, photoId) async {
   final photoService = ref.watch(photoServiceProvider);
   return await photoService.getPhoto(photoId);
 });

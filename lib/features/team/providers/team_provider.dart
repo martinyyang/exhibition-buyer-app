@@ -33,7 +33,8 @@ final teamMembersProvider = FutureProvider<List<User>>((ref) async {
 });
 
 // 特定小组的成员Provider（用于按teamId查询）
-final teamMembersByIdProvider = FutureProvider.family<List<User>, String>((ref, teamId) async {
+final teamMembersByIdProvider =
+    FutureProvider.family<List<User>, String>((ref, teamId) async {
   final teamService = ref.watch(teamServiceProvider);
   return await teamService.getTeamMembers(teamId);
 });

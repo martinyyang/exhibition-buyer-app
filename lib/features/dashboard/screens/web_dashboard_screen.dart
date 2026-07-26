@@ -107,8 +107,7 @@ class _WebDashboardLayoutState extends ConsumerState<WebDashboardLayout> {
   /// 买手列表项
   Widget _buildBuyerItem(
     String name,
-    String colorEmoji,
-    {
+    String colorEmoji, {
     required bool isOnline,
     required int photoCount,
   }) {

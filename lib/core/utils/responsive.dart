@@ -125,12 +125,14 @@ class ResponsiveContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final containerMaxWidth = maxWidth ?? Responsive.getMaxContentWidth(context);
+    final containerMaxWidth =
+        maxWidth ?? Responsive.getMaxContentWidth(context);
 
     return Center(
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: screenWidth > containerMaxWidth ? containerMaxWidth : screenWidth,
+          maxWidth:
+              screenWidth > containerMaxWidth ? containerMaxWidth : screenWidth,
         ),
         child: child,
       ),

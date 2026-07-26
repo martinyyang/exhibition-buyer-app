@@ -108,7 +108,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
     // 计算变换矩阵，使旗子居中
     final matrix = Matrix4.identity()
-      ..translate(-targetX + imageSize.width / 2, -targetY + imageSize.height / 2)
+      ..translate(
+          -targetX + imageSize.width / 2, -targetY + imageSize.height / 2)
       ..scale(2.0); // 放大2倍
 
     _transformationController.value = matrix;
@@ -155,7 +156,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
           CachedNetworkImage(
             imageUrl: _photo!.url,
             fit: BoxFit.contain,
-            placeholder: (context, url) => const Center(child: LoadingIndicator()),
+            placeholder: (context, url) =>
+                const Center(child: LoadingIndicator()),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
 

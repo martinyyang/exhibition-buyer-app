@@ -6,7 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Mock类
 class MockSupabaseClient extends Mock implements SupabaseClient {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder {}
+
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder {}
 
 void main() {
   late MockSupabaseClient mockSupabase;
@@ -27,9 +29,12 @@ void main() {
       final createInsertBuilder = MockPostgrestFilterBuilder();
       final createSelectBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(createUpdateBuilder as dynamic);
-      when(() => createUpdateBuilder.update(any())).thenReturn(createUpdateBuilder);
-      when(() => createUpdateBuilder.eq('team_id', testTeamId)).thenAnswer((_) async => []);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(createUpdateBuilder as dynamic);
+      when(() => createUpdateBuilder.update(any()))
+          .thenReturn(createUpdateBuilder);
+      when(() => createUpdateBuilder.eq('team_id', testTeamId))
+          .thenAnswer((_) async => []);
 
       final createdEventData = {
         'id': 'event-new',
@@ -41,10 +46,13 @@ void main() {
         'created_at': '2024-05-20T10:00:00Z',
       };
 
-      when(() => mockSupabase.from('events')).thenReturn(createInsertBuilder as dynamic);
-      when(() => createInsertBuilder.insert(any())).thenReturn(createSelectBuilder);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(createInsertBuilder as dynamic);
+      when(() => createInsertBuilder.insert(any()))
+          .thenReturn(createSelectBuilder);
       when(() => createSelectBuilder.select()).thenReturn(createSelectBuilder);
-      when(() => createSelectBuilder.single()).thenAnswer((_) async => createdEventData);
+      when(() => createSelectBuilder.single())
+          .thenAnswer((_) async => createdEventData);
 
       final createdEvent = await eventService.createEvent(
         name: '测试展会',
@@ -59,10 +67,12 @@ void main() {
 
       // 2. 读取单个场次
       final readBuilder = MockPostgrestFilterBuilder();
-      when(() => mockSupabase.from('events')).thenReturn(readBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(readBuilder as dynamic);
       when(() => readBuilder.select()).thenReturn(readBuilder);
       when(() => readBuilder.eq('id', 'event-new')).thenReturn(readBuilder);
-      when(() => readBuilder.single()).thenAnswer((_) async => createdEventData);
+      when(() => readBuilder.single())
+          .thenAnswer((_) async => createdEventData);
 
       final readEvent = await eventService.getEvent('event-new');
       expect(readEvent.id, 'event-new');
@@ -73,11 +83,15 @@ void main() {
       final updateBuilder = MockPostgrestFilterBuilder();
       final updateSelectBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(updateBuilder as dynamic);
-      when(() => updateBuilder.update({'name': '更新后的展会'})).thenReturn(updateBuilder);
-      when(() => updateBuilder.eq('id', 'event-new')).thenReturn(updateSelectBuilder);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(updateBuilder as dynamic);
+      when(() => updateBuilder.update({'name': '更新后的展会'}))
+          .thenReturn(updateBuilder);
+      when(() => updateBuilder.eq('id', 'event-new'))
+          .thenReturn(updateSelectBuilder);
       when(() => updateSelectBuilder.select()).thenReturn(updateSelectBuilder);
-      when(() => updateSelectBuilder.single()).thenAnswer((_) async => updatedEventData);
+      when(() => updateSelectBuilder.single())
+          .thenAnswer((_) async => updatedEventData);
 
       final updatedEvent = await eventService.updateEvent(
         eventId: 'event-new',
@@ -87,9 +101,11 @@ void main() {
 
       // 4. 删除场次
       final deleteBuilder = MockPostgrestFilterBuilder();
-      when(() => mockSupabase.from('events')).thenReturn(deleteBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(deleteBuilder as dynamic);
       when(() => deleteBuilder.delete()).thenReturn(deleteBuilder);
-      when(() => deleteBuilder.eq('id', 'event-new')).thenAnswer((_) async => []);
+      when(() => deleteBuilder.eq('id', 'event-new'))
+          .thenAnswer((_) async => []);
 
       await eventService.deleteEvent('event-new');
       verify(() => deleteBuilder.delete()).called(1);
@@ -101,9 +117,12 @@ void main() {
       final event1InsertBuilder = MockPostgrestFilterBuilder();
       final event1SelectBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(event1UpdateBuilder as dynamic);
-      when(() => event1UpdateBuilder.update(any())).thenReturn(event1UpdateBuilder);
-      when(() => event1UpdateBuilder.eq('team_id', testTeamId)).thenAnswer((_) async => []);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(event1UpdateBuilder as dynamic);
+      when(() => event1UpdateBuilder.update(any()))
+          .thenReturn(event1UpdateBuilder);
+      when(() => event1UpdateBuilder.eq('team_id', testTeamId))
+          .thenAnswer((_) async => []);
 
       final event1Data = {
         'id': 'event-1',
@@ -114,10 +133,13 @@ void main() {
         'created_at': '2024-05-20T10:00:00Z',
       };
 
-      when(() => mockSupabase.from('events')).thenReturn(event1InsertBuilder as dynamic);
-      when(() => event1InsertBuilder.insert(any())).thenReturn(event1SelectBuilder);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(event1InsertBuilder as dynamic);
+      when(() => event1InsertBuilder.insert(any()))
+          .thenReturn(event1SelectBuilder);
       when(() => event1SelectBuilder.select()).thenReturn(event1SelectBuilder);
-      when(() => event1SelectBuilder.single()).thenAnswer((_) async => event1Data);
+      when(() => event1SelectBuilder.single())
+          .thenAnswer((_) async => event1Data);
 
       final event1 = await eventService.createEvent(
         name: '第一个展会',
@@ -132,9 +154,12 @@ void main() {
       final event2InsertBuilder = MockPostgrestFilterBuilder();
       final event2SelectBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(event2UpdateBuilder as dynamic);
-      when(() => event2UpdateBuilder.update({'is_active': false})).thenReturn(event2UpdateBuilder);
-      when(() => event2UpdateBuilder.eq('team_id', testTeamId)).thenAnswer((_) async => []);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(event2UpdateBuilder as dynamic);
+      when(() => event2UpdateBuilder.update({'is_active': false}))
+          .thenReturn(event2UpdateBuilder);
+      when(() => event2UpdateBuilder.eq('team_id', testTeamId))
+          .thenAnswer((_) async => []);
 
       final event2Data = {
         'id': 'event-2',
@@ -145,10 +170,13 @@ void main() {
         'created_at': '2024-06-20T10:00:00Z',
       };
 
-      when(() => mockSupabase.from('events')).thenReturn(event2InsertBuilder as dynamic);
-      when(() => event2InsertBuilder.insert(any())).thenReturn(event2SelectBuilder);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(event2InsertBuilder as dynamic);
+      when(() => event2InsertBuilder.insert(any()))
+          .thenReturn(event2SelectBuilder);
       when(() => event2SelectBuilder.select()).thenReturn(event2SelectBuilder);
-      when(() => event2SelectBuilder.single()).thenAnswer((_) async => event2Data);
+      when(() => event2SelectBuilder.single())
+          .thenAnswer((_) async => event2Data);
 
       final event2 = await eventService.createEvent(
         name: '第二个展会',
@@ -165,13 +193,19 @@ void main() {
       final switchUpdateBuilder1 = MockPostgrestFilterBuilder();
       final switchUpdateBuilder2 = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(switchUpdateBuilder1 as dynamic);
-      when(() => switchUpdateBuilder1.update({'is_active': false})).thenReturn(switchUpdateBuilder1);
-      when(() => switchUpdateBuilder1.eq('team_id', testTeamId)).thenAnswer((_) async => []);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(switchUpdateBuilder1 as dynamic);
+      when(() => switchUpdateBuilder1.update({'is_active': false}))
+          .thenReturn(switchUpdateBuilder1);
+      when(() => switchUpdateBuilder1.eq('team_id', testTeamId))
+          .thenAnswer((_) async => []);
 
-      when(() => mockSupabase.from('events')).thenReturn(switchUpdateBuilder2 as dynamic);
-      when(() => switchUpdateBuilder2.update({'is_active': true})).thenReturn(switchUpdateBuilder2);
-      when(() => switchUpdateBuilder2.eq('id', 'event-1')).thenAnswer((_) async => [event1Data]);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(switchUpdateBuilder2 as dynamic);
+      when(() => switchUpdateBuilder2.update({'is_active': true}))
+          .thenReturn(switchUpdateBuilder2);
+      when(() => switchUpdateBuilder2.eq('id', 'event-1'))
+          .thenAnswer((_) async => [event1Data]);
 
       await eventService.setActiveEvent('event-1', testTeamId);
 
@@ -188,9 +222,12 @@ void main() {
       final team1InsertBuilder = MockPostgrestFilterBuilder();
       final team1SelectBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(team1UpdateBuilder as dynamic);
-      when(() => team1UpdateBuilder.update(any())).thenReturn(team1UpdateBuilder);
-      when(() => team1UpdateBuilder.eq('team_id', team1Id)).thenAnswer((_) async => []);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(team1UpdateBuilder as dynamic);
+      when(() => team1UpdateBuilder.update(any()))
+          .thenReturn(team1UpdateBuilder);
+      when(() => team1UpdateBuilder.eq('team_id', team1Id))
+          .thenAnswer((_) async => []);
 
       final team1EventData = {
         'id': 'team1-event',
@@ -201,10 +238,13 @@ void main() {
         'created_at': '2024-05-20T10:00:00Z',
       };
 
-      when(() => mockSupabase.from('events')).thenReturn(team1InsertBuilder as dynamic);
-      when(() => team1InsertBuilder.insert(any())).thenReturn(team1SelectBuilder);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(team1InsertBuilder as dynamic);
+      when(() => team1InsertBuilder.insert(any()))
+          .thenReturn(team1SelectBuilder);
       when(() => team1SelectBuilder.select()).thenReturn(team1SelectBuilder);
-      when(() => team1SelectBuilder.single()).thenAnswer((_) async => team1EventData);
+      when(() => team1SelectBuilder.single())
+          .thenAnswer((_) async => team1EventData);
 
       await eventService.createEvent(
         name: 'Team1展会',
@@ -220,9 +260,12 @@ void main() {
       final team2InsertBuilder = MockPostgrestFilterBuilder();
       final team2SelectBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('events')).thenReturn(team2UpdateBuilder as dynamic);
-      when(() => team2UpdateBuilder.update(any())).thenReturn(team2UpdateBuilder);
-      when(() => team2UpdateBuilder.eq('team_id', team2Id)).thenAnswer((_) async => []);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(team2UpdateBuilder as dynamic);
+      when(() => team2UpdateBuilder.update(any()))
+          .thenReturn(team2UpdateBuilder);
+      when(() => team2UpdateBuilder.eq('team_id', team2Id))
+          .thenAnswer((_) async => []);
 
       final team2EventData = {
         'id': 'team2-event',
@@ -233,10 +276,13 @@ void main() {
         'created_at': '2024-05-20T10:00:00Z',
       };
 
-      when(() => mockSupabase.from('events')).thenReturn(team2InsertBuilder as dynamic);
-      when(() => team2InsertBuilder.insert(any())).thenReturn(team2SelectBuilder);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(team2InsertBuilder as dynamic);
+      when(() => team2InsertBuilder.insert(any()))
+          .thenReturn(team2SelectBuilder);
       when(() => team2SelectBuilder.select()).thenReturn(team2SelectBuilder);
-      when(() => team2SelectBuilder.single()).thenAnswer((_) async => team2EventData);
+      when(() => team2SelectBuilder.single())
+          .thenAnswer((_) async => team2EventData);
 
       await eventService.createEvent(
         name: 'Team2展会',
@@ -260,7 +306,8 @@ void main() {
       when(() => mockSupabase.from('users')).thenReturn(userBuilder as dynamic);
       when(() => userBuilder.select('team_id')).thenReturn(userBuilder);
       when(() => userBuilder.eq('id', testUserId)).thenReturn(userBuilder);
-      when(() => userBuilder.single()).thenAnswer((_) async => {'team_id': testTeamId});
+      when(() => userBuilder.single())
+          .thenAnswer((_) async => {'team_id': testTeamId});
 
       final eventsData = [
         {
@@ -289,9 +336,11 @@ void main() {
         },
       ];
 
-      when(() => mockSupabase.from('events')).thenReturn(eventsBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(eventsBuilder as dynamic);
       when(() => eventsBuilder.select()).thenReturn(eventsBuilder);
-      when(() => eventsBuilder.eq('team_id', testTeamId)).thenReturn(orderBuilder);
+      when(() => eventsBuilder.eq('team_id', testTeamId))
+          .thenReturn(orderBuilder);
       when(() => orderBuilder.order('start_date', ascending: false))
           .thenAnswer((_) async => eventsData);
 
@@ -301,29 +350,37 @@ void main() {
       expect(events[0].startDate, DateTime(2024, 8, 1));
       expect(events[1].startDate, DateTime(2024, 7, 1));
       expect(events[2].startDate, DateTime(2024, 6, 1));
-      verify(() => orderBuilder.order('start_date', ascending: false)).called(1);
+      verify(() => orderBuilder.order('start_date', ascending: false))
+          .called(1);
     });
 
     test('同一小组只能有一个活跃场次', () async {
       final activeEventsBuilder = MockPostgrestFilterBuilder();
 
-      when(() => mockSupabase.from('users')).thenReturn(activeEventsBuilder as dynamic);
-      when(() => activeEventsBuilder.select('team_id')).thenReturn(activeEventsBuilder);
-      when(() => activeEventsBuilder.eq('id', testUserId)).thenReturn(activeEventsBuilder);
-      when(() => activeEventsBuilder.single()).thenAnswer((_) async => {'team_id': testTeamId});
+      when(() => mockSupabase.from('users'))
+          .thenReturn(activeEventsBuilder as dynamic);
+      when(() => activeEventsBuilder.select('team_id'))
+          .thenReturn(activeEventsBuilder);
+      when(() => activeEventsBuilder.eq('id', testUserId))
+          .thenReturn(activeEventsBuilder);
+      when(() => activeEventsBuilder.single())
+          .thenAnswer((_) async => {'team_id': testTeamId});
 
-      when(() => mockSupabase.from('events')).thenReturn(activeEventsBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(activeEventsBuilder as dynamic);
       when(() => activeEventsBuilder.select()).thenReturn(activeEventsBuilder);
-      when(() => activeEventsBuilder.eq('team_id', testTeamId)).thenReturn(activeEventsBuilder);
-      when(() => activeEventsBuilder.eq('is_active', true)).thenReturn(activeEventsBuilder);
+      when(() => activeEventsBuilder.eq('team_id', testTeamId))
+          .thenReturn(activeEventsBuilder);
+      when(() => activeEventsBuilder.eq('is_active', true))
+          .thenReturn(activeEventsBuilder);
       when(() => activeEventsBuilder.maybeSingle()).thenAnswer((_) async => {
-        'id': 'active-event',
-        'name': '活跃展会',
-        'start_date': '2024-06-01',
-        'team_id': testTeamId,
-        'is_active': true,
-        'created_at': '2024-05-20T10:00:00Z',
-      });
+            'id': 'active-event',
+            'name': '活跃展会',
+            'start_date': '2024-06-01',
+            'team_id': testTeamId,
+            'is_active': true,
+            'created_at': '2024-05-20T10:00:00Z',
+          });
 
       final activeEvent = await eventService.getActiveEvent(testUserId);
 

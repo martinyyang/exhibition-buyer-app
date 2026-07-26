@@ -281,7 +281,8 @@ void main() {
       expect(booth?.id, testBoothId);
       expect(booth?.boothNumber, 'B01');
 
-      verify(mockBoothService.getBooth(testBoothId)).called(greaterThanOrEqualTo(1));
+      verify(mockBoothService.getBooth(testBoothId))
+          .called(greaterThanOrEqualTo(1));
 
       container.dispose();
     });

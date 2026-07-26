@@ -6,6 +6,7 @@ import 'package:exhibition_buyer_app/features/photo/services/image_helper_servic
 
 // Mock classes
 class MockImagePicker extends Mock implements ImagePicker {}
+
 class MockXFile extends Mock implements XFile {}
 
 void main() {

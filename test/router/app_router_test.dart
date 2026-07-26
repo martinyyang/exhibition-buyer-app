@@ -60,15 +60,18 @@ void main() {
       expect(router.namedLocation('login'), '/login');
       expect(router.namedLocation('events'), '/events');
       expect(
-        router.namedLocation('booths', pathParameters: {'eventId': 'event-123'}),
+        router
+            .namedLocation('booths', pathParameters: {'eventId': 'event-123'}),
         '/events/event-123/booths',
       );
       expect(
-        router.namedLocation('photos', pathParameters: {'boothId': 'booth-456'}),
+        router
+            .namedLocation('photos', pathParameters: {'boothId': 'booth-456'}),
         '/booths/booth-456/photos',
       );
       expect(
-        router.namedLocation('photo-detail', pathParameters: {'photoId': 'photo-789'}),
+        router.namedLocation('photo-detail',
+            pathParameters: {'photoId': 'photo-789'}),
         '/photos/photo-789',
       );
 
@@ -106,15 +109,18 @@ void main() {
       expect(() => router.namedLocation('login'), returnsNormally);
       expect(() => router.namedLocation('events'), returnsNormally);
       expect(
-        () => router.namedLocation('booths', pathParameters: {'eventId': 'test'}),
+        () =>
+            router.namedLocation('booths', pathParameters: {'eventId': 'test'}),
         returnsNormally,
       );
       expect(
-        () => router.namedLocation('photos', pathParameters: {'boothId': 'test'}),
+        () =>
+            router.namedLocation('photos', pathParameters: {'boothId': 'test'}),
         returnsNormally,
       );
       expect(
-        () => router.namedLocation('photo-detail', pathParameters: {'photoId': 'test'}),
+        () => router
+            .namedLocation('photo-detail', pathParameters: {'photoId': 'test'}),
         returnsNormally,
       );
 

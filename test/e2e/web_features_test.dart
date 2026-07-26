@@ -11,7 +11,8 @@ void main() {
       // Login before each test
     });
 
-    testWidgets('Photo upload button shows file upload icon on web', (WidgetTester tester) async {
+    testWidgets('Photo upload button shows file upload icon on web',
+        (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -36,7 +37,8 @@ void main() {
       expect(iconFinder, findsOneWidget);
     });
 
-    testWidgets('File picker opens on photo upload', (WidgetTester tester) async {
+    testWidgets('File picker opens on photo upload',
+        (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -57,7 +59,8 @@ void main() {
   });
 
   group('Web Responsive Layout Tests', () {
-    testWidgets('Desktop layout - centered card on login', (WidgetTester tester) async {
+    testWidgets('Desktop layout - centered card on login',
+        (WidgetTester tester) async {
       // Set window size to desktop
       tester.view.physicalSize = const Size(1920, 1080);
       tester.view.devicePixelRatio = 1.0;
@@ -70,7 +73,8 @@ void main() {
       expect(loginForm, findsOneWidget);
     });
 
-    testWidgets('Mobile layout - full screen on login', (WidgetTester tester) async {
+    testWidgets('Mobile layout - full screen on login',
+        (WidgetTester tester) async {
       // Set window size to mobile
       tester.view.physicalSize = const Size(375, 667);
       tester.view.devicePixelRatio = 2.0;
@@ -82,7 +86,8 @@ void main() {
       expect(find.byType(TextField), findsWidgets);
     });
 
-    testWidgets('Photo grid columns adjust by screen size', (WidgetTester tester) async {
+    testWidgets('Photo grid columns adjust by screen size',
+        (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 

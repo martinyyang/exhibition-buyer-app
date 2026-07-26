@@ -10,8 +10,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder {}
-class MockPostgrestTransformBuilder<T> extends Mock implements PostgrestTransformBuilder<T> {}
+
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder {}
+
+class MockPostgrestTransformBuilder<T> extends Mock
+    implements PostgrestTransformBuilder<T> {}
 
 void main() {
   late MockSupabaseClient mockSupabase;
@@ -32,9 +36,11 @@ void main() {
     test('getEvents 通过userId查询team_id过滤场次', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
 
       // 第一次调用：获取用户的team_id
       var callCount = 0;
@@ -47,20 +53,21 @@ void main() {
       });
 
       // Mock events查询
-      when(() => mockSupabase.from('events')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
-          .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'event-1',
-          'name': '场次A1',
-          'start_date': '2026-07-20',
-          'team_id': 'team-A',
-          'is_active': true,
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'event-1',
+              'name': '场次A1',
+              'start_date': '2026-07-20',
+              'team_id': 'team-A',
+              'is_active': true,
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await eventService.getEvents('user-1');
 
@@ -72,21 +79,23 @@ void main() {
     test('getEventsByTeam 只返回指定小组的场次', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('events')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'event-1',
-          'name': '场次A1',
-          'start_date': '2026-07-20',
-          'team_id': 'team-A',
-          'is_active': true,
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'event-1',
+              'name': '场次A1',
+              'start_date': '2026-07-20',
+              'team_id': 'team-A',
+              'is_active': true,
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await eventService.getEventsByTeam('team-A');
 
@@ -98,19 +107,21 @@ void main() {
     test('createEvent 创建时必须指定team_id', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('events')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.insert(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'event-new',
-        'name': '新场次',
-        'start_date': '2026-07-22',
-        'team_id': 'team-B',
-        'is_active': true,
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'event-new',
+            'name': '新场次',
+            'start_date': '2026-07-22',
+            'team_id': 'team-B',
+            'is_active': true,
+            'created_at': now.toIso8601String(),
+          });
 
       final result = await eventService.createEvent(
         name: '新场次',
@@ -127,21 +138,23 @@ void main() {
     test('getBooths 同时过滤eventId和teamId', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('booths')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('booths'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'booth-1',
-          'booth_number': 'A01',
-          'event_id': 'event-1',
-          'team_id': 'team-A',
-          'created_by': 'user-1',
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'booth-1',
+              'booth_number': 'A01',
+              'event_id': 'event-1',
+              'team_id': 'team-A',
+              'created_by': 'user-1',
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await boothService.getBooths(
         eventId: 'event-1',
@@ -157,17 +170,18 @@ void main() {
     test('createBooth 创建时必须指定team_id', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('booths')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('booths'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.insert(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'booth-new',
-        'booth_number': 'B01',
-        'event_id': 'event-1',
-        'team_id': 'team-B',
-        'created_by': 'user-2',
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'booth-new',
+            'booth_number': 'B01',
+            'event_id': 'event-1',
+            'team_id': 'team-B',
+            'created_by': 'user-2',
+            'created_at': now.toIso8601String(),
+          });
 
       final result = await boothService.createBooth(
         boothNumber: 'B01',
@@ -183,29 +197,31 @@ void main() {
     test('getBoothsByTeam 只返回指定小组的摊位', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('booths')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('booths'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'booth-1',
-          'booth_number': 'C01',
-          'event_id': 'event-1',
-          'team_id': 'team-C',
-          'created_by': 'user-3',
-          'created_at': now.toIso8601String(),
-        },
-        {
-          'id': 'booth-2',
-          'booth_number': 'C02',
-          'event_id': 'event-2',
-          'team_id': 'team-C',
-          'created_by': 'user-3',
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'booth-1',
+              'booth_number': 'C01',
+              'event_id': 'event-1',
+              'team_id': 'team-C',
+              'created_by': 'user-3',
+              'created_at': now.toIso8601String(),
+            },
+            {
+              'id': 'booth-2',
+              'booth_number': 'C02',
+              'event_id': 'event-2',
+              'team_id': 'team-C',
+              'created_by': 'user-3',
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await boothService.getBoothsByTeam('team-C');
 
@@ -217,17 +233,20 @@ void main() {
 
   group('数据隔离验证 - 跨小组访问拒绝', () {
     test('小组A不能访问小组B的场次', () async {
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'team_id': 'team-A',
-      });
+            'team_id': 'team-A',
+          });
 
-      when(() => mockSupabase.from('events')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('events'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
-          .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => []);
 
       final result = await eventService.getEvents('user-from-team-A');
@@ -239,11 +258,13 @@ void main() {
     });
 
     test('小组A不能访问小组B的摊位', () async {
-      when(() => mockSupabase.from('booths')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('booths'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => []);
 
       final result = await boothService.getBooths(
@@ -317,21 +338,23 @@ void main() {
       final now = DateTime.now();
 
       // 小组A的买手1查询摊位
-      when(() => mockSupabase.from('booths')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('booths'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-        {
-          'id': 'booth-1',
-          'booth_number': 'A01',
-          'event_id': 'event-1',
-          'team_id': 'team-A',
-          'created_by': 'buyer-2', // 由买手2创建
-          'created_at': now.toIso8601String(),
-        },
-      ]);
+            {
+              'id': 'booth-1',
+              'booth_number': 'A01',
+              'event_id': 'event-1',
+              'team_id': 'team-A',
+              'created_by': 'buyer-2', // 由买手2创建
+              'created_at': now.toIso8601String(),
+            },
+          ]);
 
       final result = await boothService.getBooths(
         eventId: 'event-1',
@@ -346,11 +369,13 @@ void main() {
 
     test('不同组买手不能看到对方的数据', () async {
       // 小组A的买手查询时只能看到team-A的数据
-      when(() => mockSupabase.from('booths')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('booths'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
+      when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(),
+          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => []);
 
       final result = await boothService.getBooths(

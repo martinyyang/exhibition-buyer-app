@@ -74,7 +74,8 @@ final activeEventProvider = FutureProvider<Event?>((ref) async {
 });
 
 // 单个场次Provider
-final eventProvider = FutureProvider.family<Event?, String>((ref, eventId) async {
+final eventProvider =
+    FutureProvider.family<Event?, String>((ref, eventId) async {
   // 监听Realtime变化（建立依赖关系）
   ref.watch(eventsRealtimeProvider);
 

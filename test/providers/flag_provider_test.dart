@@ -54,7 +54,8 @@ void main() {
             ),
           ]);
 
-      when(mockRealtimeService.subscribeToFlags(any, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(any, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -82,7 +83,8 @@ void main() {
       final photoId = 'photo-123';
 
       when(mockFlagService.getFlags(photoId)).thenAnswer((_) async => []);
-      when(mockRealtimeService.subscribeToFlags(any, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(any, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -108,7 +110,8 @@ void main() {
       final photoId = 'photo-123';
 
       when(mockFlagService.getFlags(photoId)).thenAnswer((_) async => []);
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -131,8 +134,10 @@ void main() {
       final photoId = 'photo-123';
 
       when(mockFlagService.getFlags(photoId)).thenAnswer((_) async => []);
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
-      when(mockRealtimeService.unsubscribe(mockChannel)).thenAnswer((_) async => null);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
+      when(mockRealtimeService.unsubscribe(mockChannel))
+          .thenAnswer((_) async => null);
 
       final container = ProviderContainer(
         overrides: [
@@ -169,8 +174,10 @@ void main() {
             ),
           ]);
 
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenAnswer((invocation) {
-        onUpdateCallback = invocation.positionalArguments[1] as Function(dynamic);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenAnswer((invocation) {
+        onUpdateCallback =
+            invocation.positionalArguments[1] as Function(dynamic);
         return mockChannel;
       });
 
@@ -182,7 +189,8 @@ void main() {
       );
 
       final listener = MockListener<AsyncValue<List<Flag>>>();
-      container.listen(flagsProvider(photoId), listener.call, fireImmediately: true);
+      container.listen(flagsProvider(photoId), listener.call,
+          fireImmediately: true);
 
       await Future.delayed(Duration(milliseconds: 100));
 
@@ -226,7 +234,8 @@ void main() {
       final photoId = 'photo-123';
 
       when(mockFlagService.getFlags(photoId)).thenAnswer((_) async => []);
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -258,7 +267,8 @@ void main() {
             ),
           ]);
 
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -280,7 +290,8 @@ void main() {
       final photoId = 'photo-123';
 
       when(mockFlagService.getFlags(photoId)).thenThrow(Exception('网络错误'));
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -335,7 +346,8 @@ void main() {
             ),
           ]);
 
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [
@@ -361,7 +373,8 @@ void main() {
       final photoId = 'photo-123';
 
       when(mockFlagService.getFlags(photoId)).thenAnswer((_) async => []);
-      when(mockRealtimeService.subscribeToFlags(photoId, any)).thenReturn(mockChannel);
+      when(mockRealtimeService.subscribeToFlags(photoId, any))
+          .thenReturn(mockChannel);
 
       final container = ProviderContainer(
         overrides: [

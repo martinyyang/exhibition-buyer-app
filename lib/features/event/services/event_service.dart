@@ -18,8 +18,7 @@ class EventService {
     if (setAsActive) {
       await _supabase
           .from('events')
-          .update({'is_active': false})
-          .eq('team_id', teamId);
+          .update({'is_active': false}).eq('team_id', teamId);
     }
 
     final eventData = {
@@ -30,11 +29,8 @@ class EventService {
       'is_active': setAsActive,
     };
 
-    final result = await _supabase
-        .from('events')
-        .insert(eventData)
-        .select()
-        .single();
+    final result =
+        await _supabase.from('events').insert(eventData).select().single();
 
     return Event.fromJson(result);
   }
@@ -98,14 +94,12 @@ class EventService {
     // 先将所有场次设置为非活跃
     await _supabase
         .from('events')
-        .update({'is_active': false})
-        .eq('team_id', teamId);
+        .update({'is_active': false}).eq('team_id', teamId);
 
     // 设置指定场次为活跃
     await _supabase
         .from('events')
-        .update({'is_active': true})
-        .eq('id', eventId);
+        .update({'is_active': true}).eq('id', eventId);
   }
 
   /// 更新场次信息
@@ -141,11 +135,8 @@ class EventService {
 
   /// 获取单个场次详情
   Future<Event> getEvent(String eventId) async {
-    final result = await _supabase
-        .from('events')
-        .select()
-        .eq('id', eventId)
-        .single();
+    final result =
+        await _supabase.from('events').select().eq('id', eventId).single();
 
     return Event.fromJson(result);
   }

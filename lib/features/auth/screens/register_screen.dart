@@ -126,7 +126,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
         // 根据错误类型提供更明确的错误信息
         final errorString = e.toString().toLowerCase();
-        if (errorString.contains('no host') || errorString.contains('socketexception')) {
+        if (errorString.contains('no host') ||
+            errorString.contains('socketexception')) {
           errorMessage = l10n.networkError;
         } else if (errorString.contains('timeout')) {
           errorMessage = l10n.timeoutError;

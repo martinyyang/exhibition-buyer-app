@@ -67,7 +67,8 @@ class FormulaHistoryService {
   }
 
   /// 根据公式文本查询是否已存在
-  Future<Map<String, dynamic>?> getFormulaByText(String teamId, String formula) async {
+  Future<Map<String, dynamic>?> getFormulaByText(
+      String teamId, String formula) async {
     final result = await _supabase
         .from('formula_history')
         .select()

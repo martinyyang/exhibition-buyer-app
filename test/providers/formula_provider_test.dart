@@ -7,7 +7,8 @@ import 'package:exhibition_buyer_app/features/formula/services/formula_history_s
 import 'package:exhibition_buyer_app/features/formula/services/exchange_settings_service.dart';
 import 'package:exhibition_buyer_app/core/services/realtime_service.dart';
 
-@GenerateMocks([FormulaHistoryService, ExchangeSettingsService, RealtimeService])
+@GenerateMocks(
+    [FormulaHistoryService, ExchangeSettingsService, RealtimeService])
 import 'formula_provider_test.mocks.dart';
 
 void main() {
@@ -61,7 +62,8 @@ void main() {
       // 等待初始化完成
       await Future.delayed(Duration(milliseconds: 100));
 
-      verify(mockRealtimeService.subscribeToFormulaHistory(teamId, any)).called(1);
+      verify(mockRealtimeService.subscribeToFormulaHistory(teamId, any))
+          .called(1);
     });
 
     test('refresh时重新加载数据', () async {
@@ -92,8 +94,7 @@ void main() {
       final teamId = 'team-123';
       final error = Exception('网络错误');
 
-      when(mockHistoryService.getRecentFormulas(teamId))
-          .thenThrow(error);
+      when(mockHistoryService.getRecentFormulas(teamId)).thenThrow(error);
       when(mockRealtimeService.subscribeToFormulaHistory(teamId, any))
           .thenReturn(null);
 
@@ -171,7 +172,8 @@ void main() {
       // 等待初始化完成
       await Future.delayed(Duration(milliseconds: 100));
 
-      verify(mockRealtimeService.subscribeToExchangeSettings(teamId, any)).called(1);
+      verify(mockRealtimeService.subscribeToExchangeSettings(teamId, any))
+          .called(1);
     });
 
     test('refresh时重新加载数据', () async {
@@ -202,8 +204,7 @@ void main() {
       final teamId = 'team-123';
       final error = Exception('网络错误');
 
-      when(mockSettingsService.getCurrentFormula(teamId))
-          .thenThrow(error);
+      when(mockSettingsService.getCurrentFormula(teamId)).thenThrow(error);
       when(mockRealtimeService.subscribeToExchangeSettings(teamId, any))
           .thenReturn(null);
 
@@ -235,7 +236,8 @@ void main() {
       when(mockRealtimeService.subscribeToFormulaHistory(any, any))
           .thenReturn(null);
 
-      final notifier = container.read(formulaHistoryProvider('team-123').notifier);
+      final notifier =
+          container.read(formulaHistoryProvider('team-123').notifier);
 
       expect(notifier, isA<FormulaHistoryNotifier>());
 
@@ -245,7 +247,8 @@ void main() {
     test('currentFormulaProvider创建CurrentFormulaNotifier', () {
       final container = ProviderContainer(
         overrides: [
-          exchangeSettingsServiceProvider.overrideWithValue(mockSettingsService),
+          exchangeSettingsServiceProvider
+              .overrideWithValue(mockSettingsService),
           realtimeServiceProvider.overrideWithValue(mockRealtimeService),
         ],
       );
@@ -255,7 +258,8 @@ void main() {
       when(mockRealtimeService.subscribeToExchangeSettings(any, any))
           .thenReturn(null);
 
-      final notifier = container.read(currentFormulaProvider('team-123').notifier);
+      final notifier =
+          container.read(currentFormulaProvider('team-123').notifier);
 
       expect(notifier, isA<CurrentFormulaNotifier>());
 

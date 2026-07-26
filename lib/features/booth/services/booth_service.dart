@@ -20,11 +20,8 @@ class BoothService {
       'created_by': createdBy,
     };
 
-    final result = await _supabase
-        .from('booths')
-        .insert(boothData)
-        .select()
-        .single();
+    final result =
+        await _supabase.from('booths').insert(boothData).select().single();
 
     return Booth.fromJson(result);
   }
@@ -69,11 +66,8 @@ class BoothService {
 
   /// 获取单个摊位详情
   Future<Booth> getBooth(String boothId) async {
-    final result = await _supabase
-        .from('booths')
-        .select()
-        .eq('id', boothId)
-        .single();
+    final result =
+        await _supabase.from('booths').select().eq('id', boothId).single();
 
     return Booth.fromJson(result);
   }

@@ -9,7 +9,9 @@ import 'package:exhibition_buyer_app/core/services/realtime_service.dart';
 
 // Mock classes
 class MockPhotoService extends Mock implements PhotoService {}
+
 class MockRealtimeService extends Mock implements RealtimeService {}
+
 class MockRealtimeChannel extends Mock implements RealtimeChannel {}
 
 void main() {
@@ -146,9 +148,9 @@ void main() {
 
       // Verify subscription was created
       verify(() => mockRealtimeService.subscribeToPhotos(
-        testBoothId,
-        any(),
-      )).called(1);
+            testBoothId,
+            any(),
+          )).called(1);
     });
 
     test('Realtime更新时自动刷新照片列表', () async {
@@ -158,7 +160,8 @@ void main() {
           .thenAnswer((_) async => testPhotos);
       when(() => mockRealtimeService.subscribeToPhotos(testBoothId, any()))
           .thenAnswer((invocation) {
-        realtimeCallback = invocation.positionalArguments[1] as Function(dynamic);
+        realtimeCallback =
+            invocation.positionalArguments[1] as Function(dynamic);
         return mockChannel;
       });
 
@@ -200,7 +203,8 @@ void main() {
       expect(state.value, hasLength(3));
 
       // Verify refresh was called
-      verify(() => mockPhotoService.getPhotos(testBoothId)).called(greaterThanOrEqualTo(2));
+      verify(() => mockPhotoService.getPhotos(testBoothId))
+          .called(greaterThanOrEqualTo(2));
     });
 
     test('Provider dispose时取消Realtime订阅', () async {
@@ -230,8 +234,7 @@ void main() {
     test('加载失败时Provider返回错误状态', () async {
       final error = Exception('Failed to load photos');
 
-      when(() => mockPhotoService.getPhotos(testBoothId))
-          .thenThrow(error);
+      when(() => mockPhotoService.getPhotos(testBoothId)).thenThrow(error);
       when(() => mockRealtimeService.subscribeToPhotos(testBoothId, any()))
           .thenReturn(mockChannel);
 
@@ -284,7 +287,8 @@ void main() {
       expect(state.value, hasLength(1));
       expect(state.value![0].supplierName, 'Updated Supplier');
 
-      verify(() => mockPhotoService.getPhotos(testBoothId)).called(greaterThanOrEqualTo(2));
+      verify(() => mockPhotoService.getPhotos(testBoothId))
+          .called(greaterThanOrEqualTo(2));
     });
 
     test('photoProvider返回单个照片', () async {

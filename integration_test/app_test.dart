@@ -109,7 +109,8 @@ void main() {
       expect(find.byType(PhotoDetailScreen), findsOneWidget);
 
       // 在照片上点击3个位置插旗
-      final photoCenter = tester.getCenter(find.byKey(const Key('photo_canvas')));
+      final photoCenter =
+          tester.getCenter(find.byKey(const Key('photo_canvas')));
       await tester.tapAt(photoCenter + const Offset(-100, -50)); // 旗子#1
       await tester.pumpAndSettle();
 
@@ -191,8 +192,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 登录
-      await tester.enterText(find.byKey(const Key('email_field')), 'buyer@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'buyer@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -201,7 +204,8 @@ void main() {
       await tester.tap(find.byKey(const Key('create_event_button')));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const Key('event_name_field')), '2026春季展');
+      await tester.enterText(
+          find.byKey(const Key('event_name_field')), '2026春季展');
       await tester.tap(find.byKey(const Key('start_date_picker')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
@@ -217,7 +221,8 @@ void main() {
 
       await tester.tap(find.byKey(const Key('create_booth_button')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('booth_number_field')), 'B01');
+      await tester.enterText(
+          find.byKey(const Key('booth_number_field')), 'B01');
       await tester.tap(find.byKey(const Key('save_booth_button')));
       await tester.pumpAndSettle();
 
@@ -232,7 +237,8 @@ void main() {
       await tester.tap(find.byKey(const Key('create_event_button')));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const Key('event_name_field')), '2026秋季展');
+      await tester.enterText(
+          find.byKey(const Key('event_name_field')), '2026秋季展');
       await tester.tap(find.byKey(const Key('start_date_picker')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
@@ -254,7 +260,8 @@ void main() {
       // 预期：允许创建，数据隔离正确
       await tester.tap(find.byKey(const Key('create_booth_button')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('booth_number_field')), 'B01');
+      await tester.enterText(
+          find.byKey(const Key('booth_number_field')), 'B01');
       await tester.tap(find.byKey(const Key('save_booth_button')));
       await tester.pumpAndSettle();
 
@@ -264,7 +271,8 @@ void main() {
       // 再创建一个B02
       await tester.tap(find.byKey(const Key('create_booth_button')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('booth_number_field')), 'B02');
+      await tester.enterText(
+          find.byKey(const Key('booth_number_field')), 'B02');
       await tester.tap(find.byKey(const Key('save_booth_button')));
       await tester.pumpAndSettle();
 
@@ -289,8 +297,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 登录并准备测试数据
-      await tester.enterText(find.byKey(const Key('email_field')), 'remote@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'remote@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -384,8 +394,10 @@ void main() {
 
       // 步骤1 - 买手A登录并获得颜色标识
       // 预期：分配颜色（如绿色🟢）
-      await tester.enterText(find.byKey(const Key('email_field')), 'buyerA@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'buyerA@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -418,7 +430,8 @@ void main() {
 
       await tester.tap(find.byKey(const Key('create_booth_button')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('booth_number_field')), 'A01');
+      await tester.enterText(
+          find.byKey(const Key('booth_number_field')), 'A01');
       await tester.tap(find.byKey(const Key('save_booth_button')));
       await tester.pumpAndSettle();
 
@@ -438,8 +451,10 @@ void main() {
 
       // 步骤3 - 买手B登录并获得不同颜色
       // 预期：分配不同颜色（如蓝色🔵）
-      await tester.enterText(find.byKey(const Key('email_field')), 'buyerB@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'buyerB@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -468,8 +483,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.logout));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const Key('email_field')), 'remote@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'remote@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -488,8 +505,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 准备测试环境：登录、创建场次、摊位、照片、旗子
-      await tester.enterText(find.byKey(const Key('email_field')), 'buyer@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'buyer@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -560,8 +579,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 登录并准备测试数据
-      await tester.enterText(find.byKey(const Key('email_field')), 'remote@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'remote@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -575,8 +596,10 @@ void main() {
       // 验证单列布局，网格显示2列
       expect(find.byKey(const Key('photo_grid')), findsOneWidget);
       // 验证响应式网格列数为2
-      final mobileGrid = tester.widget<GridView>(find.byKey(const Key('photo_grid')));
-      final mobileDelegate = mobileGrid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+      final mobileGrid =
+          tester.widget<GridView>(find.byKey(const Key('photo_grid')));
+      final mobileDelegate =
+          mobileGrid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(mobileDelegate.crossAxisCount, 2);
 
       // 验证侧边栏隐藏
@@ -587,8 +610,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 验证网格显示3列
-      final tabletGrid = tester.widget<GridView>(find.byKey(const Key('photo_grid')));
-      final tabletDelegate = tabletGrid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+      final tabletGrid =
+          tester.widget<GridView>(find.byKey(const Key('photo_grid')));
+      final tabletDelegate =
+          tabletGrid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(tabletDelegate.crossAxisCount, 3);
 
       // 3. 桌面端 (1600x1200)
@@ -596,8 +621,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 验证网格显示4列
-      final desktopGrid = tester.widget<GridView>(find.byKey(const Key('photo_grid')));
-      final desktopDelegate = desktopGrid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+      final desktopGrid =
+          tester.widget<GridView>(find.byKey(const Key('photo_grid')));
+      final desktopDelegate =
+          desktopGrid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(desktopDelegate.crossAxisCount, 4);
 
       // 验证Web端三栏布局显示
@@ -606,10 +633,12 @@ void main() {
       expect(find.byKey(const Key('flag_sidebar')), findsOneWidget); // 右侧Flag表格
 
       // 验证侧边栏宽度
-      final buyerSidebar = tester.widget<Container>(find.byKey(const Key('buyer_sidebar')));
+      final buyerSidebar =
+          tester.widget<Container>(find.byKey(const Key('buyer_sidebar')));
       expect(buyerSidebar.constraints?.maxWidth, 280);
 
-      final flagSidebar = tester.widget<Container>(find.byKey(const Key('flag_sidebar')));
+      final flagSidebar =
+          tester.widget<Container>(find.byKey(const Key('flag_sidebar')));
       expect(flagSidebar.constraints?.maxWidth, 400);
 
       // 重置屏幕尺寸
@@ -621,8 +650,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 登录并准备照片
-      await tester.enterText(find.byKey(const Key('email_field')), 'buyer@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'buyer@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -674,8 +705,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 远程端登录
-      await tester.enterText(find.byKey(const Key('email_field')), 'remote@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'remote@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 
@@ -684,7 +717,8 @@ void main() {
 
       // 步骤1 - 远程在照片上依次点击3个位置
       // 预期：生成旗子#1, #2, #3
-      final photoCenter = tester.getCenter(find.byKey(const Key('photo_canvas')));
+      final photoCenter =
+          tester.getCenter(find.byKey(const Key('photo_canvas')));
 
       // 第一个位置（左上）
       await tester.tapAt(photoCenter + const Offset(-150, -100));
@@ -720,8 +754,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.logout));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const Key('email_field')), 'buyer@test.com');
-      await tester.enterText(find.byKey(const Key('password_field')), 'test123456');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'buyer@test.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'test123456');
       await tester.tap(find.byKey(const Key('login_button')));
       await tester.pumpAndSettle();
 

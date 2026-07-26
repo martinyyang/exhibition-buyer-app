@@ -47,7 +47,8 @@ void main() {
       ];
 
       // 至少应该有输入框和按钮
-      bool hasLoginUI = loginElements.any((finder) => finder.evaluate().isNotEmpty);
+      bool hasLoginUI =
+          loginElements.any((finder) => finder.evaluate().isNotEmpty);
       expect(hasLoginUI, true, reason: '登录页面应该包含输入框或按钮');
     });
 
@@ -80,7 +81,8 @@ void main() {
       // 验证没有网络初始化失败的错误
       expect(find.textContaining('网络连接失败'), findsNothing);
       expect(find.textContaining('Network Error'), findsNothing);
-      expect(find.textContaining('Supabase initialization failed'), findsNothing);
+      expect(
+          find.textContaining('Supabase initialization failed'), findsNothing);
     });
 
     testWidgets('页面导航测试 - 验证基础导航功能正常', (tester) async {
@@ -98,8 +100,7 @@ void main() {
       final textButtons = find.byType(TextButton);
 
       // 应该至少有一些可交互的按钮
-      final hasInteractiveElements =
-          buttons.evaluate().isNotEmpty ||
+      final hasInteractiveElements = buttons.evaluate().isNotEmpty ||
           iconButtons.evaluate().isNotEmpty ||
           textButtons.evaluate().isNotEmpty;
 
@@ -158,11 +159,13 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
       // 模拟应用进入后台
-      await tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.binding
+          .handleAppLifecycleStateChanged(AppLifecycleState.paused);
       await tester.pump();
 
       // 模拟应用恢复前台
-      await tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.binding
+          .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // 验证应用仍然正常显示

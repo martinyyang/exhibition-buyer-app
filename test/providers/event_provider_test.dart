@@ -11,9 +11,13 @@ import 'dart:async';
 
 // Mock类
 class MockEventService extends Mock implements EventService {}
+
 class MockAuthService extends Mock implements AuthService {}
+
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockSupabaseService extends Mock implements SupabaseService {}
+
 class MockRealtimeChannel extends Mock implements RealtimeChannel {}
 
 // 为了测试Realtime，需要创建fake回调
@@ -33,7 +37,8 @@ class FakeRealtimeChannel implements RealtimeChannel {
   }
 
   @override
-  RealtimeChannel subscribe([void Function(String, Map<String, dynamic>?)? callback]) {
+  RealtimeChannel subscribe(
+      [void Function(String, Map<String, dynamic>?)? callback]) {
     _isSubscribed = true;
     return this;
   }

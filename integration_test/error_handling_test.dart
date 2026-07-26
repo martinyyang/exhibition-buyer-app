@@ -113,11 +113,13 @@ void main() {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     const Text(
                       '应用初始化失败',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -395,7 +397,9 @@ void main() {
         final uri = Uri.tryParse(url);
 
         // 验证URL解析逻辑能检测到问题
-        if (uri == null || uri.scheme != 'https' || !url.contains('supabase.co')) {
+        if (uri == null ||
+            uri.scheme != 'https' ||
+            !url.contains('supabase.co')) {
           print('✓ 检测到无效URL: $url');
         }
       }

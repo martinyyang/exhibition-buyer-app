@@ -11,7 +11,8 @@ class ExchangeSettingsService {
   /// 获取当前活跃的汇率公式
   Future<String?> getCurrentFormula(String teamId) async {
     final today = DateTime.now();
-    final todayStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    final todayStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
     final result = await _supabase
         .from('exchange_settings')
@@ -27,7 +28,8 @@ class ExchangeSettingsService {
   /// 设置当天的汇率公式
   Future<void> setDailyFormula(String teamId, String formula) async {
     final today = DateTime.now();
-    final todayStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    final todayStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
     // 先将同team_id的今天其他公式is_active设为false
     await _supabase
@@ -50,7 +52,8 @@ class ExchangeSettingsService {
   }
 
   /// 使用当前公式计算价格
-  Future<double?> calculateWithCurrentFormula(String teamId, double rmbPrice) async {
+  Future<double?> calculateWithCurrentFormula(
+      String teamId, double rmbPrice) async {
     final formula = await getCurrentFormula(teamId);
 
     if (formula == null) {

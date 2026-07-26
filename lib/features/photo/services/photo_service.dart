@@ -40,9 +40,7 @@ class PhotoService {
         );
 
     // 获取公共URL
-    final publicUrl = _supabase.storage
-        .from('photos')
-        .getPublicUrl(filePath);
+    final publicUrl = _supabase.storage.from('photos').getPublicUrl(filePath);
 
     // 创建照片记录
     final photoData = {
@@ -53,11 +51,8 @@ class PhotoService {
       'uploaded_by': uploadedBy,
     };
 
-    final result = await _supabase
-        .from('photos')
-        .insert(photoData)
-        .select()
-        .single();
+    final result =
+        await _supabase.from('photos').insert(photoData).select().single();
 
     return Photo.fromJson(result);
   }
@@ -76,11 +71,8 @@ class PhotoService {
   /// 获取单张照片详情
   Future<Photo?> getPhoto(String photoId) async {
     try {
-      final result = await _supabase
-          .from('photos')
-          .select()
-          .eq('id', photoId)
-          .single();
+      final result =
+          await _supabase.from('photos').select().eq('id', photoId).single();
 
       return Photo.fromJson(result);
     } catch (e) {
@@ -96,7 +88,8 @@ class PhotoService {
   }) async {
     final updateData = <String, dynamic>{};
     if (supplierName != null) updateData['supplier_name'] = supplierName;
-    if (supplierLogoUrl != null) updateData['supplier_logo_url'] = supplierLogoUrl;
+    if (supplierLogoUrl != null)
+      updateData['supplier_logo_url'] = supplierLogoUrl;
 
     final result = await _supabase
         .from('photos')
@@ -178,9 +171,7 @@ class PhotoService {
         );
 
     // 获取公共URL
-    final publicUrl = _supabase.storage
-        .from('photos')
-        .getPublicUrl(filePath);
+    final publicUrl = _supabase.storage.from('photos').getPublicUrl(filePath);
 
     return publicUrl;
   }
@@ -219,4 +210,3 @@ class PhotoService {
   }
   */
 }
-

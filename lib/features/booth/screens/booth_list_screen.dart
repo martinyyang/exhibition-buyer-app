@@ -209,7 +209,8 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
             const Text('摊位列表', style: TextStyle(fontSize: 16)),
             Text(
               _eventName,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              style:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
             ),
           ],
         ),

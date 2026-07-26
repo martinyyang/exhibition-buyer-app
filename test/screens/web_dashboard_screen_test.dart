@@ -45,7 +45,7 @@ void main() {
             home: WebDashboardLayout(
               photo: testPhoto,
               flags: testFlags,
-              onAddFlag: (offset) ,
+              onAddFlag: (offset),
               onUpdateFlag: (flag) {},
             ),
           ),
@@ -212,15 +212,17 @@ void main() {
       );
 
       final buyerSidebar = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(Row),
-          matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is Container &&
-                widget.width == 280 &&
-                widget.decoration is BoxDecoration,
-          ),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(Row),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is Container &&
+                    widget.width == 280 &&
+                    widget.decoration is BoxDecoration,
+              ),
+            )
+            .first,
       );
 
       expect(buyerSidebar.width, 280);
@@ -241,15 +243,17 @@ void main() {
       );
 
       final flagSidebar = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(Row),
-          matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is Container &&
-                widget.width == 400 &&
-                widget.decoration is BoxDecoration,
-          ),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(Row),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is Container &&
+                    widget.width == 400 &&
+                    widget.decoration is BoxDecoration,
+              ),
+            )
+            .first,
       );
 
       expect(flagSidebar.width, 400);

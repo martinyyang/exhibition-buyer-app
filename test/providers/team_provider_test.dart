@@ -8,6 +8,7 @@ import 'package:exhibition_buyer_app/features/auth/models/team.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockTeamService extends Mock implements TeamService {}
+
 class MockAuthService extends Mock implements AuthService {}
 
 void main() {
@@ -40,8 +41,10 @@ void main() {
         createdAt: now,
       );
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => user);
-      when(() => mockTeamService.getTeam('team-456')).thenAnswer((_) async => team);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => user);
+      when(() => mockTeamService.getTeam('team-456'))
+          .thenAnswer((_) async => team);
 
       container = ProviderContainer(
         overrides: [
@@ -69,7 +72,8 @@ void main() {
         createdAt: now,
       );
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => user);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => user);
 
       container = ProviderContainer(
         overrides: [
@@ -120,8 +124,10 @@ void main() {
         ),
       ];
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => currentUser);
-      when(() => mockTeamService.getTeamMembers('team-123')).thenAnswer((_) async => members);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => currentUser);
+      when(() => mockTeamService.getTeamMembers('team-123'))
+          .thenAnswer((_) async => members);
 
       container = ProviderContainer(
         overrides: [
@@ -148,7 +154,8 @@ void main() {
         createdAt: now,
       );
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => currentUser);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => currentUser);
 
       container = ProviderContainer(
         overrides: [
@@ -176,7 +183,8 @@ void main() {
         ),
       ];
 
-      when(() => mockTeamService.getTeamMembers('team-456')).thenAnswer((_) async => members);
+      when(() => mockTeamService.getTeamMembers('team-456'))
+          .thenAnswer((_) async => members);
 
       container = ProviderContainer(
         overrides: [
@@ -184,7 +192,8 @@ void main() {
         ],
       );
 
-      final result = await container.read(teamMembersByIdProvider('team-456').future);
+      final result =
+          await container.read(teamMembersByIdProvider('team-456').future);
 
       expect(result.length, 1);
       expect(result[0].teamId, 'team-456');
@@ -232,8 +241,10 @@ void main() {
         ),
       ];
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => currentUser);
-      when(() => mockTeamService.getTeamMembers('team-123')).thenAnswer((_) async => members);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => currentUser);
+      when(() => mockTeamService.getTeamMembers('team-123'))
+          .thenAnswer((_) async => members);
 
       container = ProviderContainer(
         overrides: [
@@ -278,8 +289,10 @@ void main() {
         ),
       ];
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => currentUser);
-      when(() => mockTeamService.getTeamMembers('team-123')).thenAnswer((_) async => members);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => currentUser);
+      when(() => mockTeamService.getTeamMembers('team-123'))
+          .thenAnswer((_) async => members);
 
       container = ProviderContainer(
         overrides: [

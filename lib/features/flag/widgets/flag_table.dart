@@ -83,13 +83,10 @@ class _FlagTableState extends State<FlagTable> {
           headingRowColor: MaterialStateProperty.all(Colors.grey[100]),
           columns: [
             const DataColumn(label: Text('编号')),
-            if (!widget.isRemoteView)
-              const DataColumn(label: Text('报价(¥)')),
-            if (widget.isRemoteView)
-              const DataColumn(label: Text('卖家报价')),
+            if (!widget.isRemoteView) const DataColumn(label: Text('报价(¥)')),
+            if (widget.isRemoteView) const DataColumn(label: Text('卖家报价')),
             const DataColumn(label: Text('换算价')),
-            if (widget.isRemoteView)
-              const DataColumn(label: Text('目标价')),
+            if (widget.isRemoteView) const DataColumn(label: Text('目标价')),
             const DataColumn(label: Text('状态')),
           ],
           rows: widget.flags.map((flag) {

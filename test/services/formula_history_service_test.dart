@@ -4,7 +4,8 @@ import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:exhibition_buyer_app/features/formula/services/formula_history_service.dart';
 
-@GenerateMocks([SupabaseClient, PostgrestFilterBuilder, PostgrestTransformBuilder])
+@GenerateMocks(
+    [SupabaseClient, PostgrestFilterBuilder, PostgrestTransformBuilder])
 import 'formula_history_service_test.mocks.dart';
 
 void main() {
@@ -26,8 +27,10 @@ void main() {
       // Mock查询（返回null表示不存在）
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('formula', formula)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('formula', formula))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => null);
 
       // Mock插入
@@ -35,7 +38,8 @@ void main() {
 
       await historyService.saveFormula(formula, teamId);
 
-      verify(mockFilterBuilder.insert(argThat(predicate((Map<String, dynamic> data) {
+      verify(mockFilterBuilder
+          .insert(argThat(predicate((Map<String, dynamic> data) {
         return data['team_id'] == teamId &&
             data['formula'] == formula &&
             data['use_count'] == 1;
@@ -52,23 +56,28 @@ void main() {
       // Mock查询（返回已存在的记录）
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('formula', formula)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('formula', formula))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => {
             'id': existingId,
             'team_id': teamId,
             'formula': formula,
             'use_count': 3,
-            'last_used_at': DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
+            'last_used_at':
+                DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
           });
 
       // Mock更新
       when(mockFilterBuilder.update(any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('id', existingId)).thenAnswer((_) async => null);
+      when(mockFilterBuilder.eq('id', existingId))
+          .thenAnswer((_) async => null);
 
       await historyService.saveFormula(formula, teamId);
 
-      verify(mockFilterBuilder.update(argThat(predicate((Map<String, dynamic> data) {
+      verify(mockFilterBuilder
+          .update(argThat(predicate((Map<String, dynamic> data) {
         return data['use_count'] == 4 && data['last_used_at'] != null;
       })))).called(1);
     });
@@ -82,15 +91,18 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('formula', formula)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('formula', formula))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => null);
 
       when(mockFilterBuilder.insert(any)).thenAnswer((_) async => null);
 
       await historyService.saveFormula(formula, teamId);
 
-      verify(mockFilterBuilder.insert(argThat(predicate((Map<String, dynamic> data) {
+      verify(mockFilterBuilder
+          .insert(argThat(predicate((Map<String, dynamic> data) {
         final lastUsedAt = DateTime.parse(data['last_used_at']);
         return lastUsedAt.difference(now).inSeconds.abs() < 5;
       })))).called(1);
@@ -106,7 +118,8 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select('formula')).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.order('last_used_at', ascending: false))
           .thenReturn(mockTransformBuilder);
       when(mockTransformBuilder.limit(5)).thenAnswer((_) async => [
@@ -132,7 +145,8 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select('formula')).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.order('last_used_at', ascending: false))
           .thenReturn(mockTransformBuilder);
       when(mockTransformBuilder.limit(5)).thenAnswer((_) async => []);
@@ -150,11 +164,13 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select('formula')).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.order('last_used_at', ascending: false))
           .thenReturn(mockTransformBuilder);
 
-      verify(mockFilterBuilder.order('last_used_at', ascending: false)).called(1);
+      verify(mockFilterBuilder.order('last_used_at', ascending: false))
+          .called(1);
     });
   });
 
@@ -167,8 +183,10 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.delete()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('formula', formula)).thenAnswer((_) async => null);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('formula', formula))
+          .thenAnswer((_) async => null);
 
       await historyService.deleteFormula(teamId, formula);
 
@@ -187,8 +205,10 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('formula', formula)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('formula', formula))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => {
             'id': 'history-1',
             'team_id': teamId,
@@ -212,8 +232,10 @@ void main() {
 
       when(mockSupabase.from('formula_history')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('formula', formula)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('formula', formula))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => null);
 
       final result = await historyService.getFormulaByText(teamId, formula);

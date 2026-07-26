@@ -5,12 +5,20 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockGoTrueClient extends Mock implements GoTrueClient {}
+
 class MockAuthResponse extends Mock implements AuthResponse {}
+
 class MockSupabaseUser extends Mock implements User {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder {}
+
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder {}
+
 class MockPostgrestBuilder extends Mock implements PostgrestBuilder {}
-class MockPostgrestTransformBuilder<T> extends Mock implements PostgrestTransformBuilder<T> {}
+
+class MockPostgrestTransformBuilder<T> extends Mock
+    implements PostgrestTransformBuilder<T> {}
 
 void main() {
   late MockSupabaseClient mockSupabase;
@@ -42,40 +50,43 @@ void main() {
       when(() => mockUser.id).thenReturn('user-123');
       when(() => mockResponse.user).thenReturn(mockUser);
       when(() => mockAuth.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
       // Mock数据库查询
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'user-123',
-        'email': 'test@example.com',
-        'role': 'remote',
-        'team_id': 'team-1',
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'user-123',
+            'email': 'test@example.com',
+            'role': 'remote',
+            'team_id': 'team-1',
+            'created_at': now.toIso8601String(),
+          });
 
-      final result = await authService.signIn('test@example.com', 'password123');
+      final result =
+          await authService.signIn('test@example.com', 'password123');
 
       expect(result.id, 'user-123');
       expect(result.email, 'test@example.com');
       expect(result.role, 'remote');
       verify(() => mockAuth.signInWithPassword(
-        email: 'test@example.com',
-        password: 'password123',
-      )).called(1);
+            email: 'test@example.com',
+            password: 'password123',
+          )).called(1);
     });
 
     test('signIn 失败抛出异常', () async {
       final mockResponse = MockAuthResponse();
       when(() => mockResponse.user).thenReturn(null);
       when(() => mockAuth.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
       expect(
         () => authService.signIn('test@example.com', 'wrong'),
@@ -91,22 +102,24 @@ void main() {
       when(() => mockUser.id).thenReturn('user-456');
       when(() => mockResponse.user).thenReturn(mockUser);
       when(() => mockAuth.signUp(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
       // Mock插入和查询
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.insert(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'user-456',
-        'email': 'new@example.com',
-        'role': 'buyer',
-        'team_id': 'team-1',
-        'created_at': now.toIso8601String(),
-      });
+            'id': 'user-456',
+            'email': 'new@example.com',
+            'role': 'buyer',
+            'team_id': 'team-1',
+            'created_at': now.toIso8601String(),
+          });
 
       final result = await authService.signUp(
         email: 'new@example.com',
@@ -169,14 +182,16 @@ void main() {
       when(() => mockUser.id).thenReturn('buyer-123');
       when(() => mockResponse.user).thenReturn(mockUser);
       when(() => mockAuth.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
       // Mock查询买手用户（无颜色）
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
 
       var callCount = 0;
@@ -209,25 +224,28 @@ void main() {
       when(() => mockUser.id).thenReturn('buyer-123');
       when(() => mockResponse.user).thenReturn(mockUser);
       when(() => mockAuth.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
       // Mock查询买手用户（已有今天的颜色）
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'buyer-123',
-        'email': 'buyer@example.com',
-        'role': 'buyer',
-        'team_id': 'team-1',
-        'daily_color': 'blue',
-        'color_assigned_date': today,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+            'id': 'buyer-123',
+            'email': 'buyer@example.com',
+            'role': 'buyer',
+            'team_id': 'team-1',
+            'daily_color': 'blue',
+            'color_assigned_date': today,
+            'created_at': DateTime.now().toIso8601String(),
+          });
 
-      final result = await authService.signIn('buyer@example.com', 'password123');
+      final result =
+          await authService.signIn('buyer@example.com', 'password123');
 
       expect(result.dailyColor, 'blue');
       expect(result.colorAssignedDate?.toIso8601String().split('T')[0], today);
@@ -242,23 +260,26 @@ void main() {
       when(() => mockUser.id).thenReturn('remote-123');
       when(() => mockResponse.user).thenReturn(mockUser);
       when(() => mockAuth.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
       // Mock查询远程用户
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'remote-123',
-        'email': 'remote@example.com',
-        'role': 'remote',
-        'team_id': 'team-1',
-        'created_at': DateTime.now().toIso8601String(),
-      });
+            'id': 'remote-123',
+            'email': 'remote@example.com',
+            'role': 'remote',
+            'team_id': 'team-1',
+            'created_at': DateTime.now().toIso8601String(),
+          });
 
-      final result = await authService.signIn('remote@example.com', 'password123');
+      final result =
+          await authService.signIn('remote@example.com', 'password123');
 
       expect(result.isRemote, isTrue);
       expect(result.dailyColor, isNull);
@@ -273,9 +294,11 @@ void main() {
       when(() => mockUser.id).thenReturn('buyer-123');
       when(() => mockAuth.currentUser).thenReturn(mockUser);
 
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
 
       var maybeSingleCallCount = 0;
@@ -292,14 +315,14 @@ void main() {
       });
 
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-        'id': 'buyer-123',
-        'email': 'buyer@example.com',
-        'role': 'buyer',
-        'team_id': 'team-1',
-        'daily_color': 'red',
-        'color_assigned_date': today,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+            'id': 'buyer-123',
+            'email': 'buyer@example.com',
+            'role': 'buyer',
+            'team_id': 'team-1',
+            'daily_color': 'red',
+            'color_assigned_date': today,
+            'created_at': DateTime.now().toIso8601String(),
+          });
 
       final result = await authService.getCurrentUser();
 
@@ -316,13 +339,15 @@ void main() {
       when(() => mockUser.id).thenReturn('buyer-123');
       when(() => mockResponse.user).thenReturn(mockUser);
       when(() => mockAuth.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => mockResponse);
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => mockResponse);
 
-      when(() => mockSupabase.from('users')).thenReturn(mockFilterBuilder as dynamic);
+      when(() => mockSupabase.from('users'))
+          .thenReturn(mockFilterBuilder as dynamic);
       when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.eq(any(), any()))
+          .thenReturn(mockTransformBuilder);
 
       String? assignedColor;
       when(() => mockFilterBuilder.update(any())).thenAnswer((invocation) {

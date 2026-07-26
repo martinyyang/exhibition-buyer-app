@@ -5,7 +5,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:exhibition_buyer_app/features/formula/services/exchange_settings_service.dart';
 import 'package:exhibition_buyer_app/features/formula/services/formula_history_service.dart';
 
-@GenerateMocks([SupabaseClient, PostgrestFilterBuilder, PostgrestTransformBuilder, FormulaHistoryService])
+@GenerateMocks([
+  SupabaseClient,
+  PostgrestFilterBuilder,
+  PostgrestTransformBuilder,
+  FormulaHistoryService
+])
 import 'exchange_settings_service_test.mocks.dart';
 
 void main() {
@@ -27,11 +32,15 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => {
             'id': 'setting-1',
             'team_id': teamId,
@@ -51,11 +60,15 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => null);
 
       final result = await settingsService.getCurrentFormula(teamId);
@@ -68,11 +81,15 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
 
       verify(mockFilterBuilder.eq('is_active', true)).called(1);
     });
@@ -86,13 +103,17 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
 
       // Mock禁用其他公式
       when(mockFilterBuilder.update(any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.neq('formula', formula)).thenAnswer((_) async => null);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.neq('formula', formula))
+          .thenAnswer((_) async => null);
 
       // Mock插入新公式
       when(mockFilterBuilder.insert(any)).thenAnswer((_) async => {
@@ -105,7 +126,8 @@ void main() {
           });
 
       // Mock保存到历史
-      when(mockHistoryService.saveFormula(formula, teamId)).thenAnswer((_) async => {});
+      when(mockHistoryService.saveFormula(formula, teamId))
+          .thenAnswer((_) async => {});
 
       await settingsService.setDailyFormula(teamId, formula);
 
@@ -119,11 +141,15 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.update(any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.neq('formula', formula)).thenAnswer((_) async => null);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.neq('formula', formula))
+          .thenAnswer((_) async => null);
 
       when(mockFilterBuilder.insert(any)).thenAnswer((_) async => {
             'id': 'setting-1',
@@ -133,7 +159,8 @@ void main() {
             'is_active': true,
           });
 
-      when(mockHistoryService.saveFormula(formula, teamId)).thenAnswer((_) async => {});
+      when(mockHistoryService.saveFormula(formula, teamId))
+          .thenAnswer((_) async => {});
 
       await settingsService.setDailyFormula(teamId, formula);
 
@@ -146,11 +173,15 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.update(any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.neq('formula', formula)).thenAnswer((_) async => null);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.neq('formula', formula))
+          .thenAnswer((_) async => null);
 
       when(mockFilterBuilder.insert(any)).thenAnswer((_) async => {
             'id': 'setting-1',
@@ -159,11 +190,13 @@ void main() {
             'is_active': true,
           });
 
-      when(mockHistoryService.saveFormula(formula, teamId)).thenAnswer((_) async => {});
+      when(mockHistoryService.saveFormula(formula, teamId))
+          .thenAnswer((_) async => {});
 
       await settingsService.setDailyFormula(teamId, formula);
 
-      verify(mockFilterBuilder.insert(argThat(predicate((Map<String, dynamic> data) {
+      verify(mockFilterBuilder
+          .insert(argThat(predicate((Map<String, dynamic> data) {
         return data['is_active'] == true &&
             data['formula'] == formula &&
             data['team_id'] == teamId;
@@ -174,15 +207,20 @@ void main() {
       final teamId = 'team-123';
       final formula = 'RMB * 0.14';
       final today = DateTime.now();
-      final todayStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+      final todayStr =
+          '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.update(any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.neq('formula', formula)).thenAnswer((_) async => null);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.neq('formula', formula))
+          .thenAnswer((_) async => null);
 
       when(mockFilterBuilder.insert(any)).thenAnswer((_) async => {
             'id': 'setting-1',
@@ -192,11 +230,13 @@ void main() {
             'is_active': true,
           });
 
-      when(mockHistoryService.saveFormula(formula, teamId)).thenAnswer((_) async => {});
+      when(mockHistoryService.saveFormula(formula, teamId))
+          .thenAnswer((_) async => {});
 
       await settingsService.setDailyFormula(teamId, formula);
 
-      verify(mockFilterBuilder.insert(argThat(predicate((Map<String, dynamic> data) {
+      verify(mockFilterBuilder
+          .insert(argThat(predicate((Map<String, dynamic> data) {
         return data['valid_date'] == todayStr;
       })))).called(1);
     });
@@ -210,16 +250,21 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => {
             'formula': formula,
           });
 
-      final result = await settingsService.calculateWithCurrentFormula(teamId, rmbPrice);
+      final result =
+          await settingsService.calculateWithCurrentFormula(teamId, rmbPrice);
 
       expect(result, 140.0);
     });
@@ -231,16 +276,21 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => {
             'formula': formula,
           });
 
-      final result = await settingsService.calculateWithCurrentFormula(teamId, rmbPrice);
+      final result =
+          await settingsService.calculateWithCurrentFormula(teamId, rmbPrice);
 
       expect(result, 143.0);
     });
@@ -251,14 +301,19 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => null);
 
-      final result = await settingsService.calculateWithCurrentFormula(teamId, rmbPrice);
+      final result =
+          await settingsService.calculateWithCurrentFormula(teamId, rmbPrice);
 
       expect(result, isNull);
     });
@@ -270,11 +325,15 @@ void main() {
 
       final mockFilterBuilder = MockPostgrestFilterBuilder();
 
-      when(mockSupabase.from('exchange_settings')).thenReturn(mockFilterBuilder);
+      when(mockSupabase.from('exchange_settings'))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('team_id', teamId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('valid_date', any)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('is_active', true)).thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('team_id', teamId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('valid_date', any))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.eq('is_active', true))
+          .thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.maybeSingle()).thenAnswer((_) async => {
             'formula': formula,
           });

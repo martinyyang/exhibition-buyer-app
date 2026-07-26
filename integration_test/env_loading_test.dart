@@ -101,7 +101,8 @@ void main() {
         reason: 'SUPABASE_PUBLISHABLE_KEY不能为空',
       );
 
-      print('✓ SUPABASE_PUBLISHABLE_KEY存在: ${supabaseKey?.substring(0, 20)}...');
+      print(
+          '✓ SUPABASE_PUBLISHABLE_KEY存在: ${supabaseKey?.substring(0, 20)}...');
     });
   });
 
@@ -190,7 +191,8 @@ void main() {
       try {
         await Supabase.initialize(
           url: supabaseUrl,
-          anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
+          anonKey:
+              supabaseKey, // TODO: Update to publishableKey when SDK updates
         );
         print('✓ Supabase初始化成功');
       } catch (e) {
@@ -201,7 +203,8 @@ void main() {
       final client = Supabase.instance.client;
       expect(client, isNotNull);
 
-      print('  Client ready: ${client.auth.currentSession == null ? "未登录" : "已登录"}');
+      print(
+          '  Client ready: ${client.auth.currentSession == null ? "未登录" : "已登录"}');
     });
 
     test('验证Supabase客户端可以发起请求', () async {
@@ -240,7 +243,8 @@ void main() {
       try {
         await Supabase.initialize(
           url: supabaseUrl,
-          anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
+          anonKey:
+              supabaseKey, // TODO: Update to publishableKey when SDK updates
         );
 
         // 尝试访问auth（这会触发网络请求）
@@ -343,7 +347,8 @@ void main() {
         final supabaseKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY'];
 
         expect(supabaseUrl, isNotNull, reason: 'CI环境应该注入SUPABASE_URL');
-        expect(supabaseKey, isNotNull, reason: 'CI环境应该注入SUPABASE_PUBLISHABLE_KEY');
+        expect(supabaseKey, isNotNull,
+            reason: 'CI环境应该注入SUPABASE_PUBLISHABLE_KEY');
 
         print('✓ GitHub Secrets正确注入到CI环境');
       } else {

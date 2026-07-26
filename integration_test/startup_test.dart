@@ -50,15 +50,21 @@ void main() {
       final supabaseUrl = dotenv.env['SUPABASE_URL'];
       final supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
 
-      expect(supabaseUrl, isNotNull, reason: 'SUPABASE_URL should be present in .env');
-      expect(supabaseKey, isNotNull, reason: 'SUPABASE_ANON_KEY should be present in .env');
+      expect(supabaseUrl, isNotNull,
+          reason: 'SUPABASE_URL should be present in .env');
+      expect(supabaseKey, isNotNull,
+          reason: 'SUPABASE_ANON_KEY should be present in .env');
 
-      expect(supabaseUrl, isNotEmpty, reason: 'SUPABASE_URL should not be empty');
-      expect(supabaseKey, isNotEmpty, reason: 'SUPABASE_ANON_KEY should not be empty');
+      expect(supabaseUrl, isNotEmpty,
+          reason: 'SUPABASE_URL should not be empty');
+      expect(supabaseKey, isNotEmpty,
+          reason: 'SUPABASE_ANON_KEY should not be empty');
 
       // 验证URL格式正确
-      expect(supabaseUrl, contains('supabase.co'), reason: 'SUPABASE_URL should be a valid Supabase URL');
-      expect(supabaseUrl, startsWith('https://'), reason: 'SUPABASE_URL should use HTTPS');
+      expect(supabaseUrl, contains('supabase.co'),
+          reason: 'SUPABASE_URL should be a valid Supabase URL');
+      expect(supabaseUrl, startsWith('https://'),
+          reason: 'SUPABASE_URL should use HTTPS');
 
       print('✓ 环境变量加载成功:');
       print('  SUPABASE_URL: ${supabaseUrl?.substring(0, 30)}...');
@@ -76,7 +82,8 @@ void main() {
       try {
         await Supabase.initialize(
           url: supabaseUrl,
-          anonKey: supabaseKey, // TODO: Update to publishableKey when SDK updates
+          anonKey:
+              supabaseKey, // TODO: Update to publishableKey when SDK updates
         );
 
         // 验证Supabase客户端可用
@@ -122,8 +129,8 @@ void main() {
 
       // 此时可能显示Splash或已经进入登录页面
       final hasSplash = find.byIcon(Icons.storefront).or(
-        find.text('初始化中...'),
-      );
+            find.text('初始化中...'),
+          );
       final hasLogin = find.byType(TextFormField);
 
       expect(

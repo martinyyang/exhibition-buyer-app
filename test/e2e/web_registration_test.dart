@@ -22,7 +22,8 @@ void main() {
 
       // Fill registration form
       final emailField = find.byType(TextField).first;
-      await tester.enterText(emailField, 'e2e_${DateTime.now().millisecondsSinceEpoch}@test.com');
+      await tester.enterText(
+          emailField, 'e2e_${DateTime.now().millisecondsSinceEpoch}@test.com');
       await tester.pumpAndSettle();
 
       final passwordField = find.byType(TextField).at(1);
@@ -47,7 +48,8 @@ void main() {
       expect(find.text('Select Event'), findsOneWidget);
     });
 
-    testWidgets('Registration validation - password mismatch', (WidgetTester tester) async {
+    testWidgets('Registration validation - password mismatch',
+        (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 

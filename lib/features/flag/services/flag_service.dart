@@ -25,11 +25,8 @@ class FlagService {
       'created_by': createdBy,
     };
 
-    final inserted = await _supabase
-        .from('flags')
-        .insert(flagData)
-        .select()
-        .single();
+    final inserted =
+        await _supabase.from('flags').insert(flagData).select().single();
 
     return Flag.fromJson(inserted);
   }
@@ -48,11 +45,8 @@ class FlagService {
   /// 获取单个旗子详情
   Future<Flag?> getFlag(String flagId) async {
     try {
-      final result = await _supabase
-          .from('flags')
-          .select()
-          .eq('id', flagId)
-          .single();
+      final result =
+          await _supabase.from('flags').select().eq('id', flagId).single();
 
       return Flag.fromJson(result);
     } catch (e) {
@@ -198,7 +192,8 @@ class FlagService {
     for (final flag in flags) {
       if (flag.priceRmb != null) {
         try {
-          final converted = FormulaCalculator.calculate(formula, flag.priceRmb!);
+          final converted =
+              FormulaCalculator.calculate(formula, flag.priceRmb!);
           await _supabase.from('flags').update({
             'price_converted': converted,
           }).eq('id', flag.id);

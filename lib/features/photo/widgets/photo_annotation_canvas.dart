@@ -24,9 +24,8 @@ class PhotoAnnotationCanvas extends StatelessWidget {
       left: flag.positionX * imageSize.width - 20,
       top: flag.positionY * imageSize.height - 40,
       child: GestureDetector(
-        onLongPress: onFlagLongPress != null
-            ? () => onFlagLongPress!(flag)
-            : null,
+        onLongPress:
+            onFlagLongPress != null ? () => onFlagLongPress!(flag) : null,
         child: Column(
           children: [
             // 旗子圆圈

@@ -5,7 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:exhibition_buyer_app/features/flag/services/flag_service.dart';
 import 'package:exhibition_buyer_app/features/flag/models/flag.dart';
 
-@GenerateMocks([SupabaseClient, PostgrestFilterBuilder, PostgrestTransformBuilder])
+@GenerateMocks(
+    [SupabaseClient, PostgrestFilterBuilder, PostgrestTransformBuilder])
 import 'flag_service_test.mocks.dart';
 
 void main() {
@@ -28,8 +29,10 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select('number')).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('photo_id', photoId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.order('number', ascending: false)).thenReturn(mockTransformBuilder);
+      when(mockFilterBuilder.eq('photo_id', photoId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.order('number', ascending: false))
+          .thenReturn(mockTransformBuilder);
       when(mockTransformBuilder.limit(1)).thenAnswer((_) async => []);
 
       // Mock插入操作
@@ -69,8 +72,10 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select('number')).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('photo_id', photoId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.order('number', ascending: false)).thenReturn(mockTransformBuilder);
+      when(mockFilterBuilder.eq('photo_id', photoId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.order('number', ascending: false))
+          .thenReturn(mockTransformBuilder);
       when(mockTransformBuilder.limit(1)).thenAnswer((_) async => [
             {'number': 1}
           ]);
@@ -108,8 +113,10 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select('number')).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('photo_id', photoId)).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.order('number', ascending: false)).thenReturn(mockTransformBuilder);
+      when(mockFilterBuilder.eq('photo_id', photoId))
+          .thenReturn(mockFilterBuilder);
+      when(mockFilterBuilder.order('number', ascending: false))
+          .thenReturn(mockTransformBuilder);
       when(mockTransformBuilder.limit(1)).thenAnswer((_) async => []);
 
       when(mockFilterBuilder.insert(any)).thenReturn(mockFilterBuilder);
@@ -225,7 +232,8 @@ void main() {
             'position_y': 0.5,
             'price_rmb': 1000.0,
             'target_price': 900.0,
-            'target_price_updated_at': now.subtract(Duration(hours: 1)).toIso8601String(),
+            'target_price_updated_at':
+                now.subtract(Duration(hours: 1)).toIso8601String(),
             'buyer_price_updated_at': now.toIso8601String(),
             'needs_attention': false,
             'created_by': 'user-123',
@@ -326,7 +334,8 @@ void main() {
             'price_rmb': 1000.0,
             'target_price': 900.0,
             'target_price_updated_at': now.toIso8601String(),
-            'buyer_price_updated_at': now.subtract(Duration(hours: 1)).toIso8601String(),
+            'buyer_price_updated_at':
+                now.subtract(Duration(hours: 1)).toIso8601String(),
             'needs_attention': true,
             'created_by': 'user-123',
             'created_at': now.toIso8601String(),
@@ -360,7 +369,8 @@ void main() {
             'position_y': 0.5,
             'price_rmb': 1000.0,
             'target_price': 900.0,
-            'target_price_updated_at': now.subtract(Duration(hours: 1)).toIso8601String(),
+            'target_price_updated_at':
+                now.subtract(Duration(hours: 1)).toIso8601String(),
             'buyer_price_updated_at': now.toIso8601String(),
             'needs_attention': false,
             'created_by': 'user-123',
@@ -373,7 +383,8 @@ void main() {
       );
 
       expect(flag.needsAttention, false);
-      expect(flag.buyerPriceUpdatedAt!.isAfter(flag.targetPriceUpdatedAt!), true);
+      expect(
+          flag.buyerPriceUpdatedAt!.isAfter(flag.targetPriceUpdatedAt!), true);
     });
   });
 
@@ -386,29 +397,31 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('photo_id', photoId)).thenReturn(mockTransformBuilder);
-      when(mockTransformBuilder.order('number', ascending: true)).thenAnswer((_) async => [
-            {
-              'id': 'flag-1',
-              'photo_id': photoId,
-              'number': 1,
-              'position_x': 0.5,
-              'position_y': 0.5,
-              'needs_attention': false,
-              'created_by': 'user-123',
-              'created_at': DateTime.now().toIso8601String(),
-            },
-            {
-              'id': 'flag-2',
-              'photo_id': photoId,
-              'number': 2,
-              'position_x': 0.3,
-              'position_y': 0.7,
-              'needs_attention': true,
-              'created_by': 'user-123',
-              'created_at': DateTime.now().toIso8601String(),
-            },
-          ]);
+      when(mockFilterBuilder.eq('photo_id', photoId))
+          .thenReturn(mockTransformBuilder);
+      when(mockTransformBuilder.order('number', ascending: true))
+          .thenAnswer((_) async => [
+                {
+                  'id': 'flag-1',
+                  'photo_id': photoId,
+                  'number': 1,
+                  'position_x': 0.5,
+                  'position_y': 0.5,
+                  'needs_attention': false,
+                  'created_by': 'user-123',
+                  'created_at': DateTime.now().toIso8601String(),
+                },
+                {
+                  'id': 'flag-2',
+                  'photo_id': photoId,
+                  'number': 2,
+                  'position_x': 0.3,
+                  'position_y': 0.7,
+                  'needs_attention': true,
+                  'created_by': 'user-123',
+                  'created_at': DateTime.now().toIso8601String(),
+                },
+              ]);
 
       final flags = await flagService.getFlags(photoId);
 
@@ -427,39 +440,41 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('photo_id', photoId)).thenReturn(mockTransformBuilder);
-      when(mockTransformBuilder.order('number', ascending: true)).thenAnswer((_) async => [
-            {
-              'id': 'flag-1',
-              'photo_id': photoId,
-              'number': 1,
-              'position_x': 0.5,
-              'position_y': 0.5,
-              'needs_attention': false,
-              'created_by': 'user-123',
-              'created_at': DateTime.now().toIso8601String(),
-            },
-            {
-              'id': 'flag-2',
-              'photo_id': photoId,
-              'number': 3,
-              'position_x': 0.8,
-              'position_y': 0.2,
-              'needs_attention': false,
-              'created_by': 'user-123',
-              'created_at': DateTime.now().toIso8601String(),
-            },
-            {
-              'id': 'flag-3',
-              'photo_id': photoId,
-              'number': 5,
-              'position_x': 0.1,
-              'position_y': 0.9,
-              'needs_attention': false,
-              'created_by': 'user-123',
-              'created_at': DateTime.now().toIso8601String(),
-            },
-          ]);
+      when(mockFilterBuilder.eq('photo_id', photoId))
+          .thenReturn(mockTransformBuilder);
+      when(mockTransformBuilder.order('number', ascending: true))
+          .thenAnswer((_) async => [
+                {
+                  'id': 'flag-1',
+                  'photo_id': photoId,
+                  'number': 1,
+                  'position_x': 0.5,
+                  'position_y': 0.5,
+                  'needs_attention': false,
+                  'created_by': 'user-123',
+                  'created_at': DateTime.now().toIso8601String(),
+                },
+                {
+                  'id': 'flag-2',
+                  'photo_id': photoId,
+                  'number': 3,
+                  'position_x': 0.8,
+                  'position_y': 0.2,
+                  'needs_attention': false,
+                  'created_by': 'user-123',
+                  'created_at': DateTime.now().toIso8601String(),
+                },
+                {
+                  'id': 'flag-3',
+                  'photo_id': photoId,
+                  'number': 5,
+                  'position_x': 0.1,
+                  'position_y': 0.9,
+                  'needs_attention': false,
+                  'created_by': 'user-123',
+                  'created_at': DateTime.now().toIso8601String(),
+                },
+              ]);
 
       final flags = await flagService.getFlags(photoId);
 
@@ -476,8 +491,10 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder);
       when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(mockFilterBuilder.eq('photo_id', photoId)).thenReturn(mockTransformBuilder);
-      when(mockTransformBuilder.order('number', ascending: true)).thenAnswer((_) async => []);
+      when(mockFilterBuilder.eq('photo_id', photoId))
+          .thenReturn(mockTransformBuilder);
+      when(mockTransformBuilder.order('number', ascending: true))
+          .thenAnswer((_) async => []);
 
       final flags = await flagService.getFlags(photoId);
 
@@ -514,8 +531,10 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder1);
       when(mockFilterBuilder1.select('number')).thenReturn(mockFilterBuilder1);
-      when(mockFilterBuilder1.eq('photo_id', photoId1)).thenReturn(mockFilterBuilder1);
-      when(mockFilterBuilder1.order('number', ascending: false)).thenReturn(mockTransformBuilder1);
+      when(mockFilterBuilder1.eq('photo_id', photoId1))
+          .thenReturn(mockFilterBuilder1);
+      when(mockFilterBuilder1.order('number', ascending: false))
+          .thenReturn(mockTransformBuilder1);
       when(mockTransformBuilder1.limit(1)).thenAnswer((_) async => [
             {'number': 2}
           ]);
@@ -548,8 +567,10 @@ void main() {
 
       when(mockSupabase.from('flags')).thenReturn(mockFilterBuilder2);
       when(mockFilterBuilder2.select('number')).thenReturn(mockFilterBuilder2);
-      when(mockFilterBuilder2.eq('photo_id', photoId2)).thenReturn(mockFilterBuilder2);
-      when(mockFilterBuilder2.order('number', ascending: false)).thenReturn(mockTransformBuilder2);
+      when(mockFilterBuilder2.eq('photo_id', photoId2))
+          .thenReturn(mockFilterBuilder2);
+      when(mockFilterBuilder2.order('number', ascending: false))
+          .thenReturn(mockTransformBuilder2);
       when(mockTransformBuilder2.limit(1)).thenAnswer((_) async => []);
 
       when(mockFilterBuilder2.insert(any)).thenReturn(mockFilterBuilder2);
