@@ -11,12 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
           channel: 'stable'
 
       - name: Install dependencies
@@ -56,12 +55,11 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
           channel: 'stable'
 
       - name: Setup Java
@@ -84,7 +82,7 @@ jobs:
         run: flutter build apk --release
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -96,12 +94,11 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
           channel: 'stable'
 
       - name: Create .env file
@@ -136,7 +133,7 @@ jobs:
           echo "✓ Build artifacts verified"
 
       - name: Upload Web artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: build/web/
