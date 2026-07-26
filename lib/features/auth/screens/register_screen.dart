@@ -85,18 +85,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     try {
       final l10n = AppLocalizations.of(context)!;
 
-      // 1. 先创建团队
-      final teamService = ref.read(teamServiceProvider);
-      final team = await teamService.createTeam(name: _teamNameController.text);
-
-      // 2. 使用团队ID注册用户
+      // 1. 先注册用户（不关联团队）
       final authService = ref.read(authServiceProvider);
       await authService.signUp(
         email: _emailController.text,
         password: _passwordController.text,
         role: _selectedRole,
-        teamId: team.id,
+        teamId: null, // 暂时不关联团队
       );
+
+      // 2. 用户创建成功后，创建团队（现在有认证上下文）
+      final teamService = ref.read(teamServiceProvider);
+      final team = await teamService.createTeam(name: _teamNameController.text);
+
+      // 3. 更新用户的 team_id
+      final userId = authService.currentUserId;
+      if (userId != null) {
+        await teamService.updateUserTeam(userId, team.id);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

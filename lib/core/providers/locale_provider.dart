@@ -7,7 +7,7 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
 });
 
 class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier() : super(const Locale('zh')) {
+  LocaleNotifier() : super(const Locale('en')) {
     _loadLocale();
   }
 
@@ -15,7 +15,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
 
   Future<void> _loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    final languageCode = prefs.getString(_localeKey) ?? 'zh';
+    final languageCode = prefs.getString(_localeKey) ?? 'en';
     state = Locale(languageCode);
   }
 

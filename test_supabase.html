@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Registration Test</h1>
+    <div id="result"></div>
+
+    <script>
+        const supabaseUrl = 'https://ppwjblvnixqeympfcqgs.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwd2pibHZuaXhxZXltcGZjcWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ2MjQsImV4cCI6MjEwMDIyMDYyNH0.LhLw3KUTKrLXry6Qst5nLWKsGCxEewW5XW1Pc6QrzEE';
+
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function testSignup() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing signup...';
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: 'testuser' + Date.now() + '@example.com',
+                    password: 'test123456',
+                });
+
+                if (error) {
+                    resultDiv.innerHTML = '<pre style="color: red;">Error: ' + JSON.stringify(error, null, 2) + '</pre>';
+                } else {
+                    resultDiv.innerHTML = '<pre style="color: green;">Success: ' + JSON.stringify(data, null, 2) + '</pre>';
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<pre style="color: red;">Exception: ' + e.toString() + '</pre>';
+            }
+        }
+
+        testSignup();
+    </script>
+</body>
+</html>

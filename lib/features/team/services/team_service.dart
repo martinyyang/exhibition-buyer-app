@@ -86,4 +86,12 @@ class TeamService {
         .update({'last_seen': DateTime.now().toIso8601String()})
         .eq('id', userId);
   }
+
+  /// 更新用户的团队ID
+  Future<void> updateUserTeam(String userId, String teamId) async {
+    await _supabase
+        .from('users')
+        .update({'team_id': teamId})
+        .eq('id', userId);
+  }
 }

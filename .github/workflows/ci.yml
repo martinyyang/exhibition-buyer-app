@@ -114,8 +114,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+        continue-on-error: true
+
       - name: Build Web
-        run: flutter build web --release --base-href "/exhibition-buyer-app/"
+        run: flutter build web --release --base-href="/exhibition-buyer-app/"
+
+      - name: Verify build artifacts
+        run: |
+          echo "Checking build artifacts..."
+          ls -lh build/web/
+          if [ ! -f "build/web/index.html" ]; then
+            echo "Error: index.html not found"
+            exit 1
+          fi
+          if [ ! -f "build/web/main.dart.js" ]; then
+            echo "Error: main.dart.js not found"
+            exit 1
+          fi
+          echo "✓ Build artifacts verified"
 
       - name: Upload Web artifact
         uses: actions/upload-artifact@v3

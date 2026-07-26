@@ -100,3 +100,4 @@ linux/flutter/ephemeral/
 # 其他
 .DS_Store
 Thumbs.db
+.gstack/
