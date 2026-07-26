@@ -40,10 +40,35 @@ jobs:
 
     - name: Create .env file
       run: |
-        cat > .env << EOF
+        echo "Creating .env file..."
+        cat > .env << 'EOF'
+        # Supabase项目配置
+
+        # Supabase项目URL
         SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+
+        # Supabase匿名公钥
         SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
         EOF
+
+        echo "=== .env file contents ==="
+        cat .env
+        echo "========================="
+
+        # 验证 secrets 是否存在
+        if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+          echo "❌ ERROR: SUPABASE_URL secret is not configured!"
+          echo "Please add it in: Settings > Secrets and variables > Actions > Repository secrets"
+          exit 1
+        fi
+
+        if [ -z "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
+          echo "❌ ERROR: SUPABASE_ANON_KEY secret is not configured!"
+          echo "Please add it in: Settings > Secrets and variables > Actions > Repository secrets"
+          exit 1
+        fi
+
+        echo "✓ Secrets validated successfully"
 
     - name: Get dependencies
       run: flutter pub get
