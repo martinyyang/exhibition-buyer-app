@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:exhibition_buyer_app/main.dart';
+import 'package:exhibition_buyer_app/main.dart' as app;
 import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
 import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.dart';
@@ -17,11 +17,7 @@ void main() {
   group('完整采购工作流E2E测试', () {
     testWidgets('买手登录-创建场次-创建摊位-拍照-远程标注-报价-谈判流程', (tester) async {
       // 启动应用
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 步骤1 - 买手登录
@@ -192,11 +188,7 @@ void main() {
     });
 
     testWidgets('场次切换和数据隔离测试', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 登录
@@ -294,11 +286,7 @@ void main() {
     });
 
     testWidgets('公式换算和历史记录测试', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 登录并准备测试数据
@@ -392,11 +380,7 @@ void main() {
     });
 
     testWidgets('买手小组协作测试', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 步骤1 - 买手A登录并获得颜色标识
@@ -501,11 +485,7 @@ void main() {
     });
 
     testWidgets('红色警告标记逻辑测试', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 准备测试环境：登录、创建场次、摊位、照片、旗子
@@ -577,11 +557,7 @@ void main() {
     });
 
     testWidgets('响应式布局测试：移动端-平板-桌面端切换', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 登录并准备测试数据
@@ -642,11 +618,7 @@ void main() {
     });
 
     testWidgets('供应商信息测试：添加供应商名称和Logo', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 登录并准备照片
@@ -699,11 +671,7 @@ void main() {
     });
 
     testWidgets('旗子编号顺序测试：远程插旗顺序=买手看到的顺序', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MyApp(),
-        ),
-      );
+      app.main();
       await tester.pumpAndSettle();
 
       // 远程端登录
