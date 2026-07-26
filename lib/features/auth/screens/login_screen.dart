@@ -42,8 +42,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (value == null || value.isEmpty) {
       return l10n.pleaseEnterPassword;
     }
-    if (value.length < 6) {
-      return l10n.passwordMinLength;
+    if (value.length < 8) {
+      return l10n.passwordComplexityError;
+    }
+    // Check for at least one uppercase, one lowercase, and one number
+    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$').hasMatch(value)) {
+      return l10n.passwordComplexityError;
     }
     return null;
   }

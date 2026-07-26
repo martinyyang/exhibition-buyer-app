@@ -48,8 +48,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (value == null || value.isEmpty) {
       return l10n.pleaseEnterPassword;
     }
-    if (value.length < 6) {
-      return l10n.passwordMinLength;
+    if (value.length < 8) {
+      return l10n.passwordComplexityError;
+    }
+    // Check for at least one uppercase, one lowercase, and one number
+    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$').hasMatch(value)) {
+      return l10n.passwordComplexityError;
     }
     return null;
   }
@@ -69,6 +73,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
       return l10n.pleaseEnterTeamName;
+    }
+    final trimmedValue = value.trim();
+    if (trimmedValue.length < 2 || trimmedValue.length > 50) {
+      return l10n.teamNameLength;
     }
     return null;
   }
@@ -108,8 +116,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.registerSuccess)),
         );
-        // 注册成功后返回登录页
-        context.go('/login');
+        // 注册成功后直接进入事件选择页面
+        context.go('/event-selection');
       }
     } catch (e) {
       if (mounted) {
@@ -119,13 +127,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         // 根据错误类型提供更明确的错误信息
         final errorString = e.toString().toLowerCase();
         if (errorString.contains('no host') || errorString.contains('socketexception')) {
-          errorMessage = '网络连接失败，请检查网络设置或联系管理员';
+          errorMessage = l10n.networkError;
         } else if (errorString.contains('timeout')) {
-          errorMessage = '请求超时，请检查网络连接后重试';
+          errorMessage = l10n.timeoutError;
         } else if (errorString.contains('email')) {
-          errorMessage = '邮箱格式错误或已被使用';
+          errorMessage = l10n.emailError;
         } else if (errorString.contains('password')) {
-          errorMessage = '密码格式不正确（至少6位字符）';
+          errorMessage = l10n.passwordError;
         } else {
           errorMessage = l10n.registerFailed(e.toString());
         }
@@ -135,17 +143,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             content: Text(errorMessage),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
-              label: '查看详情',
+              label: l10n.viewDetails,
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('错误详情'),
+                    title: Text(l10n.errorDetails),
                     content: Text(e.toString()),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('关闭'),
+                        child: Text(l10n.close),
                       ),
                     ],
                   ),
