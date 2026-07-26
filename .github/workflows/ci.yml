@@ -115,10 +115,18 @@ jobs:
         run: flutter pub get
 
       - name: Build Web
-        run: flutter build web --release
+        run: flutter build web --release --base-href "/exhibition-buyer-app/"
 
       - name: Upload Web artifact
         uses: actions/upload-artifact@v3
         with:
           name: web-build
           path: build/web/
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          cname: false

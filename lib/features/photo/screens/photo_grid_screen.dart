@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../core/utils/responsive.dart';
 import '../models/photo.dart';
+import '../services/image_helper_service.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -54,25 +57,42 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _takePhoto() async {
+    if (kIsWeb) {
+      // Web 端：直接打开文件选择器
+      await _pickImageFromGallery();
+    } else {
+      // 移动端：显示相机/相册选择对话框
+      await _showImageSourceDialog();
+    }
+  }
+
+  /// Web 端和移动端相册选择
+  Future<void> _pickImageFromGallery() async {
     setState(() {
       _isUploading = true;
     });
 
     try {
-      // TODO: 调用相机拍照
-      // final picker = ImagePicker();
-      // final photo = await picker.pickImage(source: ImageSource.camera);
-      // if (photo != null) {
-      //   final photoService = ref.read(photoServiceProvider);
-      //   await photoService.uploadPhoto(widget.boothId, photo);
-      //   await _loadPhotos();
-      // }
-      await Future.delayed(const Duration(seconds: 1));
+      final pickedFile = await imageHelper.pickImage(
+        source: ImageSource.gallery,
+      );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('照片上传成功')),
-        );
+      if (pickedFile != null) {
+        // TODO: 上传照片
+        // final photoService = ref.read(photoServiceProvider);
+        // await photoService.uploadPhoto(
+        //   photoFile: pickedFile,
+        //   boothId: widget.boothId,
+        //   teamId: 'current_team_id',
+        //   uploadedBy: 'current_user_id',
+        // );
+        // await _loadPhotos();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('照片上传成功')),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -87,6 +107,68 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         });
       }
     }
+  }
+
+  /// 移动端：相机拍照
+  Future<void> _pickImageFromCamera() async {
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      final pickedFile = await imageHelper.pickImage(
+        source: ImageSource.camera,
+      );
+
+      if (pickedFile != null) {
+        // TODO: 上传照片（同上）
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('照片上传成功')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('拍照失败: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
+  }
+
+  /// 移动端：显示图片来源选择对话框
+  Future<void> _showImageSourceDialog() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('拍照'),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImageFromCamera();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('从相册选择'),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImageFromGallery();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   void _onPhotoTap(Photo photo) {
@@ -319,8 +401,8 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
             )
           : FloatingActionButton(
               onPressed: _takePhoto,
-              tooltip: '拍照',
-              child: const Icon(Icons.camera_alt),
+              tooltip: kIsWeb ? '上传照片' : '拍照',
+              child: Icon(kIsWeb ? Icons.upload_file : Icons.camera_alt),
             ),
     );
   }

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../models/photo.dart';
@@ -10,8 +10,10 @@ class PhotoService {
   PhotoService(this._supabase);
 
   /// 上传照片并创建记录
+  ///
+  /// 使用 XFile 支持跨平台（Mobile 和 Web）
   Future<Photo> uploadPhoto({
-    required File photoFile,
+    required XFile photoFile,
     required String boothId,
     required String teamId,
     required String uploadedBy,
@@ -24,10 +26,13 @@ class PhotoService {
     final fileName = '${timestamp}_$uuid.jpg';
     final filePath = '$teamId/$boothId/$fileName';
 
+    // 读取文件为字节数组（跨平台方式）
+    final bytes = await photoFile.readAsBytes();
+
     // 上传到Supabase Storage
-    await _supabase.storage.from('photos').upload(
+    await _supabase.storage.from('photos').uploadBinary(
           filePath,
-          photoFile,
+          bytes,
           fileOptions: const FileOptions(
             contentType: 'image/jpeg',
             upsert: false,
