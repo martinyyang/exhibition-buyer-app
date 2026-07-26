@@ -16,7 +16,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.24.5'
 
       - name: Install dependencies
         run: flutter pub get
@@ -60,7 +60,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.24.5'
 
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -99,7 +99,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.24.5'
 
       - name: Create .env file
         run: |
