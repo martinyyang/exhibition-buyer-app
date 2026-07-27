@@ -11,27 +11,42 @@ final eventServiceProvider = Provider((ref) {
   return EventService(supabase.client);
 });
 
-// Realtime订阅Provider - 监听events表变化
-final eventsRealtimeProvider = StreamProvider<void>((ref) {
+// Realtime订阅Provider - 监听events表变化（仅监听当前团队）
+final eventsRealtimeProvider = StreamProvider<void>((ref) async* {
   final supabase = ref.watch(supabaseServiceProvider);
   final authService = ref.watch(authServiceProvider);
 
   final userId = authService.currentUserId;
   if (userId == null) {
-    return Stream.value(null);
+    yield null;
+    return;
+  }
+
+  // 获取用户的 team_id
+  final user = await authService.getCurrentUser();
+  final teamId = user?.teamId;
+
+  if (teamId == null) {
+    yield null;
+    return;
   }
 
   final controller = StreamController<void>();
 
-  // 订阅events表的变化
+  // 订阅events表的变化，仅监听当前团队
   final channel = supabase.client
-      .channel('events_changes')
+      .channel('events_changes_$teamId')
       .onPostgresChanges(
         event: PostgresChangeEvent.all,
         schema: 'public',
         table: 'events',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'team_id',
+          value: teamId,
+        ),
         callback: (payload) {
-          // 当events表有任何变化时，触发刷新
+          // 当当前团队的events表有变化时，触发刷新
           controller.add(null);
         },
       )
@@ -42,7 +57,7 @@ final eventsRealtimeProvider = StreamProvider<void>((ref) {
     controller.close();
   });
 
-  return controller.stream;
+  yield* controller.stream;
 });
 
 // 场次列表Provider（按团队过滤，支持Realtime自动刷新）
