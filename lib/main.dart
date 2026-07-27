@@ -129,6 +129,7 @@ class ExhibitionBuyerApp extends ConsumerWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
+        fontFamily: null, // 使用系统默认字体，避免 Web 加载 Google Fonts
       ),
       routerConfig: router,
     );
