@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../shared/widgets/color_badge.dart';
 import '../models/booth.dart';
+import '../providers/booth_provider.dart';
+import '../services/booth_service.dart';
+import '../../event/providers/event_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class BoothListScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -17,48 +22,7 @@ class BoothListScreen extends ConsumerStatefulWidget {
 }
 
 class _BoothListScreenState extends ConsumerState<BoothListScreen> {
-  bool _isLoading = false;
-  String _eventName = '加载中...';
-  final List<Booth> _booths = []; // TODO: 从Provider获取
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // TODO: 加载场次信息和摊位列表
-      // final eventService = ref.read(eventServiceProvider);
-      // final event = await eventService.getEvent(widget.eventId);
-      // final boothService = ref.read(boothServiceProvider);
-      // final booths = await boothService.getBooths(widget.eventId);
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      if (mounted) {
-        setState(() {
-          _eventName = '2026春季广交会'; // TODO: 从数据库获取
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('加载失败: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
+  bool _isCreating = false;
 
   void _showCreateBoothDialog() {
     final numberController = TextEditingController();
@@ -106,39 +70,68 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
 
   Future<void> _createBooth(String boothNumber) async {
     setState(() {
-      _isLoading = true;
+      _isCreating = true;
     });
 
     try {
-      // TODO: 调用BoothService创建摊位
-      // final boothService = ref.read(boothServiceProvider);
-      // await boothService.createBooth(widget.eventId, boothNumber);
-      await Future.delayed(const Duration(seconds: 1));
+      final authService = ref.read(authServiceProvider);
+
+      // 获取用户信息和team_id（带重试逻辑）
+      String? teamId;
+      String? userId;
+      for (int i = 0; i < 3; i++) {
+        final user = await authService.getCurrentUser();
+        teamId = user?.teamId;
+        userId = user?.id;
+
+        if (teamId != null && userId != null) break;
+
+        if (i < 2) {
+          await Future.delayed(const Duration(seconds: 1));
+        }
+      }
+
+      if (teamId == null || userId == null) {
+        throw Exception('用户未登录或未加入团队');
+      }
+
+      final boothService = ref.read(boothServiceProvider);
+      await boothService.createBooth(
+        boothNumber: boothNumber,
+        eventId: widget.eventId,
+        teamId: teamId,
+        createdBy: userId,
+      );
 
       if (mounted) {
+        // 手动刷新摊位列表
+        ref.invalidate(boothsProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('摊位 $boothNumber 创建成功')),
         );
-        _loadData();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('创建失败: $e')),
+          SnackBar(
+            content: Text('创建失败: $e'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     } finally {
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _isCreating = false;
         });
       }
     }
   }
 
   void _onBoothTap(Booth booth) {
-    // TODO: 导航到照片网格页面
-    // context.go('/photos', extra: booth.id);
+    // 导航到照片网格页面
+    context.go('/events/${widget.eventId}/booths/${booth.id}/photos');
   }
 
   void _onBoothLongPress(Booth booth) {
@@ -152,7 +145,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
             title: const Text('编辑'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: 编辑摊位
+              _showEditBoothDialog(booth);
             },
           ),
           ListTile(
@@ -166,6 +159,82 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         ],
       ),
     );
+  }
+
+  void _showEditBoothDialog(Booth booth) {
+    final numberController = TextEditingController(text: booth.boothNumber);
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('编辑摊位'),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: numberController,
+            decoration: const InputDecoration(
+              labelText: '摊位号',
+              hintText: '例如：B01',
+            ),
+            textCapitalization: TextCapitalization.characters,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return '请输入摊位号';
+              }
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(context).pop();
+                _editBooth(booth, numberController.text);
+              }
+            },
+            child: const Text('保存'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _editBooth(Booth booth, String newBoothNumber) async {
+    if (newBoothNumber == booth.boothNumber) {
+      return; // 没有变化，不需要更新
+    }
+
+    try {
+      final boothService = ref.read(boothServiceProvider);
+      await boothService.updateBooth(
+        boothId: booth.id,
+        boothNumber: newBoothNumber,
+      );
+
+      if (mounted) {
+        // 手动刷新摊位列表
+        ref.invalidate(boothsProvider);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('摊位信息已更新')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('更新失败: $e'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
   }
 
   void _confirmDeleteBooth(Booth booth) {
@@ -193,39 +262,87 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   Future<void> _deleteBooth(Booth booth) async {
-    // TODO: 调用BoothService删除摊位
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('已删除摊位"${booth.boothNumber}"')),
-    );
+    try {
+      final boothService = ref.read(boothServiceProvider);
+      await boothService.deleteBooth(booth.id);
+
+      if (mounted) {
+        // 手动刷新摊位列表
+        ref.invalidate(boothsProvider);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已删除摊位"${booth.boothNumber}"')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('删除失败: $e'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('摊位列表', style: TextStyle(fontSize: 16)),
-            Text(
-              _eventName,
-              style:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+    // 获取当前用户的team_id
+    final authService = ref.watch(authServiceProvider);
+    final userId = authService.currentUserId;
+
+    if (userId == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('摊位列表')),
+        body: const Center(child: Text('请先登录')),
+      );
+    }
+
+    // 获取场次信息
+    final eventAsync = ref.watch(eventProvider(widget.eventId));
+
+    return eventAsync.when(
+      data: (event) {
+        if (event == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('摊位列表')),
+            body: const Center(child: Text('场次不存在')),
+          );
+        }
+
+        // 获取摊位列表
+        final boothsParams = BoothsParams(
+          eventId: widget.eventId,
+          teamId: event.teamId,
+        );
+        final boothsAsync = ref.watch(boothsProvider(boothsParams));
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('摊位列表', style: TextStyle(fontSize: 16)),
+                Text(
+                  event.name,
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.normal),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _showCreateBoothDialog,
-            tooltip: '新建摊位',
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: _isCreating ? null : _showCreateBoothDialog,
+                tooltip: '新建摊位',
+              ),
+            ],
           ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: LoadingIndicator())
-          : _booths.isEmpty
-              ? Center(
+          body: boothsAsync.when(
+            data: (booths) {
+              if (booths.isEmpty) {
+                return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -252,65 +369,107 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                       ),
                     ],
                   ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _booths.length,
-                  itemBuilder: (context, index) {
-                    final booth = _booths[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () => _onBoothTap(booth),
-                        onLongPress: () => _onBoothLongPress(booth),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              // TODO: 显示买手颜色标识
-                              // ColorBadge(color: booth.createdByColor),
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade100,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Center(
-                                  child: Icon(Icons.store, size: 20),
-                                ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: booths.length,
+                itemBuilder: (context, index) {
+                  final booth = booths[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: InkWell(
+                      onTap: () => _onBoothTap(booth),
+                      onLongPress: () => _onBoothLongPress(booth),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade100,
+                                shape: BoxShape.circle,
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '摊位 ${booth.boothNumber}',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '0张照片', // TODO: 显示实际照片数量
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              child: const Center(
+                                child: Icon(Icons.store, size: 20),
                               ),
-                              const Icon(Icons.chevron_right),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '摊位 ${booth.boothNumber}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '0张照片',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
+              );
+            },
+            loading: () => const Center(child: LoadingIndicator()),
+            error: (error, stack) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('加载失败: $error'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => ref.invalidate(boothsProvider),
+                    child: const Text('重试'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text('摊位列表')),
+        body: const Center(child: LoadingIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(title: const Text('摊位列表')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('加载失败: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(eventProvider(widget.eventId)),
+                child: const Text('重试'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -91,7 +91,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 照片网格页
       GoRoute(
-        path: '/booths/:boothId/photos',
+        path: '/events/:eventId/booths/:boothId/photos',
         name: 'photos',
         builder: (context, state) {
           final boothId = state.pathParameters['boothId']!;
