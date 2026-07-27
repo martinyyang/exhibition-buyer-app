@@ -110,9 +110,22 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      final user = await authService.getCurrentUser();
 
-      if (user?.teamId == null) {
+      // 重试逻辑：有时注册后 team_id 更新需要时间
+      String? teamId;
+      for (int i = 0; i < 3; i++) {
+        final user = await authService.getCurrentUser();
+        teamId = user?.teamId;
+
+        if (teamId != null) break;
+
+        // 如果是第一次重试，等待 1 秒
+        if (i < 2) {
+          await Future.delayed(const Duration(seconds: 1));
+        }
+      }
+
+      if (teamId == null) {
         throw Exception(l10n.userNotInTeam);
       }
 
@@ -120,7 +133,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       await eventService.createEvent(
         name: name,
         startDate: startDate,
-        teamId: user!.teamId!,
+        teamId: teamId,
         setAsActive: true,
       );
 
@@ -132,7 +145,10 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.createFailed(e.toString()))),
+          SnackBar(
+            content: Text(l10n.createFailed(e.toString())),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     } finally {

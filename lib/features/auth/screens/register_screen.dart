@@ -108,8 +108,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       // 3. 更新用户的 team_id
       final userId = authService.currentUserId;
-      if (userId != null) {
-        await teamService.updateUserTeam(userId, team.id);
+      if (userId == null) {
+        throw Exception('User ID not found after registration');
+      }
+
+      await teamService.updateUserTeam(userId, team.id);
+
+      // 4. 验证 team_id 已成功更新
+      final updatedUser = await authService.getCurrentUser();
+      if (updatedUser?.teamId == null) {
+        throw Exception('Failed to associate user with team');
       }
 
       if (mounted) {
