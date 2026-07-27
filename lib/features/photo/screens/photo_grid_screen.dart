@@ -3,10 +3,13 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../core/utils/responsive.dart';
 import '../models/photo.dart';
 import '../services/image_helper_service.dart';
+import '../providers/photo_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -21,40 +24,7 @@ class PhotoGridScreen extends ConsumerStatefulWidget {
 }
 
 class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
-  bool _isLoading = false;
   bool _isUploading = false;
-  final List<Photo> _photos = []; // TODO: 从Provider获取
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPhotos();
-  }
-
-  Future<void> _loadPhotos() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // TODO: 加载照片列表
-      // final photoService = ref.read(photoServiceProvider);
-      // final photos = await photoService.getPhotos(widget.boothId);
-      await Future.delayed(const Duration(milliseconds: 500));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('加载失败: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
 
   Future<void> _takePhoto() async {
     if (kIsWeb) {
@@ -78,15 +48,22 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       );
 
       if (pickedFile != null) {
-        // TODO: 上传照片
-        // final photoService = ref.read(photoServiceProvider);
-        // await photoService.uploadPhoto(
-        //   photoFile: pickedFile,
-        //   boothId: widget.boothId,
-        //   teamId: 'current_team_id',
-        //   uploadedBy: 'current_user_id',
-        // );
-        // await _loadPhotos();
+        final photoService = ref.read(photoServiceProvider);
+        final userData = await ref.read(currentUserDataProvider.future);
+        final authState = ref.read(currentUserProvider);
+        final user = authState.asData?.value.session?.user;
+        final teamId = userData?.teamId;
+
+        if (user == null || teamId == null) {
+          throw Exception('用户未登录或未加入团队');
+        }
+
+        await photoService.uploadPhoto(
+          photoFile: pickedFile,
+          boothId: widget.boothId,
+          teamId: teamId,
+          uploadedBy: user.id,
+        );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +98,23 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       );
 
       if (pickedFile != null) {
-        // TODO: 上传照片（同上）
+        final photoService = ref.read(photoServiceProvider);
+        final userData = await ref.read(currentUserDataProvider.future);
+        final authState = ref.read(currentUserProvider);
+        final user = authState.asData?.value.session?.user;
+        final teamId = userData?.teamId;
+
+        if (user == null || teamId == null) {
+          throw Exception('用户未登录或未加入团队');
+        }
+
+        await photoService.uploadPhoto(
+          photoFile: pickedFile,
+          boothId: widget.boothId,
+          teamId: teamId,
+          uploadedBy: user.id,
+        );
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('照片上传成功')),
@@ -172,8 +165,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   void _onPhotoTap(Photo photo) {
-    // TODO: 导航到照片详情页
-    // context.go('/photo-detail', extra: photo.id);
+    context.push('/events/${photo.boothId}/booths/${photo.boothId}/photos/${photo.id}');
   }
 
   void _onPhotoLongPress(Photo photo) {
@@ -253,10 +245,25 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _updateSupplierInfo(Photo photo, String supplierName) async {
-    // TODO: 更新供应商信息
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('供应商信息已更新')),
-    );
+    try {
+      final photoService = ref.read(photoServiceProvider);
+      await photoService.updatePhoto(
+        photoId: photo.id,
+        supplierName: supplierName,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('供应商信息已更新')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('更新失败: $e')),
+        );
+      }
+    }
   }
 
   void _confirmDeletePhoto(Photo photo) {
@@ -284,116 +291,146 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _deletePhoto(Photo photo) async {
-    // TODO: 删除照片
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('照片已删除')),
-    );
+    try {
+      final photoService = ref.read(photoServiceProvider);
+      await photoService.deletePhoto(photo.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('照片已删除')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('删除失败: $e')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final photosAsync = ref.watch(photosProvider(widget.boothId));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('照片'),
       ),
-      body: _isLoading
-          ? const Center(child: LoadingIndicator())
-          : _photos.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.photo_camera,
-                        size: 64,
-                        color: Colors.grey[400],
+      body: photosAsync.when(
+        data: (photos) => photos.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.photo_camera,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '暂无照片',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        '暂无照片',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                        ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '点击右下角相机按钮拍照',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[500],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '点击右下角相机按钮拍照',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: Responsive.getGridColumns(context),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.75,
-                  ),
-                  itemCount: _photos.length,
-                  itemBuilder: (context, index) {
-                    final photo = _photos[index];
-                    return Card(
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: () => _onPhotoTap(photo),
-                        onLongPress: () => _onPhotoLongPress(photo),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: CachedNetworkImage(
-                                imageUrl: photo.url,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    const Center(child: LoadingIndicator()),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (photo.supplierName != null)
-                                    Text(
-                                      photo.supplierName!,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.flag, size: 14),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '0个旗子', // TODO: 显示实际旗子数量
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
+              )
+            : GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: Responsive.getGridColumns(context),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.75,
+                ),
+                itemCount: photos.length,
+                itemBuilder: (context, index) {
+                  final photo = photos[index];
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => _onPhotoTap(photo),
+                      onLongPress: () => _onPhotoLongPress(photo),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: CachedNetworkImage(
+                              imageUrl: photo.url,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) =>
+                                  const Center(child: LoadingIndicator()),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (photo.supplierName != null)
+                                  Text(
+                                    photo.supplierName!,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.flag, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '0个旗子', // TODO: 显示实际旗子数量
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+        loading: () => const Center(child: LoadingIndicator()),
+        error: (err, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('加载失败: $err'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(photosProvider(widget.boothId)),
+                child: const Text('重试'),
+              ),
+            ],
+          ),
+        ),
+      ),
       floatingActionButton: _isUploading
           ? const FloatingActionButton(
               onPressed: null,

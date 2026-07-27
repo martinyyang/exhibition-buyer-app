@@ -153,17 +153,20 @@ class PhotoService {
   }
 
   /// 上传供应商Logo
-  Future<String> uploadSupplierLogo(File logoFile) async {
+  Future<String> uploadSupplierLogo(XFile logoFile) async {
     // 生成唯一文件名：suppliers/{timestamp}_{uuid}.jpg
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final uuid = _uuid.v4();
     final fileName = '${timestamp}_$uuid.jpg';
     final filePath = 'suppliers/$fileName';
 
+    // 读取文件字节
+    final bytes = await logoFile.readAsBytes();
+
     // 上传到Supabase Storage
-    await _supabase.storage.from('photos').upload(
+    await _supabase.storage.from('photos').uploadBinary(
           filePath,
-          logoFile,
+          bytes,
           fileOptions: const FileOptions(
             contentType: 'image/jpeg',
             upsert: false,
