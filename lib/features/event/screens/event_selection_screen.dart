@@ -170,8 +170,10 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       await _setActiveEvent(event);
     }
 
-    // TODO: 导航到摊位列表页面
-    // context.go('/booths', extra: event.id);
+    // 导航到摊位列表页面
+    if (mounted) {
+      context.go('/events/${event.id}/booths');
+    }
   }
 
   void _onEventLongPress(Event event) {
