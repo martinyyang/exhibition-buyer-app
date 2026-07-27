@@ -137,7 +137,11 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
         setAsActive: true,
       );
 
+      // 手动刷新事件列表（防止 Realtime 未启用）
       if (mounted) {
+        ref.invalidate(eventsProvider);
+        ref.invalidate(activeEventProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.eventCreatedSuccess)),
         );
@@ -235,7 +239,11 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       final eventService = ref.read(eventServiceProvider);
       await eventService.setActiveEvent(event.id, teamId);
 
+      // 手动刷新事件列表（防止 Realtime 未启用）
       if (mounted) {
+        ref.invalidate(eventsProvider);
+        ref.invalidate(activeEventProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.setActiveEventSuccess(event.name))),
         );
@@ -282,7 +290,11 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       final eventService = ref.read(eventServiceProvider);
       await eventService.deleteEvent(event.id);
 
+      // 手动刷新事件列表（防止 Realtime 未启用）
       if (mounted) {
+        ref.invalidate(eventsProvider);
+        ref.invalidate(activeEventProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.eventDeletedSuccess(event.name))),
         );
