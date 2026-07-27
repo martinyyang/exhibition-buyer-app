@@ -35,7 +35,10 @@ USING (
   )
 );
 
--- 第三步：配置 Photos 表 RLS
+-- 第三步：启用 Realtime（确保照片上传后自动刷新）
+ALTER PUBLICATION supabase_realtime ADD TABLE photos;
+
+-- 第四步：配置 Photos 表 RLS
 DROP POLICY IF EXISTS "Team members can view photos" ON photos;
 DROP POLICY IF EXISTS "Team members can insert photos" ON photos;
 DROP POLICY IF EXISTS "Team members can delete photos" ON photos;
@@ -72,3 +75,4 @@ USING (
 );
 
 -- 完成！现在可以上传照片了
+-- 注意：照片上传后会自动显示在列表中（Realtime 实时同步）
