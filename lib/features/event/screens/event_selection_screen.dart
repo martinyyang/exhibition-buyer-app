@@ -160,7 +160,12 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     }
   }
 
-  void _onEventTap(Event event) {
+  Future<void> _onEventTap(Event event) async {
+    // 如果点击的不是当前活动，先设置为活动
+    if (!event.isActive) {
+      await _setActiveEvent(event);
+    }
+
     // TODO: 导航到摊位列表页面
     // context.go('/booths', extra: event.id);
   }
