@@ -9,13 +9,51 @@
 -- ==========================================
 
 -- 为所有表启用实时同步，上传/修改后自动刷新
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS photos;
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS flags;
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS comments;
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS exchange_settings;
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS formula_history;
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS booths;
-ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS events;
+-- 注意：ALTER PUBLICATION ADD TABLE 不支持 IF NOT EXISTS，需要逐个尝试
+DO $$
+BEGIN
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE photos;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL; -- 表已存在于 publication 中，忽略
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE flags;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE comments;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE exchange_settings;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE formula_history;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE booths;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE events;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  END;
+END $$;
 
 -- ==========================================
 -- 第二部分：补充缺失的 DELETE 策略
