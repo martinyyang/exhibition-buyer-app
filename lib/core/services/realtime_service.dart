@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/providers/auth_provider.dart';
 
 /// Realtime同步服务
 /// 监听数据库变化并自动更新本地状态
@@ -159,7 +160,8 @@ class RealtimeService {
 
   /// 取消所有订阅
   Future<void> unsubscribeAll() async {
-    for (final channel in _channels) {
+    final channelsCopy = List<RealtimeChannel>.from(_channels);
+    for (final channel in channelsCopy) {
       await _client.removeChannel(channel);
     }
     _channels.clear();
@@ -172,9 +174,13 @@ class RealtimeService {
 }
 
 /// Realtime Service Provider
+/// 注意：需要在使用前先import supabaseServiceProvider
+/// import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
 final realtimeServiceProvider = Provider((ref) {
-  final supabase = Supabase.instance.client;
-  final service = RealtimeService(supabase);
+  // 通过provider获取supabase客户端，而不是直接使用Supabase.instance
+  // 这样在测试时可以mock
+  final supabaseService = ref.watch(supabaseServiceProvider);
+  final service = RealtimeService(supabaseService.client);
 
   // 当Provider被销毁时清理资源
   ref.onDispose(() {

@@ -5,12 +5,8 @@ import '../services/booth_service.dart';
 import '../models/booth.dart';
 import '../../auth/providers/auth_provider.dart';
 
-// Supabase Service Provider
-final supabaseServiceProvider = Provider((ref) {
-  return Supabase.instance;
-});
-
 // BoothService Provider
+// 注意：supabaseServiceProvider 已在 auth_provider.dart 中定义
 final boothServiceProvider = Provider((ref) {
   final supabase = ref.watch(supabaseServiceProvider);
   return BoothService(supabase.client);

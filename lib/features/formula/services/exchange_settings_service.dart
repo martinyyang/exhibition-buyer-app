@@ -62,4 +62,9 @@ class ExchangeSettingsService {
 
     return FormulaCalculator.calculate(formula, rmbPrice);
   }
+
+  /// 更新汇率公式（别名方法，便于调用）
+  Future<void> updateFormula(String teamId, String formula) async {
+    await setDailyFormula(teamId, formula);
+  }
 }

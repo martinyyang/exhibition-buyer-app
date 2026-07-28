@@ -67,9 +67,12 @@ void main() {
         ),
       );
 
+      // 等待widget渲染
+      await tester.pump();
+
       // 点击照片
       await tester.tap(find.byType(PhotoAnnotationCanvas));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // 验证回调被触发
       expect(tappedPosition, isNotNull);

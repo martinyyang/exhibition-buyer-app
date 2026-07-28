@@ -1,8 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Supabase客户端单例
-final supabaseClient = Supabase.instance.client;
-
+/// Supabase服务封装
+/// 注意：不要直接使用 Supabase.instance，而是通过 SupabaseService 类
+/// 在测试中可以mock这个服务
 class SupabaseService {
   final SupabaseClient _client;
 

@@ -17,6 +17,11 @@ class FormulaCalculator {
 
       final result = expression.evaluate(EvaluationType.REAL, contextModel);
 
+      // 检查除以零的情况
+      if (result.isInfinite || result.isNaN) {
+        throw FormatException('公式计算结果无效: 除以零或无效操作');
+      }
+
       return double.parse(result.toStringAsFixed(2));
     } catch (e) {
       throw FormatException('公式错误: $e');

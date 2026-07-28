@@ -1,19 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:exhibition_buyer_app/features/flag/widgets/flag_table.dart';
 import 'package:exhibition_buyer_app/features/flag/models/flag.dart';
+import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
+import 'test_helpers.dart';
 
 void main() {
+  late MockSupabaseService mockSupabaseService;
+  late MockSupabaseClient mockSupabaseClient;
+  late MockGoTrueClient mockGoTrueClient;
+  late MockUser mockUser;
+
+  setUp(() {
+    mockSupabaseService = MockSupabaseService();
+    mockSupabaseClient = MockSupabaseClient();
+    mockGoTrueClient = MockGoTrueClient();
+    mockUser = MockUser();
+
+    when(() => mockSupabaseService.client).thenReturn(mockSupabaseClient);
+    when(() => mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
+    when(() => mockGoTrueClient.currentUser).thenReturn(mockUser);
+    when(() => mockUser.id).thenReturn('test-user-id');
+  });
+
   group('FlagTable Widget Tests', () {
     testWidgets('显示所有必需的列', (tester) async {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: false,
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: false,
+              ),
             ),
           ),
         ),
@@ -29,11 +64,22 @@ void main() {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: false,
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: false,
+              ),
             ),
           ),
         ),
@@ -46,11 +92,16 @@ void main() {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: true,
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: true,
+              ),
             ),
           ),
         ),
@@ -64,11 +115,22 @@ void main() {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: false,
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: false,
+              ),
             ),
           ),
         ),
@@ -82,14 +144,19 @@ void main() {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: false,
-              onRowTap: (flag) {
-                tappedFlag = flag;
-              },
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: false,
+                onRowTap: (flag) {
+                  tappedFlag = flag;
+                },
+              ),
             ),
           ),
         ),
@@ -103,11 +170,22 @@ void main() {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: false,
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: false,
+              ),
             ),
           ),
         ),
@@ -121,18 +199,29 @@ void main() {
       final flags = <Flag>[];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlagTable(
-              flags: flags,
-              isRemoteView: false,
+        ProviderScope(
+          overrides: [
+            supabaseServiceProvider.overrideWithValue(mockSupabaseService),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: FlagTable(
+                flags: flags,
+                isRemoteView: false,
+              ),
             ),
           ),
         ),
       );
 
-      // 验证使用ListView或SingleChildScrollView
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      // 验证使用ListView或SingleChildScrollView (有两个嵌套的ScrollView)
+      expect(find.byType(SingleChildScrollView), findsWidgets);
     });
   });
 }

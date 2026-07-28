@@ -4,7 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
 import '../../flag/models/flag.dart';
+import '../../flag/providers/flag_provider.dart';
+import '../../flag/services/flag_service.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../models/photo.dart';
+import '../providers/photo_provider.dart';
 
 class PhotoDetailScreen extends ConsumerStatefulWidget {
   final String photoId;
@@ -21,49 +25,13 @@ class PhotoDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
-  bool _isLoading = false;
-  Photo? _photo;
-  final List<Flag> _flags = []; // TODO: 从Provider获取
   final TransformationController _transformationController =
       TransformationController();
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
 
   @override
   void dispose() {
     _transformationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // TODO: 加载照片和旗子数据
-      // final photoService = ref.read(photoServiceProvider);
-      // final photo = await photoService.getPhoto(widget.photoId);
-      // final flagService = ref.read(flagServiceProvider);
-      // final flags = await flagService.getFlags(widget.photoId);
-      await Future.delayed(const Duration(milliseconds: 500));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('加载失败: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
   }
 
   void _onPhotoTap(TapDownDetails details, Size imageSize) {
@@ -81,16 +49,25 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   Future<void> _createFlag(double x, double y) async {
     try {
-      // TODO: 创建新旗子
-      // final flagService = ref.read(flagServiceProvider);
-      // await flagService.createFlag(widget.photoId, x, y);
-      await Future.delayed(const Duration(milliseconds: 500));
+      final flagService = ref.read(flagServiceProvider);
+      final supabaseService = ref.read(supabaseServiceProvider);
+      final userId = supabaseService.client.auth.currentUser?.id;
+
+      if (userId == null) {
+        throw Exception('用户未登录');
+      }
+
+      await flagService.createFlag(
+        photoId: widget.photoId,
+        positionX: x,
+        positionY: y,
+        createdBy: userId,
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('标记已添加')),
         );
-        _loadData();
       }
     } catch (e) {
       if (mounted) {
@@ -142,19 +119,31 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   Future<void> _deleteFlag(Flag flag) async {
-    // TODO: 删除旗子
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('已删除旗子 #${flag.number}')),
-    );
+    try {
+      final flagService = ref.read(flagServiceProvider);
+      await flagService.deleteFlag(flag.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已删除旗子 #${flag.number}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('删除失败: $e')),
+        );
+      }
+    }
   }
 
-  Widget _buildPhotoWithFlags(Size imageSize) {
+  Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags, Size imageSize) {
     return Stack(
       children: [
         // 照片
-        if (_photo != null)
+        if (photo != null)
           CachedNetworkImage(
-            imageUrl: _photo!.url,
+            imageUrl: photo.url,
             fit: BoxFit.contain,
             placeholder: (context, url) =>
                 const Center(child: LoadingIndicator()),
@@ -162,7 +151,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
           ),
 
         // 旗子标记
-        ..._flags.map((flag) {
+        ...flags.map((flag) {
           return Positioned(
             left: flag.positionX * imageSize.width - 20,
             top: flag.positionY * imageSize.height - 40,
@@ -211,7 +200,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     );
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(Photo? photo, List<Flag> flags) {
     return Column(
       children: [
         // 上半部分：照片
@@ -225,7 +214,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               transformationController: _transformationController,
               minScale: 0.5,
               maxScale: 4.0,
-              child: _buildPhotoWithFlags(const Size(400, 300)),
+              child: _buildPhotoWithFlags(photo, flags, const Size(400, 300)),
             ),
           ),
         ),
@@ -235,7 +224,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         // 下半部分：Flag表格
         Expanded(
           flex: 2,
-          child: _flags.isEmpty
+          child: flags.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -250,7 +239,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   ),
                 )
               : FlagTable(
-                  flags: _flags,
+                  flags: flags,
                   isRemoteView: widget.isRemoteView,
                   onRowTap: (flag) => _onFlagRowTap(flag, const Size(400, 300)),
                 ),
@@ -259,7 +248,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     );
   }
 
-  Widget _buildDesktopLayout() {
+  Widget _buildDesktopLayout(Photo? photo, List<Flag> flags) {
     return Row(
       children: [
         // 左侧：照片
@@ -274,7 +263,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               minScale: 0.5,
               maxScale: 4.0,
               child: Center(
-                child: _buildPhotoWithFlags(const Size(800, 600)),
+                child: _buildPhotoWithFlags(photo, flags, const Size(800, 600)),
               ),
             ),
           ),
@@ -285,7 +274,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         // 右侧：Flag表格
         Expanded(
           flex: 1,
-          child: _flags.isEmpty
+          child: flags.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -303,7 +292,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   ),
                 )
               : FlagTable(
-                  flags: _flags,
+                  flags: flags,
                   isRemoteView: widget.isRemoteView,
                   onRowTap: (flag) => _onFlagRowTap(flag, const Size(800, 600)),
                 ),
@@ -314,34 +303,57 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final photoAsync = ref.watch(photoProvider(widget.photoId));
+    final flagsAsync = ref.watch(flagsProvider(widget.photoId));
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isRemoteView ? '标注商品' : '查看报价'),
         actions: [
-          if (_photo?.supplierName != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  _photo!.supplierName!,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-            ),
+          photoAsync.whenOrNull(
+            data: (photo) {
+              if (photo?.supplierName != null) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Center(
+                    child: Text(
+                      photo!.supplierName!,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                );
+              }
+              return null;
+            },
+          ) ?? const SizedBox.shrink(),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: LoadingIndicator())
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                // Web端（宽度>900）使用左右布局，移动端使用上下布局
-                if (constraints.maxWidth > 900) {
-                  return _buildDesktopLayout();
-                } else {
-                  return _buildMobileLayout();
-                }
-              },
+      body: photoAsync.when(
+        data: (photo) {
+          return flagsAsync.when(
+            data: (flags) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  // Web端（宽度>900）使用左右布局，移动端使用上下布局
+                  if (constraints.maxWidth > 900) {
+                    return _buildDesktopLayout(photo, flags);
+                  } else {
+                    return _buildMobileLayout(photo, flags);
+                  }
+                },
+              );
+            },
+            loading: () => const Center(child: LoadingIndicator()),
+            error: (error, stack) => Center(
+              child: Text('加载失败: $error'),
             ),
+          );
+        },
+        loading: () => const Center(child: LoadingIndicator()),
+        error: (error, stack) => Center(
+          child: Text('加载失败: $error'),
+        ),
+      ),
     );
   }
 }

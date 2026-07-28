@@ -69,6 +69,9 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('照片上传成功')),
           );
+
+          // 手动刷新照片列表（Realtime 未启用时的临时方案）
+          ref.read(photosProvider(widget.boothId).notifier).refresh();
         }
       }
     } catch (e) {
@@ -119,6 +122,9 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('照片上传成功')),
           );
+
+          // 手动刷新照片列表（Realtime 未启用时的临时方案）
+          ref.read(photosProvider(widget.boothId).notifier).refresh();
         }
       }
     } catch (e) {
@@ -165,7 +171,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   void _onPhotoTap(Photo photo) {
-    context.push('/events/${photo.boothId}/booths/${photo.boothId}/photos/${photo.id}');
+    context.push('/photos/${photo.id}');
   }
 
   void _onPhotoLongPress(Photo photo) {

@@ -133,6 +133,7 @@ class FlagService {
     double? targetPrice,
     double? positionX,
     double? positionY,
+    bool? needsAttention,
   }) async {
     final updateData = <String, dynamic>{};
 
@@ -141,6 +142,7 @@ class FlagService {
     if (targetPrice != null) updateData['target_price'] = targetPrice;
     if (positionX != null) updateData['position_x'] = positionX;
     if (positionY != null) updateData['position_y'] = positionY;
+    if (needsAttention != null) updateData['needs_attention'] = needsAttention;
 
     if (updateData.isEmpty) {
       throw ArgumentError('至少需要提供一个更新字段');
