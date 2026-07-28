@@ -12,46 +12,62 @@
 -- 注意：ALTER PUBLICATION ADD TABLE 不支持 IF NOT EXISTS，需要逐个尝试
 DO $$
 BEGIN
+  -- 核心业务表（001_initial_schema.sql 中已创建）
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE photos;
   EXCEPTION WHEN duplicate_object THEN
     NULL; -- 表已存在于 publication 中，忽略
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table photos does not exist, skipping';
   END;
 
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE flags;
   EXCEPTION WHEN duplicate_object THEN
     NULL;
-  END;
-
-  BEGIN
-    ALTER PUBLICATION supabase_realtime ADD TABLE comments;
-  EXCEPTION WHEN duplicate_object THEN
-    NULL;
-  END;
-
-  BEGIN
-    ALTER PUBLICATION supabase_realtime ADD TABLE exchange_settings;
-  EXCEPTION WHEN duplicate_object THEN
-    NULL;
-  END;
-
-  BEGIN
-    ALTER PUBLICATION supabase_realtime ADD TABLE formula_history;
-  EXCEPTION WHEN duplicate_object THEN
-    NULL;
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table flags does not exist, skipping';
   END;
 
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE booths;
   EXCEPTION WHEN duplicate_object THEN
     NULL;
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table booths does not exist, skipping';
   END;
 
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE events;
   EXCEPTION WHEN duplicate_object THEN
     NULL;
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table events does not exist, skipping';
+  END;
+
+  -- 可选功能表（20260722000000_initial_schema.sql 中创建，可能不存在）
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE comments;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table comments does not exist, skipping (need to run 20260722000000_initial_schema.sql)';
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE exchange_settings;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table exchange_settings does not exist, skipping';
+  END;
+
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE formula_history;
+  EXCEPTION WHEN duplicate_object THEN
+    NULL;
+  WHEN undefined_table THEN
+    RAISE NOTICE 'Table formula_history does not exist, skipping';
   END;
 END $$;
 
@@ -59,65 +75,97 @@ END $$;
 -- 第二部分：补充缺失的 DELETE 策略
 -- ==========================================
 
--- Comments 删除策略
-DROP POLICY IF EXISTS "Team members can delete comments" ON comments;
-CREATE POLICY "Team members can delete comments"
-ON comments FOR DELETE
-USING (
-  user_id = auth.uid()  -- 只能删除自己的评论
-  OR flag_id IN (
-    SELECT f.id FROM flags f
-    JOIN photos p ON f.photo_id = p.id
-    JOIN booths b ON p.booth_id = b.id
-    WHERE b.team_id = public.current_user_team_id()
-  )
-);
+-- Comments 删除策略（仅在 comments 表存在时创建）
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'comments') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Team members can delete comments" ON comments';
+    EXECUTE '
+      CREATE POLICY "Team members can delete comments"
+      ON comments FOR DELETE
+      USING (
+        user_id = auth.uid()
+        OR flag_id IN (
+          SELECT f.id FROM flags f
+          JOIN photos p ON f.photo_id = p.id
+          JOIN booths b ON p.booth_id = b.id
+          WHERE b.team_id = public.current_user_team_id()
+        )
+      )';
+    RAISE NOTICE 'Created DELETE policy for comments table';
+  ELSE
+    RAISE NOTICE 'Skipping comments policies - table does not exist';
+  END IF;
+END $$;
 
--- Exchange Settings 删除策略（团队管理员可能需要删除旧配置）
-DROP POLICY IF EXISTS "Team members can delete exchange settings" ON exchange_settings;
-CREATE POLICY "Team members can delete exchange settings"
-ON exchange_settings FOR DELETE
-USING (
-  team_id = public.current_user_team_id()
-);
+-- Exchange Settings 删除策略（仅在表存在时创建）
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'exchange_settings') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Team members can delete exchange settings" ON exchange_settings';
+    EXECUTE '
+      CREATE POLICY "Team members can delete exchange settings"
+      ON exchange_settings FOR DELETE
+      USING (team_id = public.current_user_team_id())';
+    RAISE NOTICE 'Created DELETE policy for exchange_settings table';
+  ELSE
+    RAISE NOTICE 'Skipping exchange_settings policies - table does not exist';
+  END IF;
+END $$;
 
--- Formula History 删除策略
-DROP POLICY IF EXISTS "Team members can delete formula history" ON formula_history;
-CREATE POLICY "Team members can delete formula history"
-ON formula_history FOR DELETE
-USING (
-  team_id = public.current_user_team_id()
-);
+-- Formula History 删除策略（仅在表存在时创建）
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'formula_history') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Team members can delete formula history" ON formula_history';
+    EXECUTE '
+      CREATE POLICY "Team members can delete formula history"
+      ON formula_history FOR DELETE
+      USING (team_id = public.current_user_team_id())';
+    RAISE NOTICE 'Created DELETE policy for formula_history table';
+  ELSE
+    RAISE NOTICE 'Skipping formula_history policies - table does not exist';
+  END IF;
+END $$;
 
 -- ==========================================
 -- 第三部分：优化现有 RLS 策略（避免递归查询）
 -- ==========================================
 
 -- 优化 Comments 查询策略（减少嵌套层级）
-DROP POLICY IF EXISTS "Team members can view comments" ON comments;
-CREATE POLICY "Team members can view comments"
-ON comments FOR SELECT
-USING (
-  flag_id IN (
-    SELECT f.id FROM flags f
-    JOIN photos p ON f.photo_id = p.id
-    JOIN booths b ON p.booth_id = b.id
-    WHERE b.team_id = public.current_user_team_id()
-  )
-);
+-- 仅在 comments 表存在时优化
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'comments') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Team members can view comments" ON comments';
+    EXECUTE '
+      CREATE POLICY "Team members can view comments"
+      ON comments FOR SELECT
+      USING (
+        flag_id IN (
+          SELECT f.id FROM flags f
+          JOIN photos p ON f.photo_id = p.id
+          JOIN booths b ON p.booth_id = b.id
+          WHERE b.team_id = public.current_user_team_id()
+        )
+      )';
 
-DROP POLICY IF EXISTS "Team members can insert comments" ON comments;
-CREATE POLICY "Team members can insert comments"
-ON comments FOR INSERT
-WITH CHECK (
-  flag_id IN (
-    SELECT f.id FROM flags f
-    JOIN photos p ON f.photo_id = p.id
-    JOIN booths b ON p.booth_id = b.id
-    WHERE b.team_id = public.current_user_team_id()
-  )
-  AND public.current_user_team_id() IS NOT NULL
-);
+    EXECUTE 'DROP POLICY IF EXISTS "Team members can insert comments" ON comments';
+    EXECUTE '
+      CREATE POLICY "Team members can insert comments"
+      ON comments FOR INSERT
+      WITH CHECK (
+        flag_id IN (
+          SELECT f.id FROM flags f
+          JOIN photos p ON f.photo_id = p.id
+          JOIN booths b ON p.booth_id = b.id
+          WHERE b.team_id = public.current_user_team_id()
+        )
+        AND public.current_user_team_id() IS NOT NULL
+      )';
+    RAISE NOTICE 'Optimized comments policies';
+  END IF;
+END $$;
 
 -- 优化 Flags 策略（使用 JOIN 替代嵌套子查询）
 DROP POLICY IF EXISTS "Team members can view flags" ON flags;
