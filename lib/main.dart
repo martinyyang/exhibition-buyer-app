@@ -29,14 +29,10 @@ void main() async {
       print('  Total keys: ${dotenv.env.keys.length}');
     } catch (e) {
       print('⚠ Failed to load .env file: $e');
-      print('Attempting to use hardcoded fallback values...');
-
-      // Fallback to hardcoded values for release builds
-      // TODO: Remove these before production release
-      supabaseUrl = 'https://ppwjblvnixqeympfcqgs.supabase.co';
-      supabaseKey =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwd2pibHZuaXhxZXltcGZjcWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ2MjQsImV4cCI6MjEwMDIyMDYyNH0.LhLw3KUTKrLXry6Qst5nLWKsGCxEewW5XW1Pc6QrzEE';
-      print('✓ Using fallback configuration');
+      throw Exception(
+        'Failed to load .env file. Please create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY. '
+        'See .env.example for template.'
+      );
     }
 
     // 验证环境变量

@@ -101,3 +101,4 @@ linux/flutter/ephemeral/
 .DS_Store
 Thumbs.db
 .gstack/
+docs/archive/

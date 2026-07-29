@@ -1,169 +1,159 @@
 # Exhibition Buyer App
 
-展会买家应用 - 基于 Flutter 和 Supabase 构建的展会管理系统。
+A Flutter-based mobile and web application for exhibition buyers to manage events, booths, photos, and annotations with real-time collaboration features.
 
-## 快速开始
+## Features
 
-### 环境要求
+- **Event Management**: Create and manage exhibition events
+- **Booth Organization**: Track and organize exhibition booths
+- **Photo Management**: Upload and view booth photos in grid layout
+- **Photo Annotation**: Add colored flags to photos for marking items of interest
+- **Team Collaboration**: Multi-buyer support with color-coded identification
+- **Real-time Sync**: Live updates across team members using Supabase Realtime
+- **Multi-language**: Supports English and Chinese (中文)
+- **Responsive Design**: Works on mobile, tablet, and web browsers
 
-- Flutter SDK 3.0+
-- Android Studio（用于 Android 开发）
-- Android SDK（API Level 30+）
+## Tech Stack
 
-### 安装依赖
+- **Frontend**: Flutter 3.24.5 / Dart 3.5.4
+- **State Management**: Riverpod
+- **Backend**: Supabase (PostgreSQL + Realtime + Storage)
+- **Authentication**: Supabase Auth
+- **Testing**: flutter_test, mocktail
+
+## Test Coverage
+
+- **121 tests passing (100%)**
+  - 36 unit tests
+  - 80 widget tests
+  - 5 integration tests
+
+See [TEST_COMPLETION_REPORT_FINAL.md](docs/TEST_COMPLETION_REPORT_FINAL.md) and [INTEGRATION_TEST_COMPLETION.md](docs/INTEGRATION_TEST_COMPLETION.md) for details.
+
+## Prerequisites
+
+- Flutter SDK 3.24.5 or higher
+- Dart 3.5.4 or higher
+- A Supabase account and project
+
+## Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/martinyyang/exhibition-buyer-app.git
+cd exhibition-buyer-app
+```
+
+### 2. Install dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 配置环境变量
+### 3. Configure Supabase
 
-复制 `.env.example` 为 `.env` 并填写配置：
+Create a `.env` file in the project root (copy from `.env.example`):
 
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env` 文件，配置 Supabase 连接信息。
+Edit `.env` and add your Supabase credentials:
 
-### 运行应用
+```env
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+```
 
+### 4. Set up Supabase database
+
+Run the SQL scripts in the `supabase/sql/` directory in your Supabase SQL Editor:
+
+1. `COMPLETE_SETUP.sql` - Creates all tables, RLS policies, and triggers
+2. (Optional) Manual steps documented in `supabase/sql/MANUAL_STEPS.md`
+
+### 5. Run the app
+
+**Web:**
 ```bash
-# 开发模式
-flutter run
+flutter run -d chrome
+```
 
-# 构建 Release APK
+**Mobile (iOS/Android):**
+```bash
+flutter run
+```
+
+**Build release APK:**
+```bash
 flutter build apk --release
 ```
 
-## 测试
+## Testing
 
-### Release APK 冒烟测试
-
-在发布 APK 之前，执行冒烟测试确保基本质量：
-
-#### 自动化冒烟测试（推荐）
-
-一键运行完整的冒烟测试流程：
-
+Run all tests:
 ```bash
-# 确保脚本可执行
-chmod +x scripts/smoke_test.sh
-
-# 运行冒烟测试
-./scripts/smoke_test.sh
+flutter test
 ```
 
-测试脚本会自动：
-1. 检查 Flutter 和 ADB 环境
-2. 检测 Android 设备或模拟器
-3. 构建 Release APK
-4. 安装 APK 到设备
-5. 启动应用并监控 logcat
-6. 检测崩溃、ANR、网络问题
-7. 生成 PASS/FAIL 报告
-
-#### 手动冒烟测试
-
-参考快速检查清单（5分钟）：
-
-1. 安装 APK 成功
-2. 应用启动无崩溃（5秒内显示登录页面）
-3. 登录功能正常
-4. 核心页面可访问
-5. 基础交互正常（按钮、滚动、跳转）
-
-完整的手动测试清单：[docs/manual_test_checklist.md](docs/manual_test_checklist.md)
-
-#### Flutter Integration Test
-
-运行基于 Dart 的冒烟测试：
-
+Run specific test suites:
 ```bash
-# 在连接的设备上运行
-flutter test integration_test/smoke_test.dart
+flutter test test/unit          # Unit tests only
+flutter test test/widget        # Widget tests only
+flutter test test/integration   # Integration tests only
 ```
 
-### 测试文档
-
-- [冒烟测试指南](docs/smoke_test_guide.md) - 详细的测试流程和故障排查
-- [手动测试清单](docs/manual_test_checklist.md) - 完整的手动测试步骤
-- [模拟器设置指南](docs/emulator_setup.md) - Android 模拟器配置
-
-### CI 自动化测试
-
-GitHub Actions 会在以下情况自动运行冒烟测试：
-- 推送 Git Tag (如 `v1.0.0`)
-- 推送到 `release/**` 分支
-- 手动触发工作流
-
-只有冒烟测试通过后，才会创建 GitHub Release 并上传 APK。
-
-配置文件：`.github/workflows/pre_release.yml`
-
-## 已知问题修复历史
-
-### v1.0.5 - .env 加载问题修复
-
-**问题**：GitHub Actions 构建的 APK 在启动时显示"应用初始化失败"
-
-**根本原因**：GitHub Actions 构建 APK 时未正确配置 Secrets，导致 .env 文件中的 SUPABASE_URL 和 SUPABASE_ANON_KEY 为空值。
-
-**解决方案**：
-- 增强 GitHub Actions workflow 的 .env 创建逻辑，添加验证步骤
-- 如果 Secrets 未配置，构建会提前失败并显示清晰的错误信息
-- 参考 [GITHUB_SECRETS_SETUP.md](GITHUB_SECRETS_SETUP.md) 配置 GitHub Secrets
-
-### v1.0.4 - 启动挂起问题修复
-
-**问题**：应用启动后停留在白屏，无响应
-
-**解决方案**：
-- 添加 SplashScreen 显示加载状态
-- 改进 router 的 redirect 逻辑处理 loading 状态
-- 在 main.dart 中添加 try-catch 捕获初始化错误并显示错误页面
-
-### v1.0.3 - "no host" 错误修复
-
-**问题**：注册时出现 "no host" 网络错误
-
-**解决方案**：
-- 添加 Android 网络权限配置
-- 增强环境变量验证逻辑
-- 改进错误处理和用户提示
-
-## 文档
-
-- [模拟器设置指南](docs/emulator_setup.md)
-- [GitHub Secrets 配置](GITHUB_SECRETS_SETUP.md)
-- [部署指南](DEPLOYMENT_GUIDE.md)
-- [E2E 测试指南](E2E_TEST_GUIDE.md)
-- [Supabase 设置](SUPABASE_SETUP.md)
-
-## 项目结构
+## Project Structure
 
 ```
 lib/
-├── core/           # 核心功能（路由、Provider等）
-├── features/       # 功能模块
-│   ├── auth/      # 认证
-│   ├── events/    # 展会管理
-│   ├── splash/    # 启动页
-│   └── ...
-└── main.dart      # 应用入口
+├── core/              # Core functionality (routing, services, providers)
+├── features/          # Feature modules
+│   ├── auth/          # Authentication
+│   ├── event/         # Event management
+│   ├── booth/         # Booth management
+│   ├── photo/         # Photo upload and viewing
+│   └── flag/          # Photo annotation
+├── shared/            # Shared widgets and utilities
+└── main.dart          # App entry point
 
-scripts/
-├── test_on_emulator.sh   # 模拟器自动化测试
-└── quick_verify.sh       # 快速验证脚本
+test/
+├── unit/              # Unit tests
+├── widget/            # Widget tests
+└── integration/       # Integration tests
 
-docs/
-└── emulator_setup.md     # 模拟器配置指南
+supabase/sql/          # Database setup scripts
 ```
 
-## 贡献
+## Database Schema
 
-欢迎提交 Issue 和 Pull Request！
+The app uses PostgreSQL with Row Level Security (RLS) enabled for data isolation between teams:
+
+- `teams` - Organization teams
+- `users` - User accounts with team association
+- `events` - Exhibition events
+- `booths` - Exhibition booths
+- `photos` - Booth photos
+- `flags` - Photo annotations
+
+See `supabase/sql/COMPLETE_SETUP.sql` for the complete schema.
+
+## Documentation
+
+- [Test Completion Report](docs/TEST_COMPLETION_REPORT_FINAL.md)
+- [Integration Test Completion](docs/INTEGRATION_TEST_COMPLETION.md)
+- [Manual Test Checklist](docs/manual_test_checklist.md)
+- [Emulator Setup Guide](docs/emulator_setup.md)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
