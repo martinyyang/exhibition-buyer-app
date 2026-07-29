@@ -12,6 +12,8 @@ import 'package:exhibition_buyer_app/features/photo/models/photo.dart';
 import 'package:exhibition_buyer_app/features/flag/models/flag.dart';
 import 'package:exhibition_buyer_app/features/event/models/event.dart';
 import 'package:exhibition_buyer_app/features/booth/providers/booth_provider.dart';
+import 'package:exhibition_buyer_app/features/photo/providers/photo_provider.dart';
+import 'package:exhibition_buyer_app/features/flag/providers/flag_provider.dart';
 
 // Mock classes for widget tests
 class MockSupabaseService extends Mock implements SupabaseService {}
@@ -36,6 +38,14 @@ class MockRealtimeService extends Mock implements RealtimeService {}
 
 class MockRealtimeChannel extends Mock implements RealtimeChannel {}
 
+// Mock classes for Postgrest builders (used in integration tests)
+// Use Fake instead of Mock to avoid type issues with Supabase's complex builder chain
+// Fake allows noSuchMethod to handle all method calls dynamically
+class MockPostgrestBuilder extends Fake {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => this;
+}
+
 // Fake classes for fallback values
 class FakePostgresChangeFilter extends Fake implements PostgresChangeFilter {}
 
@@ -46,5 +56,19 @@ class MockBoothsNotifier extends BoothsNotifier {
   MockBoothsNotifier(List<Booth> booths, MockBoothService boothService, MockRealtimeService realtimeService)
       : super(boothService, realtimeService, 'test-event-id', 'test-team-id') {
     state = AsyncValue.data(booths);
+  }
+}
+
+// Mock StateNotifier for PhotosProvider
+class MockPhotosNotifier extends Mock implements PhotosNotifier {
+  MockPhotosNotifier(List<Photo> photos) {
+    when(() => state).thenReturn(AsyncValue.data(photos));
+  }
+}
+
+// Mock StateNotifier for FlagsProvider
+class MockFlagsNotifier extends Mock implements FlagsNotifier {
+  MockFlagsNotifier(List<Flag> flags) {
+    when(() => state).thenReturn(AsyncValue.data(flags));
   }
 }
