@@ -51,9 +51,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         _imageKey.currentContext!.findRenderObject() as RenderBox;
     final localPosition = box.globalToLocal(details.globalPosition);
 
-    // 转换为相对坐标（0-1）
-    final relativeX = localPosition.dx / imageSize.width;
-    final relativeY = localPosition.dy / imageSize.height;
+    // 转换为相对坐标（0-1），并限制在有效范围内
+    final relativeX = (localPosition.dx / imageSize.width).clamp(0.0, 1.0);
+    final relativeY = (localPosition.dy / imageSize.height).clamp(0.0, 1.0);
 
     _createFlag(relativeX, relativeY);
   }
@@ -169,9 +169,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
             // 旗子标记
             ...flags.map((flag) {
+              // 限制旗子坐标在有效范围内（0-1），防止显示到画面外
+              final clampedX = flag.positionX.clamp(0.0, 1.0);
+              final clampedY = flag.positionY.clamp(0.0, 1.0);
+
               return Positioned(
-                left: flag.positionX * constraints.maxWidth - 20,
-                top: flag.positionY * constraints.maxHeight - 40,
+                left: clampedX * constraints.maxWidth - 20,
+                top: clampedY * constraints.maxHeight - 40,
                 child: GestureDetector(
                   onLongPress: () => _onFlagLongPress(flag),
                   child: Column(
