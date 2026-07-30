@@ -12,21 +12,18 @@ final eventServiceProvider = Provider((ref) {
 });
 
 // Realtime订阅Provider - 监听events表变化（仅监听当前团队）
-final eventsRealtimeProvider = StreamProvider<void>((ref) async* {
-  final supabase = ref.watch(supabaseServiceProvider);
-
-  // 获取用户的 team_id
-  final user = await ref.watch(currentUserDataProvider.future);
-  final teamId = user?.teamId;
-
-  if (teamId == null || teamId.isEmpty) {
+// Realtime订阅Provider - 监听 events 表变化（动态按 teamId 订阅）
+final eventsRealtimeFamilyProvider =
+    StreamProvider.family<void, String>((ref, teamId) async* {
+  if (teamId.isEmpty) {
     yield null;
     return;
   }
 
+  final supabase = ref.watch(supabaseServiceProvider);
   final controller = StreamController<void>();
 
-  // 订阅events表的变化，仅监听当前团队
+  // 订阅 events 表的变化，仅监听当前团队
   final channel = supabase.client
       .channel('events_changes_$teamId')
       .onPostgresChanges(
@@ -39,7 +36,7 @@ final eventsRealtimeProvider = StreamProvider<void>((ref) async* {
           value: teamId,
         ),
         callback: (payload) {
-          // 当当前团队的events表有变化时，触发刷新
+          // 当当前团队的 events 表有变化时，触发刷新
           controller.add(null);
         },
       )
@@ -53,29 +50,29 @@ final eventsRealtimeProvider = StreamProvider<void>((ref) async* {
   yield* controller.stream;
 });
 
-// 场次列表Provider（按团队过滤，支持Realtime自动刷新）
+// 场次列表Provider（按团队过滤，支持用户/团队变更时动态刷新）
 final eventsProvider = FutureProvider<List<Event>>((ref) async {
-  // 监听Realtime变化（建立依赖关系）
-  ref.watch(eventsRealtimeProvider);
-
   final user = await ref.watch(currentUserDataProvider.future);
   final teamId = user?.teamId;
 
   if (teamId == null || teamId.isEmpty) return [];
 
+  // 动态建立与当前 teamId 匹配的 Realtime 通道
+  ref.watch(eventsRealtimeFamilyProvider(teamId));
+
   final eventService = ref.watch(eventServiceProvider);
   return await eventService.getEventsByTeam(teamId);
 });
 
-// 当前活跃场次Provider（支持Realtime自动刷新）
+// 当前活跃场次Provider（按团队过滤，支持用户/团队变更时动态刷新）
 final activeEventProvider = FutureProvider<Event?>((ref) async {
-  // 监听Realtime变化（建立依赖关系）
-  ref.watch(eventsRealtimeProvider);
-
   final user = await ref.watch(currentUserDataProvider.future);
   final teamId = user?.teamId;
 
   if (teamId == null || teamId.isEmpty) return null;
+
+  // 动态建立与当前 teamId 匹配的 Realtime 通道
+  ref.watch(eventsRealtimeFamilyProvider(teamId));
 
   final eventService = ref.watch(eventServiceProvider);
   return await eventService.getActiveEventByTeam(teamId);
@@ -84,9 +81,6 @@ final activeEventProvider = FutureProvider<Event?>((ref) async {
 // 单个场次Provider
 final eventProvider =
     FutureProvider.family<Event?, String>((ref, eventId) async {
-  // 监听Realtime变化（建立依赖关系）
-  ref.watch(eventsRealtimeProvider);
-
   final eventService = ref.watch(eventServiceProvider);
   return await eventService.getEvent(eventId);
 });

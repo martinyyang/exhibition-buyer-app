@@ -235,7 +235,6 @@ class SettingsScreen extends ConsumerWidget {
                 ref.invalidate(currentUserDataProvider);
                 ref.invalidate(currentTeamProvider);
                 ref.invalidate(teamMembersProvider);
-                ref.invalidate(eventsRealtimeProvider);
                 ref.invalidate(eventsProvider);
                 ref.invalidate(activeEventProvider);
 

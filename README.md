@@ -1,6 +1,9 @@
-# Exhibition Buyer App
+# Exhibition Buyer Collaboration Platform (Web Focus)
 
-A Flutter-based mobile and web application for exhibition buyers to manage events, booths, photos, and annotations with real-time collaboration features.
+> 💡 **项目战略说明 (Strategic Focus)**：
+> **当前项目全力主攻 Web 网页版平台 (Buyer & Remote Web Collaboration Platform)，暂时不开发和构建原生移动端 APP。所有的功能开发、实时协同与端到端测试均以 Web 端为最高优先级。**
+
+A Flutter-based web platform for exhibition buyers and remote team members to manage events, booths, photos, and annotations with real-time collaboration features.
 
 ## Features
 

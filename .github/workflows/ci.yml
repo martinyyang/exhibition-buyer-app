@@ -34,11 +34,10 @@ jobs:
       - name: Run feature tests
         run: flutter test test/features/
 
+  # 战略调整：目前全力主攻 Web 网页版，暂时不进行 Android APP 的自动构建
   build-android:
     runs-on: ubuntu-latest
-    # 暂时跳过测试依赖，因为项目文件夹名包含中文导致CI测试失败
-    # needs: test
-    if: github.event_name == 'push'
+    if: false
 
     steps:
       - uses: actions/checkout@v4
