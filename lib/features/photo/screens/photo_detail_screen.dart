@@ -36,7 +36,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   void _onPhotoTap(TapDownDetails details, Size imageSize) {
-    if (!widget.isRemoteView) return; // 只有远程端可以插旗
+    // 买手和远程用户都可以插旗标记
 
     final RenderBox box = context.findRenderObject() as RenderBox;
     final localPosition = box.globalToLocal(details.globalPosition);
@@ -94,7 +94,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   void _onFlagLongPress(Flag flag) {
-    if (!widget.isRemoteView) return; // 只有远程端可以删除旗子
+    // 买手和远程用户都可以删除旗子
 
     showDialog(
       context: context,
@@ -208,9 +208,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         Expanded(
           flex: 3,
           child: GestureDetector(
-            onTapDown: widget.isRemoteView
-                ? (details) => _onPhotoTap(details, const Size(400, 300))
-                : null,
+            onTapDown: (details) => _onPhotoTap(details, const Size(400, 300)),
             child: InteractiveViewer(
               transformationController: _transformationController,
               minScale: 0.5,
@@ -233,7 +231,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       Icon(Icons.flag, size: 48, color: Colors.grey[400]),
                       const SizedBox(height: 8),
                       Text(
-                        widget.isRemoteView ? '点击照片标记商品' : '等待远程团队标记',
+                        '点击照片标记商品',
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                     ],
@@ -256,9 +254,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         Expanded(
           flex: 2,
           child: GestureDetector(
-            onTapDown: widget.isRemoteView
-                ? (details) => _onPhotoTap(details, const Size(800, 600))
-                : null,
+            onTapDown: (details) => _onPhotoTap(details, const Size(800, 600)),
             child: InteractiveViewer(
               transformationController: _transformationController,
               minScale: 0.5,
@@ -283,7 +279,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       Icon(Icons.flag, size: 64, color: Colors.grey[400]),
                       const SizedBox(height: 16),
                       Text(
-                        widget.isRemoteView ? '点击照片标记商品' : '等待远程团队标记',
+                        '点击照片标记商品',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey[600],

@@ -105,7 +105,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'photo-detail',
         builder: (context, state) {
           final photoId = state.pathParameters['photoId']!;
-          return PhotoDetailScreen(photoId: photoId);
+          // 买手和远程用户都可以标记
+          return PhotoDetailScreen(
+            photoId: photoId,
+            isRemoteView: true,
+          );
         },
       ),
 
