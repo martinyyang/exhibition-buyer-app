@@ -17,6 +17,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -42,11 +43,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (value == null || value.isEmpty) {
       return l10n.pleaseEnterPassword;
     }
-    if (value.length < 8) {
-      return l10n.passwordComplexityError;
-    }
-    // Check for at least one uppercase, one lowercase, and one number
-    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$').hasMatch(value)) {
+    // 登录时只检查最小长度，不检查复杂度（因为旧密码可能不符合新规则）
+    if (value.length < 6) {
       return l10n.passwordComplexityError;
     }
     return null;
@@ -132,8 +130,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       labelText: l10n.password,
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     validator: _validatePassword,
                     enabled: !_isLoading,
                   ),
