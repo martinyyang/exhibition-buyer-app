@@ -229,12 +229,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         // 上半部分：照片
         Expanded(
           flex: 3,
-          child: GestureDetector(
-            onTapDown: (details) => _onPhotoTap(details),
-            child: InteractiveViewer(
-              transformationController: _transformationController,
-              minScale: 0.5,
-              maxScale: 4.0,
+          child: InteractiveViewer(
+            transformationController: _transformationController,
+            minScale: 0.5,
+            maxScale: 4.0,
+            child: GestureDetector(
+              onTapDown: (details) => _onPhotoTap(details),
               child: _buildPhotoWithFlags(photo, flags),
             ),
           ),
@@ -275,13 +275,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         // 左侧：照片
         Expanded(
           flex: 2,
-          child: GestureDetector(
-            onTapDown: (details) => _onPhotoTap(details),
-            child: InteractiveViewer(
-              transformationController: _transformationController,
-              minScale: 0.5,
-              maxScale: 4.0,
-              child: Center(
+          child: InteractiveViewer(
+            transformationController: _transformationController,
+            minScale: 0.5,
+            maxScale: 4.0,
+            child: Center(
+              child: GestureDetector(
+                onTapDown: (details) => _onPhotoTap(details),
                 child: _buildPhotoWithFlags(photo, flags),
               ),
             ),
