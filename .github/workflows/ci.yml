@@ -21,6 +21,13 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      - name: Create .env file for tests
+        run: |
+          cat > .env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          EOF
+
       - name: Install dependencies
         run: flutter pub get
 
