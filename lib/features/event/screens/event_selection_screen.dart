@@ -493,8 +493,12 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   Widget _buildTeamHeader(
     BuildContext context,
     WidgetRef ref,
-    app_user.User? user,
+    app_user.User? initialUser,
   ) {
+    // 实时监听最新 currentUserDataProvider，保证 teamId 更新时能立刻重新拉取最新团队与邀请码
+    final userAsync = ref.watch(currentUserDataProvider);
+    final user = userAsync.value ?? initialUser;
+
     if (user == null) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context)!;
@@ -629,7 +633,10 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                     await teamService.joinTeamByInviteCodeOrName(input);
                 await teamService.updateUserTeam(user.id, team.id);
 
+                // 强制刷关联的用户与团队相关 Provider
                 ref.invalidate(currentUserDataProvider);
+                ref.invalidate(currentTeamProvider);
+                ref.invalidate(teamMembersProvider);
                 ref.invalidate(eventsProvider);
                 ref.invalidate(activeEventProvider);
 

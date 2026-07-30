@@ -114,8 +114,12 @@ class SettingsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
-    app_user.User user,
+    app_user.User initialUser,
   ) {
+    // 实时监听最新的 user 对象，防止旧 user 闭包缓存导致 teamId 不更新
+    final userAsync = ref.watch(currentUserDataProvider);
+    final user = userAsync.value ?? initialUser;
+
     if (user.teamId == null || user.teamId!.isEmpty) {
       return ListTile(
         leading: const Icon(Icons.group_add, color: Colors.orange),
@@ -228,10 +232,10 @@ class SettingsScreen extends ConsumerWidget {
                 final input = inputController.text.trim();
                 final teamService = ref.read(teamServiceProvider);
 
-                final team =
-                    await teamService.joinTeamByInviteCodeOrName(input);
+                final team = await teamService.joinTeamByInviteCodeOrName(input);
                 await teamService.updateUserTeam(user.id, team.id);
 
+                // 强制多重刷所有用户与团队相关的 Provider
                 ref.invalidate(currentUserDataProvider);
                 ref.invalidate(currentTeamProvider);
                 ref.invalidate(teamMembersProvider);
