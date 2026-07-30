@@ -17,20 +17,38 @@ class TeamService {
     return Team.fromJson(result);
   }
 
-  /// 智能查找或创建小组：若已存在同名小组则直接加入，否则创建新小组
+  /// 智能查找或创建小组：优先凭 6 位邀请码或名称精准匹配，否则创建新团队
   Future<Team> getOrCreateTeamByName({required String name}) async {
-    final trimmedName = name.trim();
-    final existingTeam = await _supabase
-        .from('teams')
-        .select()
-        .eq('name', trimmedName)
-        .maybeSingle();
+    return await joinTeamByInviteCodeOrName(name);
+  }
 
-    if (existingTeam != null) {
-      return Team.fromJson(existingTeam);
+  /// 凭邀请码 (Invite Code) 或团队名称加入团队
+  Future<Team> joinTeamByInviteCodeOrName(String input) async {
+    final cleanInput = input.trim();
+    if (cleanInput.isEmpty) {
+      throw Exception('邀请码或团队名称不能为空');
     }
 
-    return await createTeam(name: trimmedName);
+    final allTeamsResult = await _supabase.from('teams').select();
+    final allTeams =
+        (allTeamsResult as List).map((json) => Team.fromJson(json)).toList();
+
+    // 1. 优先按 6 位邀请码匹配
+    for (final team in allTeams) {
+      if (team.inviteCode.toUpperCase() == cleanInput.toUpperCase()) {
+        return team;
+      }
+    }
+
+    // 2. 匹配已有团队名称
+    for (final team in allTeams) {
+      if (team.name.trim().toLowerCase() == cleanInput.toLowerCase()) {
+        return team;
+      }
+    }
+
+    // 3. 都不匹配时创建新团队
+    return await createTeam(name: cleanInput);
   }
 
   /// 获取小组信息

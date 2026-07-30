@@ -45,23 +45,25 @@ void main() {
     mockTeamService = MockTeamService();
   });
 
-  group('UX Team Experience Tests', () {
-    testWidgets('EventSelectionScreen displays Team Header Bar and allows direct switching', (WidgetTester tester) async {
+  group('Team Security & Invite Code Tests', () {
+    testWidgets('Joining team by 6-digit Invite Code secures privacy and syncs team', (WidgetTester tester) async {
       final mockUser = app_user.User(
         id: 'user-remote',
         email: 'remote@example.com',
         role: 'remote',
-        teamId: 'team-1',
+        teamId: null,
         createdAt: DateTime.now(),
       );
 
-      final team1 = Team(id: 'team-1', name: 'Alpha Team', createdAt: DateTime.now());
-      final team2 = Team(id: 'team-2', name: 'Buyer Team', createdAt: DateTime.now());
+      final targetTeam = Team(
+        id: '3f8a91b2-1234-5678-90ab-cdef12345678',
+        name: 'NorthPark Team',
+        createdAt: DateTime.now(),
+      );
 
       when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => mockUser);
-      when(() => mockTeamService.getTeam('team-1')).thenAnswer((_) async => team1);
-      when(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team')).thenAnswer((_) async => team2);
-      when(() => mockTeamService.updateUserTeam('user-remote', team2.id)).thenAnswer((_) async {});
+      when(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91')).thenAnswer((_) async => targetTeam);
+      when(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id)).thenAnswer((_) async {});
 
       await tester.pumpWidget(
         createTestableWidget(
@@ -77,25 +79,25 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Check Team Header is present on main screen
-      expect(find.textContaining('当前团队:'), findsOneWidget);
-      expect(find.text('切换团队'), findsOneWidget);
+      // Ensure NO public team list (e.g. northpark) is exposed on screen
+      expect(find.text('northpark'), findsNothing);
 
-      // Tap Switch Team directly on main screen
+      // Tap Switch Team
       await tester.tap(find.text('切换团队'));
       await tester.pumpAndSettle();
 
-      // Quick team dialog should pop up immediately without going to Settings
-      expect(find.text('凭邀请码加入买手团队'), findsOneWidget);
-
+      // Enter 6-digit invite code "3F8A91"
       final inputField = find.byType(TextFormField);
-      await tester.enterText(inputField, 'Buyer Team');
+      await tester.enterText(inputField, '3F8A91');
       await tester.pumpAndSettle();
 
+      // Tap Verify & Join
       await tester.tap(find.text('验证并加入'));
       await tester.pumpAndSettle();
 
-      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team')).called(1);
+      // Verify joinTeamByInviteCodeOrName was invoked with 3F8A91
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91')).called(1);
+      verify(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id)).called(1);
     });
   });
 }

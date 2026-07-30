@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -119,7 +120,7 @@ class SettingsScreen extends ConsumerWidget {
       return ListTile(
         leading: const Icon(Icons.group_add, color: Colors.orange),
         title: Text(l10n.teamInfo),
-        subtitle: const Text('未加入团队 (点击匹配现场团队)'),
+        subtitle: const Text('未加入团队 (点击凭邀请码加入)'),
         trailing: const Icon(Icons.add_circle_outline, color: Colors.orange),
         onTap: () => _showEditTeamDialog(context, ref, l10n, user, ''),
       );
@@ -133,16 +134,33 @@ class SettingsScreen extends ConsumerWidget {
             (teamSnapshot.connectionState == ConnectionState.waiting
                 ? '加载团队中...'
                 : l10n.teamInfo);
+        final code = team?.inviteCode;
 
         return ListTile(
           leading: const Icon(Icons.group, color: Colors.blue),
           title: Text(l10n.teamInfo),
-          subtitle: Text(teamName),
-          trailing: OutlinedButton.icon(
-            icon: const Icon(Icons.edit, size: 14),
-            label: const Text('修改团队'),
-            onPressed: () => _showEditTeamDialog(
-                context, ref, l10n, user, teamName == '加载团队中...' ? '' : teamName),
+          subtitle: Text(code != null ? '$teamName (邀请码: $code)' : teamName),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (code != null)
+                IconButton(
+                  icon: const Icon(Icons.copy, size: 18),
+                  tooltip: '复制团队邀请码',
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: code));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('已复制团队邀请码: $code')),
+                    );
+                  },
+                ),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.edit, size: 14),
+                label: const Text('切换团队'),
+                onPressed: () => _showEditTeamDialog(
+                    context, ref, l10n, user, teamName == '加载团队中...' ? '' : teamName),
+              ),
+            ],
           ),
           onTap: () => _showEditTeamDialog(
               context, ref, l10n, user, teamName == '加载团队中...' ? '' : teamName),
@@ -158,131 +176,81 @@ class SettingsScreen extends ConsumerWidget {
     app_user.User user,
     String currentTeamName,
   ) {
-    final nameController = TextEditingController(text: currentTeamName);
+    final inputController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) {
-          final teamService = ref.read(teamServiceProvider);
-
-          return AlertDialog(
-            title: const Text('修改 / 匹配现场团队'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Form(
-                    key: formKey,
-                    child: TextFormField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: '团队名称',
-                        hintText: '输入或选择与现场买手一致的团队名称',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return '团队名称不能为空';
-                        }
-                        if (value.trim().length < 2 || value.trim().length > 50) {
-                          return '团队名称长度需在2-50字之间';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '已存在的现场团队 (点击直接快捷加入):',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  FutureBuilder(
-                    future: teamService.getAllTeams(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        );
-                      }
-
-                      final teams = snapshot.data ?? [];
-                      if (teams.isEmpty) {
-                        return const Text(
-                          '暂无已存在的团队，您可以手动输入团队名创建',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        );
-                      }
-
-                      return Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        children: teams.map((team) {
-                          final isSelected =
-                              nameController.text.trim() == team.name;
-                          return ChoiceChip(
-                            label: Text(team.name),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              if (selected) {
-                                setDialogState(() {
-                                  nameController.text = team.name;
-                                });
-                              }
-                            },
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ],
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('凭邀请码 / 团队名切换团队'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '🔒 团队隐私隔离：请填入买手分享给您的 6 位团队邀请码（或准确团队全名）：',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  Navigator.pop(dialogContext);
-
-                  try {
-                    final newName = nameController.text.trim();
-                    final teamService = ref.read(teamServiceProvider);
-
-                    // 智能查找或创建同名团队，确保与现场买手同组
-                    final team =
-                        await teamService.getOrCreateTeamByName(name: newName);
-                    await teamService.updateUserTeam(user.id, team.id);
-
-                    // 刷新全局状态：包含当前用户数据、事件列表与当前活跃事件
-                    ref.invalidate(currentUserDataProvider);
-                    ref.invalidate(eventsProvider);
-                    ref.invalidate(activeEventProvider);
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('已成功加入“$newName”团队，现场数据已自动同步')),
-                      );
+              const SizedBox(height: 12),
+              Form(
+                key: formKey,
+                child: TextFormField(
+                  controller: inputController,
+                  decoration: const InputDecoration(
+                    labelText: '团队邀请码 / 团队全名',
+                    hintText: '例如: 3F8A91 或 苹果团队',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.vpn_key),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '邀请码或团队名称不能为空';
                     }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('修改团队失败: $e')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('保存'),
+                    return null;
+                  },
+                ),
               ),
             ],
-          );
-        },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (!formKey.currentState!.validate()) return;
+              Navigator.pop(dialogContext);
+
+              try {
+                final input = inputController.text.trim();
+                final teamService = ref.read(teamServiceProvider);
+
+                final team = await teamService.joinTeamByInviteCodeOrName(input);
+                await teamService.updateUserTeam(user.id, team.id);
+
+                ref.invalidate(currentUserDataProvider);
+                ref.invalidate(eventsProvider);
+                ref.invalidate(activeEventProvider);
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('已成功加入“${team.name}”团队，现场数据已自动同步')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('修改团队失败: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('验证并加入'),
+          ),
+        ],
       ),
     );
   }

@@ -235,58 +235,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _teamNameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.teamName,
-                    hintText: '输入团队名称，或在下方直接点选',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.group),
+                  decoration: const InputDecoration(
+                    labelText: '团队名称 / 6位邀请码',
+                    hintText: '填入团队全名，或买手分享的6位邀请码',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.group),
                   ),
                   validator: _validateTeamName,
                   enabled: !_isLoading,
-                ),
-                const SizedBox(height: 8),
-                FutureBuilder(
-                  future: ref.read(teamServiceProvider).getAllTeams(),
-                  builder: (context, snapshot) {
-                    final teams = snapshot.data ?? [];
-                    if (teams.isEmpty) return const SizedBox.shrink();
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '或快捷点选已有现场团队:',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 4,
-                          children: teams.map((team) {
-                            final isSelected =
-                                _teamNameController.text.trim() == team.name;
-                            return ChoiceChip(
-                              label: Text(team.name, style: const TextStyle(fontSize: 12)),
-                              selected: isSelected,
-                              onSelected: _isLoading
-                                  ? null
-                                  : (selected) {
-                                      if (selected) {
-                                        setState(() {
-                                          _teamNameController.text = team.name;
-                                        });
-                                      }
-                                    },
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    );
-                  },
                 ),
                 const SizedBox(height: 24),
                 Text(

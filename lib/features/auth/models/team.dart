@@ -37,4 +37,12 @@ class Team extends BaseModel {
       name: name ?? this.name,
     );
   }
+
+  /// 获取团队专属 6 位大写邀请码
+  String get inviteCode {
+    if (id.length >= 6) {
+      return id.substring(0, 6).toUpperCase();
+    }
+    return id.toUpperCase();
+  }
 }

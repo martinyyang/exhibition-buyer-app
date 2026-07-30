@@ -116,13 +116,13 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify user and team info are displayed
-      expect(find.text('Alpha Team'), findsOneWidget);
+      expect(find.textContaining('Alpha Team'), findsOneWidget);
 
       // Verify SafeBackButton exists in SettingsScreen AppBar
       expect(find.byType(SafeBackButton), findsOneWidget);
 
       // Tap on Team ListTile to open edit team dialog
-      await tester.tap(find.text('Alpha Team'));
+      await tester.tap(find.textContaining('Alpha Team'));
       await tester.pumpAndSettle();
 
       // Check if edit team dialog appears

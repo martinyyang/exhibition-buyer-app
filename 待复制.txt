@@ -1,11 +1,12 @@
-# 运行远程团队匹配与数据同步 TDD 隔离测试
-flutter test test/features/remote_team_sync_test.dart
+# 本地测试与 Git 推送常用命令
 
-# 运行基础 UI/导航测试
-flutter test test/features/team_registration_and_navigation_test.dart
+1. 运行所有相关 TDD 测试套件：
+flutter test test/features/ux_team_experience_test.dart test/features/remote_team_sync_test.dart test/features/team_registration_and_navigation_test.dart
 
-# 运行代码静态检查
-flutter analyze
-
-# 运行预发布检查脚本 (PowerShell)
+2. 预发布全量检查：
 .\validate_before_push.bat
+
+3. 提交与推送至 GitHub：
+git add .
+git commit -m "feat_remote_team_ux_optimization"
+git push

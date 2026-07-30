@@ -68,8 +68,7 @@ void main() {
 
       when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => mockUser);
       when(() => mockTeamService.getTeam('team-old')).thenAnswer((_) async => oldTeam);
-      when(() => mockTeamService.getAllTeams()).thenAnswer((_) async => [oldTeam, sharedTeam]);
-      when(() => mockTeamService.getOrCreateTeamByName(name: 'Apple Team')).thenAnswer((_) async => sharedTeam);
+      when(() => mockTeamService.joinTeamByInviteCodeOrName('Apple Team')).thenAnswer((_) async => sharedTeam);
       when(() => mockTeamService.updateUserTeam('user-remote', 'team-shared-123')).thenAnswer((_) async {});
 
       await tester.pumpWidget(
@@ -78,28 +77,28 @@ void main() {
           [
             authServiceProvider.overrideWithValue(mockAuthService),
             teamServiceProvider.overrideWithValue(mockTeamService),
+            currentUserDataProvider.overrideWith((ref) => Future.value(mockUser)),
           ],
         ),
       );
 
       await tester.pumpAndSettle();
 
-      // Tap on Team item to change team to "Apple Team"
-      await tester.tap(find.text('Old Team'));
+      // Tap on Team item to change team
+      await tester.tap(find.text('切换团队'));
       await tester.pumpAndSettle();
 
-      // ChoiceChip for Apple Team should be visible and clickable
-      final chip = find.text('Apple Team');
-      expect(chip, findsOneWidget);
-      await tester.tap(chip);
+      // Enter "Apple Team"
+      final inputField = find.byType(TextFormField);
+      await tester.enterText(inputField, 'Apple Team');
       await tester.pumpAndSettle();
 
       // Click Save
-      await tester.tap(find.text('保存'));
+      await tester.tap(find.text('验证并加入'));
       await tester.pumpAndSettle();
 
-      // Verify getOrCreateTeamByName was called
-      verify(() => mockTeamService.getOrCreateTeamByName(name: 'Apple Team')).called(1);
+      // Verify joinTeamByInviteCodeOrName was called
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Apple Team')).called(1);
       verify(() => mockTeamService.updateUserTeam('user-remote', 'team-shared-123')).called(1);
     });
   });

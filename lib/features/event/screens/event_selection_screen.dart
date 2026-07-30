@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -509,16 +510,38 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
             child: FutureBuilder(
               future: user.teamId != null ? teamService.getTeam(user.teamId!) : null,
               builder: (context, snapshot) {
-                final teamName = snapshot.data?.name ??
+                final team = snapshot.data;
+                final teamName = team?.name ??
                     (user.teamId == null ? '未加入团队' : '加载团队中...');
-                return Text(
-                  '当前团队: $teamName',
-                  style: TextStyle(
-                    color: Colors.blue.shade900,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                final code = team?.inviteCode;
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        code != null ? '当前团队: $teamName ($code)' : '当前团队: $teamName',
+                        style: TextStyle(
+                          color: Colors.blue.shade900,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (code != null)
+                      IconButton(
+                        icon: const Icon(Icons.copy, size: 14),
+                        tooltip: '复制团队邀请码',
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: code));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('已复制团队邀请码: $code')),
+                          );
+                        },
+                      ),
+                  ],
                 );
               },
             ),
@@ -543,125 +566,80 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     WidgetRef ref,
     app_user.User user,
   ) {
-    final nameController = TextEditingController();
+    final inputController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) {
-          final teamService = ref.read(teamServiceProvider);
-
-          return AlertDialog(
-            title: const Text('一键加入现场买手团队'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '提示：请加入买手所在的相同团队，即可实时接收展位和照片数据。',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 12),
-                  Form(
-                    key: formKey,
-                    child: TextFormField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: '团队名称',
-                        hintText: '输入或点击下方已有团队',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return '团队名称不能为空';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '可直接点击加入以下已有团队:',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  FutureBuilder(
-                    future: teamService.getAllTeams(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        );
-                      }
-
-                      final teams = snapshot.data ?? [];
-                      if (teams.isEmpty) {
-                        return const Text('暂无已有团队，请在上方输入新团队名');
-                      }
-
-                      return Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        children: teams.map((team) {
-                          final isSelected =
-                              nameController.text.trim() == team.name;
-                          return ChoiceChip(
-                            label: Text(team.name),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              if (selected) {
-                                setDialogState(() {
-                                  nameController.text = team.name;
-                                });
-                              }
-                            },
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ],
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('凭邀请码加入买手团队'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '🔒 隐私保护：团队间相互隔离。请输入买手分享给您的 6 位团队邀请码（或精确团队全名）：',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('取消'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  Navigator.pop(dialogContext);
-
-                  try {
-                    final newName = nameController.text.trim();
-                    final team = await teamService.getOrCreateTeamByName(name: newName);
-                    await teamService.updateUserTeam(user.id, team.id);
-
-                    ref.invalidate(currentUserDataProvider);
-                    ref.invalidate(eventsProvider);
-                    ref.invalidate(activeEventProvider);
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('已加入“$newName”团队，已同步现场数据')),
-                      );
+              const SizedBox(height: 12),
+              Form(
+                key: formKey,
+                child: TextFormField(
+                  controller: inputController,
+                  decoration: const InputDecoration(
+                    labelText: '团队邀请码 / 团队全名',
+                    hintText: '例如: 3F8A91 或 苹果团队',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.vpn_key),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '邀请码或团队名称不能为空';
                     }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('操作失败: $e')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('加入团队'),
+                    return null;
+                  },
+                ),
               ),
             ],
-          );
-        },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (!formKey.currentState!.validate()) return;
+              Navigator.pop(dialogContext);
+
+              try {
+                final input = inputController.text.trim();
+                final teamService = ref.read(teamServiceProvider);
+                final team = await teamService.joinTeamByInviteCodeOrName(input);
+                await teamService.updateUserTeam(user.id, team.id);
+
+                ref.invalidate(currentUserDataProvider);
+                ref.invalidate(eventsProvider);
+                ref.invalidate(activeEventProvider);
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('已成功加入“${team.name}”团队，已同步现场数据')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('加入失败: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('验证并加入'),
+          ),
+        ],
       ),
     );
   }
