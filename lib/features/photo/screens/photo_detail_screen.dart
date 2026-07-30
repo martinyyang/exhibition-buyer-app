@@ -28,6 +28,7 @@ class PhotoDetailScreen extends ConsumerStatefulWidget {
 class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   final TransformationController _transformationController =
       TransformationController();
+  final GlobalKey _imageKey = GlobalKey();
 
   @override
   void dispose() {
@@ -35,10 +36,19 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     super.dispose();
   }
 
-  void _onPhotoTap(TapDownDetails details, Size imageSize) {
-    // 买手和远程用户都可以插旗标记
+  Size? _getImageSize() {
+    final RenderBox? renderBox =
+        _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    return renderBox?.size;
+  }
 
-    final RenderBox box = context.findRenderObject() as RenderBox;
+  void _onPhotoTap(TapDownDetails details) {
+    // 买手和远程用户都可以插旗标记
+    final imageSize = _getImageSize();
+    if (imageSize == null) return;
+
+    final RenderBox box =
+        _imageKey.currentContext!.findRenderObject() as RenderBox;
     final localPosition = box.globalToLocal(details.globalPosition);
 
     // 转换为相对坐标（0-1）
@@ -79,8 +89,11 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     }
   }
 
-  void _onFlagRowTap(Flag flag, Size imageSize) {
+  void _onFlagRowTap(Flag flag) {
     // 点击表格行，聚焦到对应旗子位置
+    final imageSize = _getImageSize();
+    if (imageSize == null) return;
+
     final targetX = flag.positionX * imageSize.width;
     final targetY = flag.positionY * imageSize.height;
 
@@ -138,66 +151,71 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     }
   }
 
-  Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags, Size imageSize) {
-    return Stack(
-      children: [
-        // 照片
-        if (photo != null)
-          CachedNetworkImage(
-            imageUrl: photo.url,
-            fit: BoxFit.contain,
-            placeholder: (context, url) =>
-                const Center(child: LoadingIndicator()),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
+  Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          key: _imageKey,
+          children: [
+            // 照片
+            if (photo != null)
+              CachedNetworkImage(
+                imageUrl: photo.url,
+                fit: BoxFit.contain,
+                placeholder: (context, url) =>
+                    const Center(child: LoadingIndicator()),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
 
-        // 旗子标记
-        ...flags.map((flag) {
-          return Positioned(
-            left: flag.positionX * imageSize.width - 20,
-            top: flag.positionY * imageSize.height - 40,
-            child: GestureDetector(
-              onLongPress: () => _onFlagLongPress(flag),
-              child: Column(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: flag.needsAttention ? Colors.red : Colors.blue,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+            // 旗子标记
+            ...flags.map((flag) {
+              return Positioned(
+                left: flag.positionX * constraints.maxWidth - 20,
+                top: flag.positionY * constraints.maxHeight - 40,
+                child: GestureDetector(
+                  onLongPress: () => _onFlagLongPress(flag),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: flag.needsAttention ? Colors.red : Colors.blue,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${flag.number}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                        child: Center(
+                          child: Text(
+                            '${flag.number}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      // 旗杆
+                      Container(
+                        width: 2,
+                        height: 20,
+                        color: flag.needsAttention ? Colors.red : Colors.blue,
+                      ),
+                    ],
                   ),
-                  // 旗杆
-                  Container(
-                    width: 2,
-                    height: 20,
-                    color: flag.needsAttention ? Colors.red : Colors.blue,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-      ],
+                ),
+              );
+            }),
+          ],
+        );
+      },
     );
   }
 
@@ -208,12 +226,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         Expanded(
           flex: 3,
           child: GestureDetector(
-            onTapDown: (details) => _onPhotoTap(details, const Size(400, 300)),
+            onTapDown: (details) => _onPhotoTap(details),
             child: InteractiveViewer(
               transformationController: _transformationController,
               minScale: 0.5,
               maxScale: 4.0,
-              child: _buildPhotoWithFlags(photo, flags, const Size(400, 300)),
+              child: _buildPhotoWithFlags(photo, flags),
             ),
           ),
         ),
@@ -240,7 +258,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               : FlagTable(
                   flags: flags,
                   isRemoteView: widget.isRemoteView,
-                  onRowTap: (flag) => _onFlagRowTap(flag, const Size(400, 300)),
+                  onRowTap: (flag) => _onFlagRowTap(flag),
                 ),
         ),
       ],
@@ -254,13 +272,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         Expanded(
           flex: 2,
           child: GestureDetector(
-            onTapDown: (details) => _onPhotoTap(details, const Size(800, 600)),
+            onTapDown: (details) => _onPhotoTap(details),
             child: InteractiveViewer(
               transformationController: _transformationController,
               minScale: 0.5,
               maxScale: 4.0,
               child: Center(
-                child: _buildPhotoWithFlags(photo, flags, const Size(800, 600)),
+                child: _buildPhotoWithFlags(photo, flags),
               ),
             ),
           ),
@@ -291,7 +309,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               : FlagTable(
                   flags: flags,
                   isRemoteView: widget.isRemoteView,
-                  onRowTap: (flag) => _onFlagRowTap(flag, const Size(800, 600)),
+                  onRowTap: (flag) => _onFlagRowTap(flag),
                 ),
         ),
       ],
