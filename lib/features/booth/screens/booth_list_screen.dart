@@ -9,6 +9,7 @@ import '../services/booth_service.dart';
 import '../../event/providers/event_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
+import '../../photo/providers/photo_provider.dart';
 
 class BoothListScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -379,54 +380,10 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                 itemCount: booths.length,
                 itemBuilder: (context, index) {
                   final booth = booths[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: InkWell(
-                      onTap: () => _onBoothTap(booth),
-                      onLongPress: () => _onBoothLongPress(booth),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade100,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Center(
-                                child: Icon(Icons.store, size: 20),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '摊位 ${booth.boothNumber}',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '0张照片',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      ),
-                    ),
+                  return _BoothListItem(
+                    booth: booth,
+                    onTap: () => _onBoothTap(booth),
+                    onLongPress: () => _onBoothLongPress(booth),
                   );
                 },
               );
@@ -473,6 +430,158 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
               ElevatedButton(
                 onPressed: () => ref.invalidate(eventProvider(widget.eventId)),
                 child: const Text('重试'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 摊位列表项组件 - 显示照片缩略图
+class _BoothListItem extends ConsumerWidget {
+  final Booth booth;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+
+  const _BoothListItem({
+    required this.booth,
+    required this.onTap,
+    required this.onLongPress,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final photosAsync = ref.watch(photosProvider(booth.id));
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.store, size: 20),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '摊位 ${booth.boothNumber}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        photosAsync.when(
+                          data: (photos) => Text(
+                            '${photos.length}张照片',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          loading: () => Text(
+                            '加载中...',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          error: (_, __) => Text(
+                            '0张照片',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+              photosAsync.when(
+                data: (photos) {
+                  if (photos.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: SizedBox(
+                      height: 80,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: photos.length > 5 ? 5 : photos.length,
+                        itemBuilder: (context, index) {
+                          final photo = photos[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                photo.url,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 80,
+                                    height: 80,
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.broken_image,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                    width: 80,
+                                    height: 80,
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                      child: SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
               ),
             ],
           ),
