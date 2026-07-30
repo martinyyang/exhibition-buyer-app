@@ -120,7 +120,7 @@ class SettingsScreen extends ConsumerWidget {
       return ListTile(
         leading: const Icon(Icons.group_add, color: Colors.orange),
         title: Text(l10n.teamInfo),
-        subtitle: const Text('未加入团队 (点击凭邀请码加入)'),
+        subtitle: Text(l10n.notInTeamTip),
         trailing: const Icon(Icons.add_circle_outline, color: Colors.orange),
         onTap: () => _showEditTeamDialog(context, ref, l10n, user, ''),
       );
@@ -132,38 +132,38 @@ class SettingsScreen extends ConsumerWidget {
         final team = teamSnapshot.data;
         final teamName = team?.name ??
             (teamSnapshot.connectionState == ConnectionState.waiting
-                ? '加载团队中...'
+                ? l10n.loading
                 : l10n.teamInfo);
         final code = team?.inviteCode;
 
         return ListTile(
           leading: const Icon(Icons.group, color: Colors.blue),
           title: Text(l10n.teamInfo),
-          subtitle: Text(code != null ? '$teamName (邀请码: $code)' : teamName),
+          subtitle: Text(code != null ? '$teamName (Code: $code)' : teamName),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (code != null)
                 IconButton(
                   icon: const Icon(Icons.copy, size: 18),
-                  tooltip: '复制团队邀请码',
+                  tooltip: l10n.copyInviteCode,
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: code));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('已复制团队邀请码: $code')),
+                      SnackBar(content: Text(l10n.inviteCodeCopied(code))),
                     );
                   },
                 ),
               OutlinedButton.icon(
                 icon: const Icon(Icons.edit, size: 14),
-                label: const Text('切换团队'),
+                label: Text(l10n.switchTeam),
                 onPressed: () => _showEditTeamDialog(
-                    context, ref, l10n, user, teamName == '加载团队中...' ? '' : teamName),
+                    context, ref, l10n, user, teamName == l10n.loading ? '' : teamName),
               ),
             ],
           ),
           onTap: () => _showEditTeamDialog(
-              context, ref, l10n, user, teamName == '加载团队中...' ? '' : teamName),
+              context, ref, l10n, user, teamName == l10n.loading ? '' : teamName),
         );
       },
     );
@@ -182,30 +182,30 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('凭邀请码 / 团队名切换团队'),
+        title: Text(l10n.joinTeamTitle),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '🔒 团队隐私隔离：请填入买手分享给您的 6 位团队邀请码（或准确团队全名）：',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Text(
+                l10n.teamPrivacyTip,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const SizedBox(height: 12),
               Form(
                 key: formKey,
                 child: TextFormField(
                   controller: inputController,
-                  decoration: const InputDecoration(
-                    labelText: '团队邀请码 / 团队全名',
-                    hintText: '例如: 3F8A91 或 苹果团队',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.vpn_key),
+                  decoration: InputDecoration(
+                    labelText: l10n.inviteCodeOrNameLabel,
+                    hintText: l10n.inviteCodeOrNameHint,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.vpn_key),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return '邀请码或团队名称不能为空';
+                      return l10n.teamCodeOrNameRequired;
                     }
                     return null;
                   },
@@ -237,18 +237,18 @@ class SettingsScreen extends ConsumerWidget {
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('已成功加入“${team.name}”团队，现场数据已自动同步')),
+                    SnackBar(content: Text(l10n.teamJoinSuccess(team.name))),
                   );
                 }
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('修改团队失败: $e')),
+                    SnackBar(content: Text(l10n.teamJoinFailed(e.toString()))),
                   );
                 }
               }
             },
-            child: const Text('验证并加入'),
+            child: Text(l10n.verifyAndJoin),
           ),
         ],
       ),

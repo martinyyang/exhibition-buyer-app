@@ -235,11 +235,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _teamNameController,
-                  decoration: const InputDecoration(
-                    labelText: '团队名称 / 6位邀请码',
-                    hintText: '填入团队全名，或买手分享的6位邀请码',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.group),
+                  decoration: InputDecoration(
+                    labelText: l10n.teamNameOrInviteCode,
+                    hintText: l10n.registerTeamNameHint,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.group),
                   ),
                   validator: _validateTeamName,
                   enabled: !_isLoading,

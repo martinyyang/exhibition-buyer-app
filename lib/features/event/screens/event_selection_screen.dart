@@ -358,14 +358,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                           const SizedBox(height: 16),
                           Text(
                             l10n.noEvents,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
                           Text(
-                            '若您是远程支持人员，请确保已加入买手所在的团队',
+                            l10n.noEventsRemoteTip,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14,
@@ -375,7 +369,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                           const SizedBox(height: 20),
                           ElevatedButton.icon(
                             icon: const Icon(Icons.group_add),
-                            label: const Text('一键匹配 / 加入现场团队'),
+                            label: Text(l10n.oneClickMatchTeam),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue.shade700,
                               foregroundColor: Colors.white,
@@ -496,6 +490,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   ) {
     if (user == null) return const SizedBox.shrink();
 
+    final l10n = AppLocalizations.of(context)!;
     final teamService = ref.read(teamServiceProvider);
 
     return Container(
@@ -512,14 +507,14 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
               builder: (context, snapshot) {
                 final team = snapshot.data;
                 final teamName = team?.name ??
-                    (user.teamId == null ? '未加入团队' : '加载团队中...');
+                    (user.teamId == null ? l10n.teamInfo : l10n.loading);
                 final code = team?.inviteCode;
 
                 return Row(
                   children: [
                     Expanded(
                       child: Text(
-                        code != null ? '当前团队: $teamName ($code)' : '当前团队: $teamName',
+                        code != null ? '${l10n.currentTeamPrefix}$teamName ($code)' : '${l10n.currentTeamPrefix}$teamName',
                         style: TextStyle(
                           color: Colors.blue.shade900,
                           fontSize: 13,
@@ -531,13 +526,13 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                     if (code != null)
                       IconButton(
                         icon: const Icon(Icons.copy, size: 14),
-                        tooltip: '复制团队邀请码',
+                        tooltip: l10n.copyInviteCode,
                         constraints: const BoxConstraints(),
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: code));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('已复制团队邀请码: $code')),
+                            SnackBar(content: Text(l10n.inviteCodeCopied(code))),
                           );
                         },
                       ),
@@ -553,7 +548,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             icon: const Icon(Icons.swap_horiz, size: 16),
-            label: const Text('切换团队', style: TextStyle(fontSize: 12)),
+            label: Text(l10n.switchTeam, style: const TextStyle(fontSize: 12)),
             onPressed: () => _showQuickTeamDialog(context, ref, user),
           ),
         ],
@@ -566,36 +561,37 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     WidgetRef ref,
     app_user.User user,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final inputController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('凭邀请码加入买手团队'),
+        title: Text(l10n.joinTeamTitle),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '🔒 隐私保护：团队间相互隔离。请输入买手分享给您的 6 位团队邀请码（或精确团队全名）：',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Text(
+                l10n.teamPrivacyTip,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const SizedBox(height: 12),
               Form(
                 key: formKey,
                 child: TextFormField(
                   controller: inputController,
-                  decoration: const InputDecoration(
-                    labelText: '团队邀请码 / 团队全名',
-                    hintText: '例如: 3F8A91 或 苹果团队',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.vpn_key),
+                  decoration: InputDecoration(
+                    labelText: l10n.inviteCodeOrNameLabel,
+                    hintText: l10n.inviteCodeOrNameHint,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.vpn_key),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return '邀请码或团队名称不能为空';
+                      return l10n.teamCodeOrNameRequired;
                     }
                     return null;
                   },
@@ -607,7 +603,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -626,18 +622,18 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('已成功加入“${team.name}”团队，已同步现场数据')),
+                    SnackBar(content: Text(l10n.teamJoinSuccess(team.name))),
                   );
                 }
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('加入失败: $e')),
+                    SnackBar(content: Text(l10n.teamJoinFailed(e.toString()))),
                   );
                 }
               }
             },
-            child: const Text('验证并加入'),
+            child: Text(l10n.verifyAndJoin),
           ),
         ],
       ),

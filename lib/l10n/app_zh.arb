@@ -263,5 +263,37 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+  "currentTeamPrefix": "当前团队: ",
+  "switchTeam": "切换团队",
+  "joinTeamTitle": "凭邀请码加入买手团队",
+  "teamPrivacyTip": "🔒 隐私保护：团队间相互隔离。请输入买手分享给您的 6 位团队邀请码（或准确团队全名）：",
+  "inviteCodeOrNameLabel": "团队邀请码 / 团队全名",
+  "inviteCodeOrNameHint": "例如: 3F8A91 或 苹果团队",
+  "verifyAndJoin": "验证并加入",
+  "notInTeamTip": "未加入团队 (点击凭邀请码加入)",
+  "copyInviteCode": "复制团队邀请码",
+  "inviteCodeCopied": "已复制团队邀请码: {code}",
+  "@inviteCodeCopied": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "noEventsRemoteTip": "若您是远程支持人员，请确保已加入买手所在的团队",
+  "oneClickMatchTeam": "一键匹配 / 加入现场团队",
+  "teamCodeOrNameRequired": "邀请码或团队名称不能为空",
+  "teamJoinSuccess": "已成功加入“{name}”团队，已同步现场数据",
+  "@teamJoinSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "teamJoinFailed": "加入团队失败: {error}",
+  "@teamJoinFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "registerTeamNameHint": "填入团队全名，或买手分享的6位邀请码",
+  "teamNameOrInviteCode": "团队名称 / 6位邀请码"
 }

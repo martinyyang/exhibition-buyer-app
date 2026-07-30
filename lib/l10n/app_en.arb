@@ -263,5 +263,37 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+  "currentTeamPrefix": "Current Team: ",
+  "switchTeam": "Switch Team",
+  "joinTeamTitle": "Join Buyer Team via Invite Code",
+  "teamPrivacyTip": "🔒 Privacy Isolation: Teams are isolated. Please enter the 6-digit invite code (or exact team name) shared by the buyer:",
+  "inviteCodeOrNameLabel": "Invite Code / Team Name",
+  "inviteCodeOrNameHint": "e.g., 3F8A91 or Apple Team",
+  "verifyAndJoin": "Verify & Join",
+  "notInTeamTip": "Not in a team (Tap to join via invite code)",
+  "copyInviteCode": "Copy Invite Code",
+  "inviteCodeCopied": "Invite code copied: {code}",
+  "@inviteCodeCopied": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "noEventsRemoteTip": "If you are a remote support member, please make sure you have joined the buyer's team.",
+  "oneClickMatchTeam": "Match / Join Buyer Team",
+  "teamCodeOrNameRequired": "Invite code or team name cannot be empty",
+  "teamJoinSuccess": "Successfully joined \"{name}\" team, data synced.",
+  "@teamJoinSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "teamJoinFailed": "Failed to join team: {error}",
+  "@teamJoinFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "registerTeamNameHint": "Enter team name or 6-digit invite code",
+  "teamNameOrInviteCode": "Team Name / 6-digit Invite Code"
 }
