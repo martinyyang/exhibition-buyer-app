@@ -30,9 +30,8 @@ void main() async {
     } catch (e) {
       print('⚠ Failed to load .env file: $e');
       throw Exception(
-        'Failed to load .env file. Please create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY. '
-        'See .env.example for template.'
-      );
+          'Failed to load .env file. Please create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY. '
+          'See .env.example for template.');
     }
 
     // 验证环境变量

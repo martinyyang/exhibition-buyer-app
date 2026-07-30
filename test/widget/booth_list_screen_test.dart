@@ -11,7 +11,8 @@ import 'package:exhibition_buyer_app/features/booth/providers/booth_provider.dar
 import 'package:exhibition_buyer_app/features/event/providers/event_provider.dart';
 import 'package:exhibition_buyer_app/features/event/models/event.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
-import 'package:exhibition_buyer_app/features/auth/models/user.dart' as app_user;
+import 'package:exhibition_buyer_app/features/auth/models/user.dart'
+    as app_user;
 import 'package:exhibition_buyer_app/core/services/realtime_service.dart';
 import 'package:exhibition_buyer_app/shared/widgets/color_badge.dart';
 import 'test_helpers.dart';
@@ -46,17 +47,20 @@ void main() {
     when(() => mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
     when(() => mockGoTrueClient.currentUser).thenReturn(mockUser);
     when(() => mockUser.id).thenReturn('test-user-id');
-    when(() => mockSupabaseClient.channel(any())).thenReturn(mockRealtimeChannel);
+    when(() => mockSupabaseClient.channel(any()))
+        .thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.onPostgresChanges(
-      event: any(named: 'event'),
-      schema: any(named: 'schema'),
-      table: any(named: 'table'),
-      filter: any(named: 'filter'),
-      callback: any(named: 'callback'),
-    )).thenReturn(mockRealtimeChannel);
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        )).thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.subscribe()).thenReturn(mockRealtimeChannel);
-    when(() => mockSupabaseClient.removeChannel(any())).thenAnswer((_) async => 'ok');
-    when(() => mockRealtimeService.subscribeToBooths(any(), any())).thenReturn(mockRealtimeChannel);
+    when(() => mockSupabaseClient.removeChannel(any()))
+        .thenAnswer((_) async => 'ok');
+    when(() => mockRealtimeService.subscribeToBooths(any(), any()))
+        .thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeService.unsubscribe(any())).thenAnswer((_) async {});
   });
 
@@ -91,9 +95,11 @@ void main() {
     );
 
     testWidgets('显示当前场次名称', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -103,9 +109,12 @@ void main() {
             eventServiceProvider.overrideWithValue(mockEventService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -126,9 +135,11 @@ void main() {
     });
 
     testWidgets('显示摊位列表', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -138,9 +149,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -161,9 +175,11 @@ void main() {
     });
 
     testWidgets('显示买手颜色标识', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -173,9 +189,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -196,9 +215,11 @@ void main() {
     });
 
     testWidgets('点击新建摊位按钮显示对话框', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -207,9 +228,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -236,9 +260,11 @@ void main() {
     });
 
     testWidgets('摊位号验证', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -247,9 +273,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -278,9 +307,11 @@ void main() {
     });
 
     testWidgets('成功创建摊位', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -289,9 +320,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -313,9 +347,11 @@ void main() {
     });
 
     testWidgets('点击摊位进入照片网格页面', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -324,9 +360,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -347,9 +386,11 @@ void main() {
     });
 
     testWidgets('摊位列表为空时显示提示', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => []);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -359,9 +400,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier([], mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    [], mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -382,9 +426,11 @@ void main() {
     });
 
     testWidgets('长按摊位显示操作菜单', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -393,9 +439,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -422,9 +471,11 @@ void main() {
     });
 
     testWidgets('显示摊位照片数量', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -433,9 +484,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -456,9 +510,11 @@ void main() {
     });
 
     testWidgets('支持快速切换摊位', (tester) async {
-      when(() => mockEventService.getEvent('test-event-id')).thenAnswer((_) async => testEvent);
-      when(() => mockBoothService.getBooths(eventId: 'test-event-id', teamId: 'test-team-id'))
-          .thenAnswer((_) async => testBooths);
+      when(() => mockEventService.getEvent('test-event-id'))
+          .thenAnswer((_) async => testEvent);
+      when(() => mockBoothService.getBooths(
+          eventId: 'test-event-id',
+          teamId: 'test-team-id')).thenAnswer((_) async => testBooths);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -467,9 +523,12 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             currentUserDataProvider.overrideWith((ref) async => testUser),
-            eventProvider('test-event-id').overrideWith((ref) async => testEvent),
-            boothsProvider(BoothsParams(eventId: 'test-event-id', teamId: 'test-team-id'))
-                .overrideWith((ref) => MockBoothsNotifier(testBooths, mockBoothService, mockRealtimeService)),
+            eventProvider('test-event-id')
+                .overrideWith((ref) async => testEvent),
+            boothsProvider(BoothsParams(
+                    eventId: 'test-event-id', teamId: 'test-team-id'))
+                .overrideWith((ref) => MockBoothsNotifier(
+                    testBooths, mockBoothService, mockRealtimeService)),
           ],
           child: const MaterialApp(
             localizationsDelegates: [

@@ -471,7 +471,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text(l10n.loadFailed(error.toString())),
                     const SizedBox(height: 16),
@@ -509,7 +510,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: FutureBuilder(
-              future: user.teamId != null ? teamService.getTeam(user.teamId!) : null,
+              future: user.teamId != null
+                  ? teamService.getTeam(user.teamId!)
+                  : null,
               builder: (context, snapshot) {
                 final team = snapshot.data;
                 final teamName = team?.name ??
@@ -520,7 +523,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        code != null ? '${l10n.currentTeamPrefix}$teamName ($code)' : '${l10n.currentTeamPrefix}$teamName',
+                        code != null
+                            ? '${l10n.currentTeamPrefix}$teamName ($code)'
+                            : '${l10n.currentTeamPrefix}$teamName',
                         style: TextStyle(
                           color: Colors.blue.shade900,
                           fontSize: 13,
@@ -538,7 +543,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: code));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.inviteCodeCopied(code))),
+                            SnackBar(
+                                content: Text(l10n.inviteCodeCopied(code))),
                           );
                         },
                       ),
@@ -619,7 +625,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
               try {
                 final input = inputController.text.trim();
                 final teamService = ref.read(teamServiceProvider);
-                final team = await teamService.joinTeamByInviteCodeOrName(input);
+                final team =
+                    await teamService.joinTeamByInviteCodeOrName(input);
                 await teamService.updateUserTeam(user.id, team.id);
 
                 ref.invalidate(currentUserDataProvider);

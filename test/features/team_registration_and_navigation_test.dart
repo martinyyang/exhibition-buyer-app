@@ -6,7 +6,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:exhibition_buyer_app/features/auth/models/user.dart' as app_user;
+import 'package:exhibition_buyer_app/features/auth/models/user.dart'
+    as app_user;
 import 'package:exhibition_buyer_app/features/auth/models/team.dart';
 import 'package:exhibition_buyer_app/features/event/models/event.dart';
 import 'package:exhibition_buyer_app/features/photo/models/photo.dart';
@@ -27,20 +28,26 @@ import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.da
 import 'package:exhibition_buyer_app/shared/widgets/safe_back_button.dart';
 
 class MockAuthService extends Mock implements AuthService {}
+
 class MockTeamService extends Mock implements TeamService {}
+
 class MockRealtimeChannel extends Fake implements RealtimeChannel {}
 
 class MockRealtimeService extends Mock implements RealtimeService {
   MockRealtimeService() {
-    when(() => subscribeToPhotos(any(), any())).thenReturn(MockRealtimeChannel());
-    when(() => subscribeToBooths(any(), any())).thenReturn(MockRealtimeChannel());
+    when(() => subscribeToPhotos(any(), any()))
+        .thenReturn(MockRealtimeChannel());
+    when(() => subscribeToBooths(any(), any()))
+        .thenReturn(MockRealtimeChannel());
     when(() => unsubscribe(any())).thenAnswer((_) async {});
   }
 }
 
 class MockBoothService extends Mock implements BoothService {
   MockBoothService() {
-    when(() => getBooths(eventId: any(named: 'eventId'), teamId: any(named: 'teamId'))).thenAnswer((_) async => []);
+    when(() => getBooths(
+        eventId: any(named: 'eventId'),
+        teamId: any(named: 'teamId'))).thenAnswer((_) async => []);
   }
 }
 
@@ -84,7 +91,9 @@ void main() {
   });
 
   group('TDD Team Registration & Navigation Tests', () {
-    testWidgets('1. SettingsScreen should display team modification dialog on tap', (WidgetTester tester) async {
+    testWidgets(
+        '1. SettingsScreen should display team modification dialog on tap',
+        (WidgetTester tester) async {
       final mockUser = app_user.User(
         id: 'user-123',
         email: 'test@example.com',
@@ -99,9 +108,12 @@ void main() {
         createdAt: DateTime.now(),
       );
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => mockUser);
-      when(() => mockTeamService.getTeam('team-123')).thenAnswer((_) async => mockTeam);
-      when(() => mockTeamService.getAllTeams()).thenAnswer((_) async => [mockTeam]);
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => mockUser);
+      when(() => mockTeamService.getTeam('team-123'))
+          .thenAnswer((_) async => mockTeam);
+      when(() => mockTeamService.getAllTeams())
+          .thenAnswer((_) async => [mockTeam]);
 
       await tester.pumpWidget(
         createTestableWidget(
@@ -109,7 +121,8 @@ void main() {
           [
             authServiceProvider.overrideWithValue(mockAuthService),
             teamServiceProvider.overrideWithValue(mockTeamService),
-            currentUserDataProvider.overrideWith((ref) => Future.value(mockUser)),
+            currentUserDataProvider
+                .overrideWith((ref) => Future.value(mockUser)),
           ],
         ),
       );
@@ -130,7 +143,8 @@ void main() {
       expect(find.byType(AlertDialog), findsOneWidget);
     });
 
-    testWidgets('2. BoothListScreen should contain SafeBackButton in AppBar', (WidgetTester tester) async {
+    testWidgets('2. BoothListScreen should contain SafeBackButton in AppBar',
+        (WidgetTester tester) async {
       when(() => mockAuthService.currentUserId).thenReturn('user-123');
 
       final mockBoothService = MockBoothService();
@@ -144,13 +158,13 @@ void main() {
             boothServiceProvider.overrideWithValue(mockBoothService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
             eventProvider('event-123').overrideWith((ref) => Future.value(Event(
-              id: 'event-123',
-              name: 'Test Event',
-              startDate: DateTime.now(),
-              teamId: 'team-123',
-              isActive: true,
-              createdAt: DateTime.now(),
-            ))),
+                  id: 'event-123',
+                  name: 'Test Event',
+                  startDate: DateTime.now(),
+                  teamId: 'team-123',
+                  isActive: true,
+                  createdAt: DateTime.now(),
+                ))),
           ],
         ),
       );
@@ -161,7 +175,8 @@ void main() {
       expect(find.byType(SafeBackButton), findsOneWidget);
     });
 
-    testWidgets('3. PhotoGridScreen should contain SafeBackButton in AppBar', (WidgetTester tester) async {
+    testWidgets('3. PhotoGridScreen should contain SafeBackButton in AppBar',
+        (WidgetTester tester) async {
       final mockPhotoService = MockPhotoService();
       final mockRealtimeService = MockRealtimeService();
 
@@ -182,7 +197,9 @@ void main() {
       expect(find.byType(SafeBackButton), findsOneWidget);
     });
 
-    testWidgets('4. RegisterScreen should have SafeBackButton to return to login', (WidgetTester tester) async {
+    testWidgets(
+        '4. RegisterScreen should have SafeBackButton to return to login',
+        (WidgetTester tester) async {
       when(() => mockTeamService.getAllTeams()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(

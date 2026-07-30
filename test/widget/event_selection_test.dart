@@ -8,7 +8,8 @@ import 'package:exhibition_buyer_app/features/event/screens/event_selection_scre
 import 'package:exhibition_buyer_app/features/event/models/event.dart';
 import 'package:exhibition_buyer_app/features/event/providers/event_provider.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
-import 'package:exhibition_buyer_app/features/auth/models/user.dart' as app_user;
+import 'package:exhibition_buyer_app/features/auth/models/user.dart'
+    as app_user;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'test_helpers.dart';
 
@@ -38,16 +39,18 @@ void main() {
     when(() => mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
     when(() => mockGoTrueClient.currentUser).thenReturn(mockUser);
     when(() => mockUser.id).thenReturn('test-user-id');
-    when(() => mockSupabaseClient.channel(any())).thenReturn(mockRealtimeChannel);
+    when(() => mockSupabaseClient.channel(any()))
+        .thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.onPostgresChanges(
-      event: any(named: 'event'),
-      schema: any(named: 'schema'),
-      table: any(named: 'table'),
-      filter: any(named: 'filter'),
-      callback: any(named: 'callback'),
-    )).thenReturn(mockRealtimeChannel);
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        )).thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.subscribe()).thenReturn(mockRealtimeChannel);
-    when(() => mockSupabaseClient.removeChannel(any())).thenAnswer((_) async => 'ok');
+    when(() => mockSupabaseClient.removeChannel(any()))
+        .thenAnswer((_) async => 'ok');
   });
 
   group('EventSelectionScreen Widget Tests', () {
@@ -71,7 +74,8 @@ void main() {
     ];
 
     testWidgets('显示场次列表', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -103,7 +107,8 @@ void main() {
     });
 
     testWidgets('显示活跃场次高亮标记', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -132,7 +137,8 @@ void main() {
     });
 
     testWidgets('点击场次导航到摊位列表', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -161,7 +167,8 @@ void main() {
     });
 
     testWidgets('点击创建按钮显示创建对话框', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -198,7 +205,8 @@ void main() {
     });
 
     testWidgets('创建场次表单验证', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -232,7 +240,8 @@ void main() {
     });
 
     testWidgets('成功创建场次后显示在列表中', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -291,7 +300,8 @@ void main() {
     });
 
     testWidgets('长按场次显示操作菜单', (tester) async {
-      when(() => mockEventService.getEvents(any())).thenAnswer((_) async => testEvents);
+      when(() => mockEventService.getEvents(any()))
+          .thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(
         ProviderScope(

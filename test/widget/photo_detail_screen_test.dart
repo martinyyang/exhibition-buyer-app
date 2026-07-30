@@ -45,17 +45,20 @@ void main() {
     when(() => mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
     when(() => mockGoTrueClient.currentUser).thenReturn(mockUser);
     when(() => mockUser.id).thenReturn('test-user-id');
-    when(() => mockSupabaseClient.channel(any())).thenReturn(mockRealtimeChannel);
+    when(() => mockSupabaseClient.channel(any()))
+        .thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.onPostgresChanges(
-      event: any(named: 'event'),
-      schema: any(named: 'schema'),
-      table: any(named: 'table'),
-      filter: any(named: 'filter'),
-      callback: any(named: 'callback'),
-    )).thenReturn(mockRealtimeChannel);
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        )).thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.subscribe()).thenReturn(mockRealtimeChannel);
-    when(() => mockSupabaseClient.removeChannel(any())).thenAnswer((_) async => 'ok');
-    when(() => mockRealtimeService.subscribeToFlags(any(), any())).thenReturn(mockRealtimeChannel);
+    when(() => mockSupabaseClient.removeChannel(any()))
+        .thenAnswer((_) async => 'ok');
+    when(() => mockRealtimeService.subscribeToFlags(any(), any()))
+        .thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeService.unsubscribe(any())).thenAnswer((_) async {});
   });
 
@@ -86,8 +89,10 @@ void main() {
     ];
 
     testWidgets('显示照片和Flag表格在同一页面', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -96,10 +101,14 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -124,8 +133,10 @@ void main() {
     });
 
     testWidgets('照片支持缩放和平移', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -134,10 +145,14 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -159,8 +174,10 @@ void main() {
     });
 
     testWidgets('照片上显示旗子标记', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -169,10 +186,14 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -194,8 +215,10 @@ void main() {
     });
 
     testWidgets('点击照片位置可以插旗（远程端）', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -204,10 +227,14 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             home: PhotoDetailScreen(
@@ -226,8 +253,10 @@ void main() {
     });
 
     testWidgets('Flag表格显示所有列', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -236,8 +265,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -261,8 +292,10 @@ void main() {
     });
 
     testWidgets('买手端可以直接在表格中编辑报价', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -271,8 +304,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             home: PhotoDetailScreen(
@@ -291,8 +326,10 @@ void main() {
     });
 
     testWidgets('远程端可以设置目标价', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -301,8 +338,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             home: PhotoDetailScreen(
@@ -320,8 +359,10 @@ void main() {
     });
 
     testWidgets('显示红色警告标记', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -330,8 +371,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -353,8 +396,10 @@ void main() {
     });
 
     testWidgets('点击表格行自动聚焦到对应旗子', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -363,8 +408,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -386,8 +433,10 @@ void main() {
     });
 
     testWidgets('报价自动换算', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -396,8 +445,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -418,8 +469,10 @@ void main() {
     });
 
     testWidgets('Flag表格为空时显示提示', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -428,8 +481,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [
@@ -451,8 +506,10 @@ void main() {
     });
 
     testWidgets('长按旗子显示删除选项', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -461,8 +518,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             home: PhotoDetailScreen(
@@ -480,8 +539,10 @@ void main() {
     });
 
     testWidgets('响应式布局：Web端左右布局，移动端上下布局', (tester) async {
-      when(() => mockPhotoService.getPhoto('test-photo-id')).thenAnswer((_) async => testPhoto);
-      when(() => mockFlagService.getFlags('test-photo-id')).thenAnswer((_) async => testFlags);
+      when(() => mockPhotoService.getPhoto('test-photo-id'))
+          .thenAnswer((_) async => testPhoto);
+      when(() => mockFlagService.getFlags('test-photo-id'))
+          .thenAnswer((_) async => testFlags);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -490,8 +551,10 @@ void main() {
             photoServiceProvider.overrideWithValue(mockPhotoService),
             flagServiceProvider.overrideWithValue(mockFlagService),
             realtimeServiceProvider.overrideWithValue(mockRealtimeService),
-            photoProvider('test-photo-id').overrideWith((ref) async => testPhoto),
-            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(mockFlagService, mockRealtimeService, 'test-photo-id')),
+            photoProvider('test-photo-id')
+                .overrideWith((ref) async => testPhoto),
+            flagsProvider('test-photo-id').overrideWith((ref) => FlagsNotifier(
+                mockFlagService, mockRealtimeService, 'test-photo-id')),
           ],
           child: const MaterialApp(
             localizationsDelegates: [

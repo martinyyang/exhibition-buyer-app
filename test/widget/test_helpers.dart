@@ -53,7 +53,8 @@ class FakeRealtimeChannel extends Fake implements RealtimeChannel {}
 
 // Mock StateNotifier for BoothsProvider
 class MockBoothsNotifier extends BoothsNotifier {
-  MockBoothsNotifier(List<Booth> booths, MockBoothService boothService, MockRealtimeService realtimeService)
+  MockBoothsNotifier(List<Booth> booths, MockBoothService boothService,
+      MockRealtimeService realtimeService)
       : super(boothService, realtimeService, 'test-event-id', 'test-team-id') {
     state = AsyncValue.data(booths);
   }

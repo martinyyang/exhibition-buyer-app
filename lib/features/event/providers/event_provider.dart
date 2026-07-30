@@ -14,19 +14,12 @@ final eventServiceProvider = Provider((ref) {
 // Realtime订阅Provider - 监听events表变化（仅监听当前团队）
 final eventsRealtimeProvider = StreamProvider<void>((ref) async* {
   final supabase = ref.watch(supabaseServiceProvider);
-  final authService = ref.watch(authServiceProvider);
-
-  final userId = authService.currentUserId;
-  if (userId == null) {
-    yield null;
-    return;
-  }
 
   // 获取用户的 team_id
-  final user = await authService.getCurrentUser();
+  final user = await ref.watch(currentUserDataProvider.future);
   final teamId = user?.teamId;
 
-  if (teamId == null) {
+  if (teamId == null || teamId.isEmpty) {
     yield null;
     return;
   }
@@ -65,13 +58,13 @@ final eventsProvider = FutureProvider<List<Event>>((ref) async {
   // 监听Realtime变化（建立依赖关系）
   ref.watch(eventsRealtimeProvider);
 
+  final user = await ref.watch(currentUserDataProvider.future);
+  final teamId = user?.teamId;
+
+  if (teamId == null || teamId.isEmpty) return [];
+
   final eventService = ref.watch(eventServiceProvider);
-  final authService = ref.watch(authServiceProvider);
-
-  final userId = authService.currentUserId;
-  if (userId == null) return [];
-
-  return await eventService.getEvents(userId);
+  return await eventService.getEventsByTeam(teamId);
 });
 
 // 当前活跃场次Provider（支持Realtime自动刷新）
@@ -79,13 +72,13 @@ final activeEventProvider = FutureProvider<Event?>((ref) async {
   // 监听Realtime变化（建立依赖关系）
   ref.watch(eventsRealtimeProvider);
 
+  final user = await ref.watch(currentUserDataProvider.future);
+  final teamId = user?.teamId;
+
+  if (teamId == null || teamId.isEmpty) return null;
+
   final eventService = ref.watch(eventServiceProvider);
-  final authService = ref.watch(authServiceProvider);
-
-  final userId = authService.currentUserId;
-  if (userId == null) return null;
-
-  return await eventService.getActiveEvent(userId);
+  return await eventService.getActiveEventByTeam(teamId);
 });
 
 // 单个场次Provider

@@ -109,7 +109,8 @@ class FormulaManagementScreen extends ConsumerWidget {
                 data: (history) => FormulaInput(
                   initialFormula: currentFormulaAsync.value,
                   historyFormulas: history,
-                  onSave: (formula) => _saveFormula(context, ref, teamId, formula),
+                  onSave: (formula) =>
+                      _saveFormula(context, ref, teamId, formula),
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Text('加载历史记录失败: $err'),

@@ -106,7 +106,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       // 2. 查找或创建团队（同名团队自动加入）
       final teamService = ref.read(teamServiceProvider);
-      final team = await teamService.getOrCreateTeamByName(name: _teamNameController.text.trim());
+      final team = await teamService.getOrCreateTeamByName(
+          name: _teamNameController.text.trim());
 
       // 3. 更新用户的 team_id
       final userId = authService.currentUserId;

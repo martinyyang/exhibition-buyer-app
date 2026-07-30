@@ -5,7 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:exhibition_buyer_app/features/auth/models/user.dart' as app_user;
+import 'package:exhibition_buyer_app/features/auth/models/user.dart'
+    as app_user;
 import 'package:exhibition_buyer_app/features/auth/models/team.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
 import 'package:exhibition_buyer_app/features/auth/services/auth_service.dart';
@@ -15,6 +16,7 @@ import 'package:exhibition_buyer_app/features/event/providers/event_provider.dar
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
 
 class MockAuthService extends Mock implements AuthService {}
+
 class MockTeamService extends Mock implements TeamService {}
 
 Widget createTestableWidget(Widget child, List<Override> overrides) {
@@ -47,7 +49,9 @@ void main() {
   });
 
   group('Team Security & Invite Code Tests', () {
-    testWidgets('Joining team by 6-digit Invite Code secures privacy and syncs team', (WidgetTester tester) async {
+    testWidgets(
+        'Joining team by 6-digit Invite Code secures privacy and syncs team',
+        (WidgetTester tester) async {
       final mockUser = app_user.User(
         id: 'user-remote',
         email: 'remote@example.com',
@@ -62,9 +66,12 @@ void main() {
         createdAt: DateTime.now(),
       );
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => mockUser);
-      when(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91')).thenAnswer((_) async => targetTeam);
-      when(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id)).thenAnswer((_) async {});
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => mockUser);
+      when(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91'))
+          .thenAnswer((_) async => targetTeam);
+      when(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id))
+          .thenAnswer((_) async {});
 
       await tester.pumpWidget(
         createTestableWidget(
@@ -72,7 +79,8 @@ void main() {
           [
             authServiceProvider.overrideWithValue(mockAuthService),
             teamServiceProvider.overrideWithValue(mockTeamService),
-            currentUserDataProvider.overrideWith((ref) => Future.value(mockUser)),
+            currentUserDataProvider
+                .overrideWith((ref) => Future.value(mockUser)),
             eventsProvider.overrideWith((ref) => Future.value([])),
           ],
         ),
@@ -97,8 +105,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify joinTeamByInviteCodeOrName was invoked with 3F8A91
-      verify(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91')).called(1);
-      verify(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id)).called(1);
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91'))
+          .called(1);
+      verify(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id))
+          .called(1);
     });
   });
 }

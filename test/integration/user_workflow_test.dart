@@ -115,7 +115,8 @@ void main() {
             supabaseServiceProvider.overrideWithValue(mockSupabaseService),
             eventsProvider.overrideWith((ref) async => [testEvent]),
             boothsProvider(BoothsParams(eventId: 'event-1', teamId: 'team-123'))
-                .overrideWith((ref) => MockBoothsNotifier([testBooth], mockBoothService, MockRealtimeService())),
+                .overrideWith((ref) => MockBoothsNotifier(
+                    [testBooth], mockBoothService, MockRealtimeService())),
             photosProvider('booth-1')
                 .overrideWith((ref) => MockPhotosNotifier([testPhoto])),
             flagsProvider('photo-1')

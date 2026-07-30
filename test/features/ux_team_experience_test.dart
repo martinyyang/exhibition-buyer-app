@@ -5,7 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:exhibition_buyer_app/features/auth/models/user.dart' as app_user;
+import 'package:exhibition_buyer_app/features/auth/models/user.dart'
+    as app_user;
 import 'package:exhibition_buyer_app/features/auth/models/team.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
 import 'package:exhibition_buyer_app/features/auth/services/auth_service.dart';
@@ -15,6 +16,7 @@ import 'package:exhibition_buyer_app/features/event/providers/event_provider.dar
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
 
 class MockAuthService extends Mock implements AuthService {}
+
 class MockTeamService extends Mock implements TeamService {}
 
 Widget createTestableWidget(Widget child, List<Override> overrides) {
@@ -47,7 +49,9 @@ void main() {
   });
 
   group('UX Team Experience Tests', () {
-    testWidgets('EventSelectionScreen displays Team Header Bar and allows direct switching', (WidgetTester tester) async {
+    testWidgets(
+        'EventSelectionScreen displays Team Header Bar and allows direct switching',
+        (WidgetTester tester) async {
       final mockUser = app_user.User(
         id: 'user-remote',
         email: 'remote@example.com',
@@ -56,13 +60,19 @@ void main() {
         createdAt: DateTime.now(),
       );
 
-      final team1 = Team(id: 'team-1', name: 'Alpha Team', createdAt: DateTime.now());
-      final team2 = Team(id: 'team-2', name: 'Buyer Team', createdAt: DateTime.now());
+      final team1 =
+          Team(id: 'team-1', name: 'Alpha Team', createdAt: DateTime.now());
+      final team2 =
+          Team(id: 'team-2', name: 'Buyer Team', createdAt: DateTime.now());
 
-      when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => mockUser);
-      when(() => mockTeamService.getTeam('team-1')).thenAnswer((_) async => team1);
-      when(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team')).thenAnswer((_) async => team2);
-      when(() => mockTeamService.updateUserTeam('user-remote', team2.id)).thenAnswer((_) async {});
+      when(() => mockAuthService.getCurrentUser())
+          .thenAnswer((_) async => mockUser);
+      when(() => mockTeamService.getTeam('team-1'))
+          .thenAnswer((_) async => team1);
+      when(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team'))
+          .thenAnswer((_) async => team2);
+      when(() => mockTeamService.updateUserTeam('user-remote', team2.id))
+          .thenAnswer((_) async {});
 
       await tester.pumpWidget(
         createTestableWidget(
@@ -70,7 +80,8 @@ void main() {
           [
             authServiceProvider.overrideWithValue(mockAuthService),
             teamServiceProvider.overrideWithValue(mockTeamService),
-            currentUserDataProvider.overrideWith((ref) => Future.value(mockUser)),
+            currentUserDataProvider
+                .overrideWith((ref) => Future.value(mockUser)),
             eventsProvider.overrideWith((ref) => Future.value([])),
           ],
         ),
@@ -95,7 +106,8 @@ void main() {
       await tester.tap(find.text('验证并加入'));
       await tester.pumpAndSettle();
 
-      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team')).called(1);
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team'))
+          .called(1);
     });
   });
 }

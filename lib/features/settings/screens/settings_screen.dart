@@ -157,13 +157,13 @@ class SettingsScreen extends ConsumerWidget {
               OutlinedButton.icon(
                 icon: const Icon(Icons.edit, size: 14),
                 label: Text(l10n.switchTeam),
-                onPressed: () => _showEditTeamDialog(
-                    context, ref, l10n, user, teamName == l10n.loading ? '' : teamName),
+                onPressed: () => _showEditTeamDialog(context, ref, l10n, user,
+                    teamName == l10n.loading ? '' : teamName),
               ),
             ],
           ),
-          onTap: () => _showEditTeamDialog(
-              context, ref, l10n, user, teamName == l10n.loading ? '' : teamName),
+          onTap: () => _showEditTeamDialog(context, ref, l10n, user,
+              teamName == l10n.loading ? '' : teamName),
         );
       },
     );
@@ -228,10 +228,14 @@ class SettingsScreen extends ConsumerWidget {
                 final input = inputController.text.trim();
                 final teamService = ref.read(teamServiceProvider);
 
-                final team = await teamService.joinTeamByInviteCodeOrName(input);
+                final team =
+                    await teamService.joinTeamByInviteCodeOrName(input);
                 await teamService.updateUserTeam(user.id, team.id);
 
                 ref.invalidate(currentUserDataProvider);
+                ref.invalidate(currentTeamProvider);
+                ref.invalidate(teamMembersProvider);
+                ref.invalidate(eventsRealtimeProvider);
                 ref.invalidate(eventsProvider);
                 ref.invalidate(activeEventProvider);
 

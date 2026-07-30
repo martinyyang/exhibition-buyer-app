@@ -44,11 +44,10 @@ void main() {
       // 验证注册页有返回按钮
       final backButton = find.byType(BackButton);
       final backIcon = find.byIcon(Icons.arrow_back);
-      final hasBackNavigation = backButton.evaluate().isNotEmpty ||
-                                backIcon.evaluate().isNotEmpty;
+      final hasBackNavigation =
+          backButton.evaluate().isNotEmpty || backIcon.evaluate().isNotEmpty;
 
-      expect(hasBackNavigation, true,
-        reason: '注册页应该有返回按钮（BackButton或返回图标）');
+      expect(hasBackNavigation, true, reason: '注册页应该有返回按钮（BackButton或返回图标）');
 
       if (hasBackNavigation) {
         if (backButton.evaluate().isNotEmpty) {
@@ -76,8 +75,7 @@ void main() {
 
       // 1. 检查设置按钮存在
       final settingsButton = find.byIcon(Icons.settings);
-      expect(settingsButton, findsOneWidget,
-        reason: '场次选择页应该有设置按钮');
+      expect(settingsButton, findsOneWidget, reason: '场次选择页应该有设置按钮');
 
       // 点击设置按钮
       await tester.tap(settingsButton);
@@ -85,8 +83,7 @@ void main() {
 
       // 验证设置页有返回按钮
       final backButton = find.byType(BackButton);
-      expect(backButton, findsOneWidget,
-        reason: '设置页应该有返回按钮');
+      expect(backButton, findsOneWidget, reason: '设置页应该有返回按钮');
 
       // 返回
       await tester.tap(backButton);
@@ -103,8 +100,7 @@ void main() {
 
         // 验证摊位列表页有返回按钮
         final boothBackButton = find.byType(BackButton);
-        expect(boothBackButton, findsOneWidget,
-          reason: '摊位列表页应该有返回按钮');
+        expect(boothBackButton, findsOneWidget, reason: '摊位列表页应该有返回按钮');
       }
     });
 
@@ -125,8 +121,7 @@ void main() {
 
       // 验证有返回按钮
       final backButton = find.byType(BackButton);
-      expect(backButton, findsOneWidget,
-        reason: '摊位列表页应该有返回按钮');
+      expect(backButton, findsOneWidget, reason: '摊位列表页应该有返回按钮');
 
       // 如果有摊位，点击进入照片网格
       final boothCards = find.byType(Card);
@@ -136,8 +131,7 @@ void main() {
 
         // 验证照片网格页有返回按钮
         final photoBackButton = find.byType(BackButton);
-        expect(photoBackButton, findsOneWidget,
-          reason: '照片网格页应该有返回按钮');
+        expect(photoBackButton, findsOneWidget, reason: '照片网格页应该有返回按钮');
 
         // 测试返回功能
         await tester.tap(photoBackButton);
@@ -162,8 +156,7 @@ void main() {
 
       // 验证有返回按钮
       final backButton = find.byType(BackButton);
-      expect(backButton, findsOneWidget,
-        reason: '照片网格页应该有返回按钮');
+      expect(backButton, findsOneWidget, reason: '照片网格页应该有返回按钮');
 
       // 如果有照片，点击进入详情页
       final photoWidgets = find.byType(GestureDetector);
@@ -173,8 +166,7 @@ void main() {
 
         // 验证照片详情页有返回按钮
         final detailBackButton = find.byType(BackButton);
-        expect(detailBackButton, findsOneWidget,
-          reason: '照片详情页应该有返回按钮');
+        expect(detailBackButton, findsOneWidget, reason: '照片详情页应该有返回按钮');
 
         // 测试返回功能
         await tester.tap(detailBackButton);
@@ -266,7 +258,7 @@ void main() {
 
       // 验证至少完成了基本导航流程
       expect(navigationLog.length, greaterThan(3),
-        reason: '应该至少完成登录、场次选择、设置等基本页面的导航');
+          reason: '应该至少完成登录、场次选择、设置等基本页面的导航');
     });
   });
 }

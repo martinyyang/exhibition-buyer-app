@@ -7,7 +7,8 @@ import 'package:exhibition_buyer_app/features/photo/screens/photo_annotation_scr
 import 'package:exhibition_buyer_app/features/photo/providers/photo_provider.dart';
 import 'package:exhibition_buyer_app/features/photo/models/photo.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
-import 'package:exhibition_buyer_app/features/auth/models/user.dart' as app_user;
+import 'package:exhibition_buyer_app/features/auth/models/user.dart'
+    as app_user;
 import 'package:exhibition_buyer_app/features/flag/providers/flag_provider.dart';
 import 'package:exhibition_buyer_app/features/flag/models/flag.dart';
 import 'test_helpers.dart';
@@ -31,16 +32,18 @@ void main() {
     when(() => mockSupabaseService.client).thenReturn(mockSupabaseClient);
 
     // Configure RealtimeChannel mock
-    when(() => mockSupabaseClient.channel(any())).thenReturn(mockRealtimeChannel);
+    when(() => mockSupabaseClient.channel(any()))
+        .thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.onPostgresChanges(
-      event: any(named: 'event'),
-      schema: any(named: 'schema'),
-      table: any(named: 'table'),
-      filter: any(named: 'filter'),
-      callback: any(named: 'callback'),
-    )).thenReturn(mockRealtimeChannel);
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        )).thenReturn(mockRealtimeChannel);
     when(() => mockRealtimeChannel.subscribe()).thenReturn(mockRealtimeChannel);
-    when(() => mockSupabaseClient.removeChannel(any())).thenAnswer((_) async => 'ok');
+    when(() => mockSupabaseClient.removeChannel(any()))
+        .thenAnswer((_) async => 'ok');
   });
 
   group('PhotoAnnotationScreen Widget Tests', () {

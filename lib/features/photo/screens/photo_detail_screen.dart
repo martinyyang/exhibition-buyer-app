@@ -313,21 +313,22 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         title: Text(widget.isRemoteView ? '标注商品' : '查看报价'),
         actions: [
           photoAsync.whenOrNull(
-            data: (photo) {
-              if (photo?.supplierName != null) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Center(
-                    child: Text(
-                      photo!.supplierName!,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                );
-              }
-              return null;
-            },
-          ) ?? const SizedBox.shrink(),
+                data: (photo) {
+                  if (photo?.supplierName != null) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Center(
+                        child: Text(
+                          photo!.supplierName!,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    );
+                  }
+                  return null;
+                },
+              ) ??
+              const SizedBox.shrink(),
         ],
       ),
       body: photoAsync.when(
