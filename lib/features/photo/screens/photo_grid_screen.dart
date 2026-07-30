@@ -10,6 +10,7 @@ import '../models/photo.dart';
 import '../services/image_helper_service.dart';
 import '../providers/photo_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/widgets/safe_back_button.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -322,6 +323,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('照片'),
+        leading: const SafeBackButton(fallbackPath: '/events'),
       ),
       body: photosAsync.when(
         data: (photos) => photos.isEmpty

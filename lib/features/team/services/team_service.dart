@@ -17,6 +17,22 @@ class TeamService {
     return Team.fromJson(result);
   }
 
+  /// 智能查找或创建小组：若已存在同名小组则直接加入，否则创建新小组
+  Future<Team> getOrCreateTeamByName({required String name}) async {
+    final trimmedName = name.trim();
+    final existingTeam = await _supabase
+        .from('teams')
+        .select()
+        .eq('name', trimmedName)
+        .maybeSingle();
+
+    if (existingTeam != null) {
+      return Team.fromJson(existingTeam);
+    }
+
+    return await createTeam(name: trimmedName);
+  }
+
   /// 获取小组信息
   Future<Team?> getTeam(String teamId) async {
     final result =
@@ -76,5 +92,15 @@ class TeamService {
   /// 更新用户的团队ID
   Future<void> updateUserTeam(String userId, String teamId) async {
     await _supabase.from('users').update({'team_id': teamId}).eq('id', userId);
+  }
+
+  /// 获取所有团队列表
+  Future<List<Team>> getAllTeams() async {
+    final result = await _supabase
+        .from('teams')
+        .select()
+        .order('created_at', ascending: false);
+
+    return (result as List).map((json) => Team.fromJson(json)).toList();
   }
 }

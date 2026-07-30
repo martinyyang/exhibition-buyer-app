@@ -6,6 +6,8 @@ import '../../../shared/widgets/loading_indicator.dart';
 import '../providers/auth_provider.dart';
 import '../../team/providers/team_provider.dart';
 
+import '../../../shared/widgets/safe_back_button.dart';
+
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
@@ -93,18 +95,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     try {
       final l10n = AppLocalizations.of(context)!;
 
-      // 1. 先注册用户（不关联团队）
+      // 1. 先注册用户
       final authService = ref.read(authServiceProvider);
       await authService.signUp(
         email: _emailController.text,
         password: _passwordController.text,
         role: _selectedRole,
-        teamId: null, // 暂时不关联团队
+        teamId: null,
       );
 
-      // 2. 用户创建成功后，创建团队（现在有认证上下文）
+      // 2. 查找或创建团队（同名团队自动加入）
       final teamService = ref.read(teamServiceProvider);
-      final team = await teamService.createTeam(name: _teamNameController.text);
+      final team = await teamService.getOrCreateTeamByName(name: _teamNameController.text.trim());
 
       // 3. 更新用户的 team_id
       final userId = authService.currentUserId;
@@ -114,11 +116,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       await teamService.updateUserTeam(userId, team.id);
 
-      // 4. 验证 team_id 已成功更新
-      final updatedUser = await authService.getCurrentUser();
-      if (updatedUser?.teamId == null) {
-        throw Exception('Failed to associate user with team');
-      }
+      // 4. 刷新全局当前用户状态 Provider，确保内存状态立即拥有 teamId
+      ref.invalidate(currentUserDataProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -188,6 +187,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.registerAccount),
+        leading: const SafeBackButton(fallbackPath: '/login'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -237,12 +237,56 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _teamNameController,
                   decoration: InputDecoration(
                     labelText: l10n.teamName,
-                    hintText: l10n.teamNameHint,
+                    hintText: '输入团队名称，或在下方直接点选',
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.group),
                   ),
                   validator: _validateTeamName,
                   enabled: !_isLoading,
+                ),
+                const SizedBox(height: 8),
+                FutureBuilder(
+                  future: ref.read(teamServiceProvider).getAllTeams(),
+                  builder: (context, snapshot) {
+                    final teams = snapshot.data ?? [];
+                    if (teams.isEmpty) return const SizedBox.shrink();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '或快捷点选已有现场团队:',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          children: teams.map((team) {
+                            final isSelected =
+                                _teamNameController.text.trim() == team.name;
+                            return ChoiceChip(
+                              label: Text(team.name, style: const TextStyle(fontSize: 12)),
+                              selected: isSelected,
+                              onSelected: _isLoading
+                                  ? null
+                                  : (selected) {
+                                      if (selected) {
+                                        setState(() {
+                                          _teamNameController.text = team.name;
+                                        });
+                                      }
+                                    },
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
                 Text(

@@ -8,6 +8,7 @@ import '../providers/booth_provider.dart';
 import '../services/booth_service.dart';
 import '../../event/providers/event_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/widgets/safe_back_button.dart';
 
 class BoothListScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -320,6 +321,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
 
         return Scaffold(
           appBar: AppBar(
+            leading: const SafeBackButton(fallbackPath: '/events'),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -449,11 +451,17 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         );
       },
       loading: () => Scaffold(
-        appBar: AppBar(title: const Text('摊位列表')),
+        appBar: AppBar(
+          title: const Text('摊位列表'),
+          leading: const SafeBackButton(fallbackPath: '/events'),
+        ),
         body: const Center(child: LoadingIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(title: const Text('摊位列表')),
+        appBar: AppBar(
+          title: const Text('摊位列表'),
+          leading: const SafeBackButton(fallbackPath: '/events'),
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

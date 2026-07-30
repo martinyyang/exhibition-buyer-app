@@ -9,6 +9,7 @@ import '../../flag/services/flag_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/photo.dart';
 import '../providers/photo_provider.dart';
+import '../../../shared/widgets/safe_back_button.dart';
 
 class PhotoDetailScreen extends ConsumerStatefulWidget {
   final String photoId;
@@ -308,6 +309,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const SafeBackButton(fallbackPath: '/events'),
         title: Text(widget.isRemoteView ? '标注商品' : '查看报价'),
         actions: [
           photoAsync.whenOrNull(

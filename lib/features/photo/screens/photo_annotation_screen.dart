@@ -7,6 +7,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../widgets/photo_annotation_canvas.dart';
 import '../models/photo.dart';
 import '../providers/photo_provider.dart';
+import '../../../shared/widgets/safe_back_button.dart';
 
 class PhotoAnnotationScreen extends ConsumerStatefulWidget {
   final String photoId;
@@ -35,6 +36,7 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('照片标注'),
+        leading: const SafeBackButton(fallbackPath: '/events'),
         actions: [
           IconButton(
             icon: Icon(_isAddingFlag ? Icons.check : Icons.add_location),

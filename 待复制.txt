@@ -1,0 +1,11 @@
+# 运行远程团队匹配与数据同步 TDD 隔离测试
+flutter test test/features/remote_team_sync_test.dart
+
+# 运行基础 UI/导航测试
+flutter test test/features/team_registration_and_navigation_test.dart
+
+# 运行代码静态检查
+flutter analyze
+
+# 运行预发布检查脚本 (PowerShell)
+.\validate_before_push.bat

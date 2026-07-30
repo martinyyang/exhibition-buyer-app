@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/formula_provider.dart';
 import '../widgets/formula_input.dart';
+import '../../../shared/widgets/safe_back_button.dart';
 
 class FormulaManagementScreen extends ConsumerWidget {
   const FormulaManagementScreen({super.key});
@@ -25,6 +26,7 @@ class FormulaManagementScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('汇率公式管理'),
+        leading: const SafeBackButton(fallbackPath: '/events'),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
