@@ -232,7 +232,8 @@ class SettingsScreen extends ConsumerWidget {
                 final input = inputController.text.trim();
                 final teamService = ref.read(teamServiceProvider);
 
-                final team = await teamService.joinTeamByInviteCodeOrName(input);
+                final team =
+                    await teamService.joinTeamByInviteCodeOrName(input);
                 await teamService.updateUserTeam(user.id, team.id);
 
                 // 强制多重刷所有用户与团队相关的 Provider
