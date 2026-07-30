@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3, Matrix4;
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
 import '../../flag/models/flag.dart';
@@ -49,11 +50,22 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
     final RenderBox box =
         _imageKey.currentContext!.findRenderObject() as RenderBox;
+
+    // 获取相对于图片的局部坐标
     final localPosition = box.globalToLocal(details.globalPosition);
 
+    // 应用 InteractiveViewer 变换矩阵的逆矩阵，将视口坐标转换为图片原始坐标
+    final Matrix4 inverseMatrix =
+        Matrix4.inverted(_transformationController.value);
+    final Vector3 transformed = inverseMatrix.transform3(Vector3(
+      localPosition.dx,
+      localPosition.dy,
+      0,
+    ));
+
     // 转换为相对坐标（0-1），并限制在有效范围内
-    final relativeX = (localPosition.dx / imageSize.width).clamp(0.0, 1.0);
-    final relativeY = (localPosition.dy / imageSize.height).clamp(0.0, 1.0);
+    final relativeX = (transformed.x / imageSize.width).clamp(0.0, 1.0);
+    final relativeY = (transformed.y / imageSize.height).clamp(0.0, 1.0);
 
     _createFlag(relativeX, relativeY);
   }
