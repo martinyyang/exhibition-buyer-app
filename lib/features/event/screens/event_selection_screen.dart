@@ -358,6 +358,12 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                           const SizedBox(height: 16),
                           Text(
                             l10n.noEvents,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           Text(
                             l10n.noEventsRemoteTip,
                             textAlign: TextAlign.center,

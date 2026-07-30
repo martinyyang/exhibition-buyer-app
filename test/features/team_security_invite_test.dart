@@ -21,6 +21,7 @@ Widget createTestableWidget(Widget child, List<Override> overrides) {
   return ProviderScope(
     overrides: overrides,
     child: MaterialApp(
+      locale: const Locale('zh', ''),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

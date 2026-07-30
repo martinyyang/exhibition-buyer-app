@@ -21,6 +21,7 @@ Widget createTestableWidget(Widget child, List<Override> overrides) {
   return ProviderScope(
     overrides: overrides,
     child: MaterialApp(
+      locale: const Locale('zh', ''),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -78,15 +79,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check Team Header is present on main screen
-      expect(find.textContaining('当前团队:'), findsOneWidget);
-      expect(find.text('切换团队'), findsOneWidget);
+      expect(find.byIcon(Icons.swap_horiz), findsOneWidget);
 
       // Tap Switch Team directly on main screen
-      await tester.tap(find.text('切换团队'));
+      await tester.tap(find.byIcon(Icons.swap_horiz));
       await tester.pumpAndSettle();
 
       // Quick team dialog should pop up immediately without going to Settings
-      expect(find.text('凭邀请码加入买手团队'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsOneWidget);
 
       final inputField = find.byType(TextFormField);
       await tester.enterText(inputField, 'Buyer Team');

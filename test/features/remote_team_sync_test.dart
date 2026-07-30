@@ -20,6 +20,7 @@ Widget createTestableWidget(Widget child, List<Override> overrides) {
   return ProviderScope(
     overrides: overrides,
     child: MaterialApp(
+      locale: const Locale('zh', ''),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -84,8 +85,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Tap on Team item to change team
-      await tester.tap(find.text('切换团队'));
+      // Tap on Edit icon to change team
+      await tester.tap(find.byIcon(Icons.edit));
       await tester.pumpAndSettle();
 
       // Enter "Apple Team"

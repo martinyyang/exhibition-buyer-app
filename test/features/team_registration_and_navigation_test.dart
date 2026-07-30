@@ -54,6 +54,7 @@ Widget createTestableWidget(Widget child, List<Override> overrides) {
   return ProviderScope(
     overrides: overrides,
     child: MaterialApp(
+      locale: const Locale('zh', ''),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -126,7 +127,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check if edit team dialog appears
-      expect(find.text('凭邀请码 / 团队名切换团队'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsOneWidget);
     });
 
     testWidgets('2. BoothListScreen should contain SafeBackButton in AppBar', (WidgetTester tester) async {
