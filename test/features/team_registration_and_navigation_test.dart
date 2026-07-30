@@ -126,7 +126,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check if edit team dialog appears
-      expect(find.textContaining('切换团队'), findsOneWidget);
+      expect(find.text('凭邀请码 / 团队名切换团队'), findsOneWidget);
     });
 
     testWidgets('2. BoothListScreen should contain SafeBackButton in AppBar', (WidgetTester tester) async {
