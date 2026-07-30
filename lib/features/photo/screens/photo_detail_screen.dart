@@ -167,16 +167,18 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Stack(
-          key: _imageKey,
           children: [
             // 照片
             if (photo != null)
-              CachedNetworkImage(
-                imageUrl: photo.url,
-                fit: BoxFit.contain,
-                placeholder: (context, url) =>
-                    const Center(child: LoadingIndicator()),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+              Container(
+                key: _imageKey,
+                child: CachedNetworkImage(
+                  imageUrl: photo.url,
+                  fit: BoxFit.contain,
+                  placeholder: (context, url) =>
+                      const Center(child: LoadingIndicator()),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
 
             // 旗子标记
