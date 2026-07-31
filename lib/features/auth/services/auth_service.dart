@@ -61,7 +61,8 @@ class AuthService {
           .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
-          throw Exception('Registration request timeout, please check network connection');
+          throw Exception(
+              'Registration request timeout, please check network connection');
         },
       );
 

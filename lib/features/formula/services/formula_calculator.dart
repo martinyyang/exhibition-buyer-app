@@ -19,7 +19,8 @@ class FormulaCalculator {
 
       // 检查除以零的情况
       if (result.isInfinite || result.isNaN) {
-        throw FormatException('Invalid formula result: division by zero or invalid operation');
+        throw FormatException(
+            'Invalid formula result: division by zero or invalid operation');
       }
 
       return double.parse(result.toStringAsFixed(2));

@@ -253,7 +253,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
                 final imageAspect = _loadedImage!.width / _loadedImage!.height;
-                final containerAspect = containerSize.width / containerSize.height;
+                final containerAspect =
+                    containerSize.width / containerSize.height;
 
                 double displayWidth, displayHeight, offsetX, offsetY;
 

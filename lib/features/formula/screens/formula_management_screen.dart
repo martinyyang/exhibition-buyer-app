@@ -179,9 +179,12 @@ class FormulaManagementScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               _buildFormulaExample('RMB * 0.14', l10n.formulaExampleSimple),
-              _buildFormulaExample('(RMB - 50) * 0.14', l10n.formulaExampleDeduct),
-              _buildFormulaExample('RMB * 0.14 + 10', l10n.formulaExampleAddFee),
-              _buildFormulaExample('(RMB * 0.14 + 10) * 1.1', l10n.formulaExampleComplex),
+              _buildFormulaExample(
+                  '(RMB - 50) * 0.14', l10n.formulaExampleDeduct),
+              _buildFormulaExample(
+                  'RMB * 0.14 + 10', l10n.formulaExampleAddFee),
+              _buildFormulaExample(
+                  '(RMB * 0.14 + 10) * 1.1', l10n.formulaExampleComplex),
             ],
           ),
         ),
