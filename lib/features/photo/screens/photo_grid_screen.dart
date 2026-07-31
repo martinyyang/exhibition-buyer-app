@@ -343,8 +343,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           error: (_, __) => Text(l10n.photos),
         ),
         leading: SafeBackButton(
-          fallbackPath:
-              '/events/${Uri.parse(GoRouterState.of(context).uri.toString()).pathSegments[1]}/booths',
+          fallbackPath: '/events',
         ),
       ),
       body: photosAsync.when(

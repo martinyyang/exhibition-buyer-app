@@ -219,6 +219,8 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
     double? targetPrice,
     double? positionX,
     double? positionY,
+    bool? needsAttention,
+    bool? isPurchased,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -231,6 +233,8 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
             #targetPrice: targetPrice,
             #positionX: positionX,
             #positionY: positionY,
+            #needsAttention: needsAttention,
+            #isPurchased: isPurchased,
           },
         ),
         returnValue: _i6.Future<_i2.Flag>.value(_FakeFlag_0(
@@ -245,6 +249,8 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
               #targetPrice: targetPrice,
               #positionX: positionX,
               #positionY: positionY,
+              #needsAttention: needsAttention,
+              #isPurchased: isPurchased,
             },
           ),
         )),

@@ -146,7 +146,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _deleteFlag(flag);
+              _deleteFlagDirect(flag);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: Text(l10n.delete),
@@ -156,7 +156,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     );
   }
 
-  Future<void> _deleteFlag(Flag flag) async {
+  Future<void> _deleteFlagDirect(Flag flag) async {
     final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
@@ -244,7 +244,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.updateFailed(e.toString()))),
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
         );
       }
     }

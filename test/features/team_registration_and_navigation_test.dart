@@ -72,7 +72,7 @@ Widget createTestableWidget(Widget child, List<Override> overrides) {
         Locale('zh', ''),
         Locale('en', ''),
       ],
-      home: child,
+      home: Scaffold(body: child),
     ),
   );
 }

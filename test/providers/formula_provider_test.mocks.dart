@@ -175,6 +175,23 @@ class MockExchangeSettingsService extends _i1.Mock
         ),
         returnValue: _i4.Future<double?>.value(),
       ) as _i4.Future<double?>);
+
+  @override
+  _i4.Future<void> updateFormula(
+    String? teamId,
+    String? formula,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateFormula,
+          [
+            teamId,
+            formula,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [RealtimeService].
