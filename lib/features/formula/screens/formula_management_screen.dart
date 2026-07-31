@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/formula_provider.dart';
 import '../widgets/formula_input.dart';
@@ -10,13 +11,14 @@ class FormulaManagementScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser = ref.watch(currentUserDataProvider);
     final teamId = currentUser.value?.teamId;
 
     if (teamId == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('汇率公式管理')),
-        body: const Center(child: Text('未找到团队信息')),
+        appBar: AppBar(title: Text(l10n.exchangeFormulaManagement)),
+        body: Center(child: Text(l10n.teamInfoNotFound)),
       );
     }
 
@@ -25,7 +27,7 @@ class FormulaManagementScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('汇率公式管理'),
+        title: Text(l10n.exchangeFormulaManagement),
         leading: const SafeBackButton(fallbackPath: '/events'),
         actions: [
           IconButton(
@@ -47,9 +49,9 @@ class FormulaManagementScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        '当前使用的公式',
-                        style: TextStyle(
+                      Text(
+                        l10n.currentFormula,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -58,9 +60,9 @@ class FormulaManagementScreen extends ConsumerWidget {
                       currentFormulaAsync.when(
                         data: (formula) {
                           if (formula == null || formula.isEmpty) {
-                            return const Text(
-                              '尚未设置公式',
-                              style: TextStyle(
+                            return Text(
+                              l10n.noFormulaSet,
+                              style: const TextStyle(
                                 color: Colors.grey,
                                 fontStyle: FontStyle.italic,
                               ),
@@ -84,7 +86,7 @@ class FormulaManagementScreen extends ConsumerWidget {
                         },
                         loading: () => const CircularProgressIndicator(),
                         error: (err, stack) => Text(
-                          '加载失败: $err',
+                          l10n.loadFailed(err.toString()),
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
@@ -96,9 +98,9 @@ class FormulaManagementScreen extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // 公式输入区域
-              const Text(
-                '设置新公式',
-                style: TextStyle(
+              Text(
+                l10n.setNewFormula,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -113,7 +115,8 @@ class FormulaManagementScreen extends ConsumerWidget {
                       _saveFormula(context, ref, teamId, formula),
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Text('加载历史记录失败: $err'),
+                error: (err, stack) =>
+                    Text(l10n.loadHistoryFailed(err.toString())),
               ),
             ],
           ),
@@ -128,13 +131,14 @@ class FormulaManagementScreen extends ConsumerWidget {
     String teamId,
     String formula,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final settingsService = ref.read(exchangeSettingsServiceProvider);
       await settingsService.updateFormula(teamId, formula);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('公式保存成功')),
+          SnackBar(content: Text(l10n.formulaSavedSuccess)),
         );
       }
 
@@ -144,29 +148,30 @@ class FormulaManagementScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
+          SnackBar(content: Text(l10n.saveFailed(e.toString()))),
         );
       }
     }
   }
 
   void _showFormulaHelp(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('公式说明'),
+        title: Text(l10n.formulaInstructions),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                '如何编写公式：',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Text(
+                l10n.formulaInstructions,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text('• 使用 RMB 代表人民币价格'),
-              const Text('• 支持运算符：+ - * / ( )'),
+              Text(l10n.formulaInstructionRmb),
+              Text(l10n.formulaInstructionOperators),
               const SizedBox(height: 16),
               const Text(
                 '示例：',
@@ -183,7 +188,7 @@ class FormulaManagementScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('知道了'),
+            child: Text(l10n.gotIt),
           ),
         ],
       ),

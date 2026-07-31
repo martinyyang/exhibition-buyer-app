@@ -296,5 +296,58 @@
   },
   "registerTeamNameHint": "Enter team name or 6-digit invite code",
   "teamNameOrInviteCode": "Team Name / 6-digit Invite Code",
-  "formulaSettings": "Formula Settings"
+  "formulaSettings": "Formula Settings",
+  "exchangeFormulaManagement": "Exchange Formula Management",
+  "teamInfoNotFound": "Team information not found",
+  "currentFormula": "Current Formula",
+  "noFormulaSet": "No formula set",
+  "setNewFormula": "Set New Formula",
+  "formulaPlaceholder": "Example formula",
+  "useRmbVariable": "Use RMB as the variable for RMB price",
+  "supportedOperators": "Supported operators: + - * / ( )",
+  "previewCalculationResult": "Preview Calculation Result",
+  "formulaHistory": "Formula History",
+  "noHistory": "No history",
+  "loadHistoryFailed": "Failed to load history: {error}",
+  "@loadHistoryFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "formulaSavedSuccess": "Formula saved successfully",
+  "saveFailed": "Save failed: {error}",
+  "@saveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "formulaInstructions": "Formula Instructions",
+  "formulaInstructionRmb": "• Use RMB to represent the RMB price",
+  "formulaInstructionOperators": "• Supported operators: + - * / ( )",
+  "gotIt": "Got it",
+  "pleaseEnterFormula": "Please enter formula",
+  "formulaFormatError": "Formula format error",
+  "updatePriceFailed": "Update price failed: {error}",
+  "@updatePriceFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "updateTargetPriceFailed": "Update target price failed: {error}",
+  "@updateTargetPriceFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "cameraButton": "Camera",
+  "uploadPhotoButton": "Upload Photo",
+  "takePhotoAction": "Take Photo",
+  "chooseFromGallery": "Choose from Gallery",
+  "uploadPhotoFailed": "Photo capture failed: {error}",
+  "@uploadPhotoFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "resetView": "Reset View"
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3, Matrix4;
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
 import '../../flag/models/flag.dart';
@@ -135,6 +136,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   Future<void> _createFlag(double x, double y) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
       final supabaseService = ref.read(supabaseServiceProvider);
@@ -153,13 +155,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('标记已添加')),
+          SnackBar(content: Text(l10n.flagAdded)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加失败: $e')),
+          SnackBar(content: Text(l10n.addFailed(e.toString()))),
         );
       }
     }
@@ -195,17 +197,18 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   void _onFlagLongPress(Flag flag) {
+    final l10n = AppLocalizations.of(context)!;
     // 买手和远程用户都可以删除旗子
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('删除标记'),
-        content: Text('确定要删除旗子 #${flag.number} 吗？'),
+        title: Text(l10n.deleteFlag),
+        content: Text(l10n.confirmDeleteFlagMessage(flag.number)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -213,7 +216,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               _deleteFlag(flag);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -221,25 +224,27 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   Future<void> _deleteFlag(Flag flag) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
       await flagService.deleteFlag(flag.id);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已删除旗子 #${flag.number}')),
+          SnackBar(content: Text(l10n.flagDeletedSuccess(flag.number))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: $e')),
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
         );
       }
     }
   }
 
   Future<void> _updateFlagPrice(Flag flag, double price) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
       await flagService.updateFlag(
@@ -249,13 +254,14 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('更新报价失败: $e')),
+          SnackBar(content: Text(l10n.updatePriceFailed(e.toString()))),
         );
       }
     }
   }
 
   Future<void> _updateFlagTargetPrice(Flag flag, double targetPrice) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
       await flagService.updateFlag(
@@ -265,7 +271,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('更新目标价失败: $e')),
+          SnackBar(content: Text(l10n.updateTargetPriceFailed(e.toString()))),
         );
       }
     }
@@ -420,6 +426,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   Widget _buildMobileLayout(Photo? photo, List<Flag> flags) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         // 上半部分：照片（移动端禁用InteractiveViewer避免手势冲突）
@@ -441,7 +448,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       Icon(Icons.flag, size: 48, color: Colors.grey[400]),
                       const SizedBox(height: 8),
                       Text(
-                        '点击照片标记商品',
+                        l10n.tapToMarkProduct,
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                     ],
@@ -462,6 +469,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   Widget _buildDesktopLayout(Photo? photo, List<Flag> flags) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         // 左侧：照片
@@ -484,7 +492,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPressed: () {
                     _transformationController.value = Matrix4.identity();
                   },
-                  tooltip: '重置视图',
+                  tooltip: l10n.resetView,
                   child: const Icon(Icons.refresh, size: 20),
                 ),
               ),
@@ -505,7 +513,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       Icon(Icons.flag, size: 64, color: Colors.grey[400]),
                       const SizedBox(height: 16),
                       Text(
-                        '点击照片标记商品',
+                        l10n.tapToMarkProduct,
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey[600],
@@ -530,13 +538,15 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final photoAsync = ref.watch(photoProvider(widget.photoId));
     final flagsAsync = ref.watch(flagsProvider(widget.photoId));
 
     return Scaffold(
       appBar: AppBar(
         leading: const SafeBackButton(fallbackPath: '/events'),
-        title: Text(widget.isRemoteView ? '标注商品' : '查看报价'),
+        title:
+            Text(widget.isRemoteView ? l10n.annotateProducts : l10n.viewQuotes),
         actions: [
           photoAsync.whenOrNull(
                 data: (photo) {
@@ -574,13 +584,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
             },
             loading: () => const Center(child: LoadingIndicator()),
             error: (error, stack) => Center(
-              child: Text('加载失败: $error'),
+              child: Text(l10n.loadFailed(error.toString())),
             ),
           );
         },
         loading: () => const Center(child: LoadingIndicator()),
         error: (error, stack) => Center(
-          child: Text('加载失败: $error'),
+          child: Text(l10n.loadFailed(error.toString())),
         ),
       ),
     );

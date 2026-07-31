@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/formula_calculator.dart';
 
 class FormulaInput extends StatefulWidget {
@@ -84,18 +85,19 @@ class _FormulaInputState extends State<FormulaInput> {
   }
 
   void _onSave() {
+    final l10n = AppLocalizations.of(context)!;
     final formula = _controller.text.trim();
 
     if (formula.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入公式')),
+        SnackBar(content: Text(l10n.pleaseEnterFormula)),
       );
       return;
     }
 
     if (!FormulaCalculator.validateFormula(formula)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('公式格式错误')),
+        SnackBar(content: Text(l10n.formulaFormatError)),
       );
       return;
     }
@@ -107,6 +109,7 @@ class _FormulaInputState extends State<FormulaInput> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -114,11 +117,11 @@ class _FormulaInputState extends State<FormulaInput> {
         TextField(
           controller: _controller,
           decoration: InputDecoration(
-            labelText: '汇率公式',
-            hintText: '例如：RMB * 0.14 或 (RMB - 50) * 0.14 + 10',
+            labelText: l10n.formulaSettings,
+            hintText: l10n.formulaPlaceholder,
             errorText: _errorMessage,
             border: const OutlineInputBorder(),
-            helperText: '使用 RMB 作为人民币价格变量',
+            helperText: l10n.useRmbVariable,
           ),
           maxLines: 2,
         ),
@@ -127,7 +130,7 @@ class _FormulaInputState extends State<FormulaInput> {
 
         // 说明文字
         Text(
-          '支持的运算：+ - * / ( )',
+          l10n.supportedOperators,
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey[600],
@@ -138,9 +141,9 @@ class _FormulaInputState extends State<FormulaInput> {
 
         // 预览结果
         if (_previewResults != null) ...[
-          const Text(
-            '预览计算结果',
-            style: TextStyle(
+          Text(
+            l10n.previewCalculationResult,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -182,9 +185,9 @@ class _FormulaInputState extends State<FormulaInput> {
         // 历史公式
         if (widget.historyFormulas != null &&
             widget.historyFormulas!.isNotEmpty) ...[
-          const Text(
-            '历史公式',
-            style: TextStyle(
+          Text(
+            l10n.formulaHistory,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -212,7 +215,7 @@ class _FormulaInputState extends State<FormulaInput> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _onSave,
-              child: const Text('保存'),
+              child: Text(l10n.save),
             ),
           ),
       ],

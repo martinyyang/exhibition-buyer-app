@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../flag/models/flag.dart';
 import '../../flag/providers/flag_provider.dart';
 import '../../flag/services/flag_service.dart';
@@ -28,6 +29,7 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final photoAsync = ref.watch(photoProvider(widget.photoId));
     final flagsAsync = ref.watch(flagsProvider(widget.photoId));
     final currentUser = ref.watch(currentUserDataProvider);
@@ -35,7 +37,7 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('照片标注'),
+        title: Text(l10n.annotateProducts),
         leading: const SafeBackButton(fallbackPath: '/events'),
         actions: [
           IconButton(
@@ -48,20 +50,20 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
                 }
               });
             },
-            tooltip: _isAddingFlag ? '完成标注' : '添加标记',
+            tooltip: _isAddingFlag ? l10n.ok : l10n.annotateProducts,
           ),
           if (_selectedFlag != null)
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () => _deleteFlag(_selectedFlag!),
-              tooltip: '删除标记',
+              tooltip: l10n.deleteFlag,
             ),
         ],
       ),
       body: photoAsync.when(
         data: (photo) {
           if (photo == null) {
-            return const Center(child: Text('照片不存在'));
+            return Center(child: Text(l10n.noPhotos));
           }
 
           return flagsAsync.when(
@@ -73,10 +75,10 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     color: Colors.blue.withOpacity(0.1),
-                    child: const Text(
-                      '点击照片任意位置添加标记',
+                    child: Text(
+                      l10n.tapToMarkProduct,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.w500,
                       ),
@@ -128,11 +130,13 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
               ],
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('加载失败: $err')),
+            error: (err, stack) =>
+                Center(child: Text(l10n.loadFailed(err.toString()))),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('加载失败: $err')),
+        error: (err, stack) =>
+            Center(child: Text(l10n.loadFailed(err.toString()))),
       ),
     );
   }
@@ -193,6 +197,7 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
   }
 
   Future<void> _addFlag(Offset position, int number, String userId) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
       await flagService.createFlag(
@@ -207,33 +212,34 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('已添加标记')),
+          SnackBar(content: Text(l10n.flagAdded)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加失败: $e')),
+          SnackBar(content: Text(l10n.addFailed(e.toString()))),
         );
       }
     }
   }
 
   Future<void> _deleteFlag(Flag flag) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('删除标记'),
-        content: Text('确定要删除标记 #${flag.number} 吗？'),
+        title: Text(l10n.deleteFlag),
+        content: Text(l10n.confirmDeleteFlagMessage(flag.number)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -254,13 +260,13 @@ class _PhotoAnnotationScreenState extends ConsumerState<PhotoAnnotationScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('标记已删除')),
+          SnackBar(content: Text(l10n.flagDeletedSuccess(flag.number))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: $e')),
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
         );
       }
     }
@@ -317,6 +323,7 @@ class _FlagDetailsSheetState extends ConsumerState<_FlagDetailsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -350,7 +357,7 @@ class _FlagDetailsSheetState extends ConsumerState<_FlagDetailsSheet> {
               ),
               const SizedBox(width: 12),
               Text(
-                '标记 #${widget.flag.number}',
+                l10n.annotationDetails,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -361,27 +368,27 @@ class _FlagDetailsSheetState extends ConsumerState<_FlagDetailsSheet> {
           const SizedBox(height: 24),
           TextField(
             controller: _priceRmbController,
-            decoration: const InputDecoration(
-              labelText: '人民币价格',
+            decoration: InputDecoration(
+              labelText: l10n.priceRmb,
               prefixText: '¥',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _targetPriceController,
-            decoration: const InputDecoration(
-              labelText: '目标价格',
+            decoration: InputDecoration(
+              labelText: l10n.targetPrice,
               prefixText: '\$',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text('需要注意'),
-            subtitle: const Text('标记为需要特别关注的商品'),
+            title: Text(l10n.status),
+            subtitle: Text(l10n.status),
             value: _needsAttention,
             onChanged: (value) {
               setState(() {
@@ -394,7 +401,7 @@ class _FlagDetailsSheetState extends ConsumerState<_FlagDetailsSheet> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _saveChanges,
-              child: const Text('保存'),
+              child: Text(l10n.save),
             ),
           ),
         ],
@@ -403,6 +410,7 @@ class _FlagDetailsSheetState extends ConsumerState<_FlagDetailsSheet> {
   }
 
   Future<void> _saveChanges() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
 
@@ -429,13 +437,13 @@ class _FlagDetailsSheetState extends ConsumerState<_FlagDetailsSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('保存成功')),
+          SnackBar(content: Text(l10n.save)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
+          SnackBar(content: Text(l10n.saveFailed(e.toString()))),
         );
       }
     }

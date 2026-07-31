@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../core/utils/responsive.dart';
 import '../models/photo.dart';
@@ -40,6 +41,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
   /// Web 端和移动端相册选择
   Future<void> _pickImageFromGallery() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
     });
@@ -69,7 +71,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('照片上传成功')),
+            SnackBar(content: Text(l10n.photoUploadSuccess)),
           );
 
           // 手动刷新照片列表（Realtime 未启用时的临时方案）
@@ -79,7 +81,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('上传失败: $e')),
+          SnackBar(content: Text(l10n.uploadFailed(e.toString()))),
         );
       }
     } finally {
@@ -93,6 +95,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
   /// 移动端：相机拍照
   Future<void> _pickImageFromCamera() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
     });
@@ -122,7 +125,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('照片上传成功')),
+            SnackBar(content: Text(l10n.photoUploadSuccess)),
           );
 
           // 手动刷新照片列表（Realtime 未启用时的临时方案）
@@ -132,7 +135,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('拍照失败: $e')),
+          SnackBar(content: Text(l10n.uploadPhotoFailed(e.toString()))),
         );
       }
     } finally {
@@ -146,6 +149,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
   /// 移动端：显示图片来源选择对话框
   Future<void> _showImageSourceDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet(
       context: context,
       builder: (context) => Column(
@@ -153,7 +157,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         children: [
           ListTile(
             leading: const Icon(Icons.camera_alt),
-            title: const Text('拍照'),
+            title: Text(l10n.takePhotoAction),
             onTap: () {
               Navigator.pop(context);
               _pickImageFromCamera();
@@ -161,7 +165,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.photo_library),
-            title: const Text('从相册选择'),
+            title: Text(l10n.chooseFromGallery),
             onTap: () {
               Navigator.pop(context);
               _pickImageFromGallery();
@@ -177,6 +181,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   void _onPhotoLongPress(Photo photo) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (context) => Column(
@@ -184,7 +189,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         children: [
           ListTile(
             leading: const Icon(Icons.business),
-            title: const Text('添加供应商信息'),
+            title: Text(l10n.addSupplierInfo),
             onTap: () {
               Navigator.pop(context);
               _showSupplierDialog(photo);
@@ -192,7 +197,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
-            title: const Text('删除', style: TextStyle(color: Colors.red)),
+            title: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
             onTap: () {
               Navigator.pop(context);
               _confirmDeletePhoto(photo);
@@ -204,26 +209,27 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   void _showSupplierDialog(Photo photo) {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: photo.supplierName);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('供应商信息'),
+        title: Text(l10n.supplierInfo),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                labelText: '供应商名称',
-                hintText: '例如：LV专柜',
+              decoration: InputDecoration(
+                labelText: l10n.supplierName,
+                hintText: l10n.supplierNameHint,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              '供应商Logo（可选）',
-              style: TextStyle(fontSize: 12),
+            Text(
+              l10n.supplierLogoOptional,
+              style: const TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
@@ -231,21 +237,21 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
                 // TODO: 上传供应商Logo
               },
               icon: const Icon(Icons.upload),
-              label: const Text('上传Logo'),
+              label: Text(l10n.uploadLogo),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _updateSupplierInfo(photo, nameController.text);
             },
-            child: const Text('保存'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -253,6 +259,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _updateSupplierInfo(Photo photo, String supplierName) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final photoService = ref.read(photoServiceProvider);
       await photoService.updatePhoto(
@@ -262,28 +269,29 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('供应商信息已更新')),
+          SnackBar(content: Text(l10n.supplierInfoUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('更新失败: $e')),
+          SnackBar(content: Text(l10n.uploadFailed(e.toString()))),
         );
       }
     }
   }
 
   void _confirmDeletePhoto(Photo photo) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除这张照片吗？\n所有标注也会被删除。'),
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeletePhotoMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -291,7 +299,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
               _deletePhoto(photo);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -299,19 +307,20 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _deletePhoto(Photo photo) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final photoService = ref.read(photoServiceProvider);
       await photoService.deletePhoto(photo.id);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('照片已删除')),
+          SnackBar(content: Text(l10n.photoDeleted)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: $e')),
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
         );
       }
     }
@@ -319,11 +328,12 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final photosAsync = ref.watch(photosProvider(widget.boothId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('照片'),
+        title: Text(l10n.photos),
         leading: const SafeBackButton(fallbackPath: '/events'),
       ),
       body: photosAsync.when(
@@ -339,7 +349,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '暂无照片',
+                      l10n.noPhotos,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.grey[600],
@@ -347,7 +357,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '点击右下角相机按钮拍照',
+                      l10n.takePhotoHint,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[500],
@@ -381,11 +391,11 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
             children: [
               const Icon(Icons.error, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('加载失败: $err'),
+              Text(l10n.loadFailed(err.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.refresh(photosProvider(widget.boothId)),
-                child: const Text('重试'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -398,7 +408,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
             )
           : FloatingActionButton(
               onPressed: _takePhoto,
-              tooltip: kIsWeb ? '上传照片' : '拍照',
+              tooltip: kIsWeb ? l10n.uploadPhotoButton : l10n.cameraButton,
               child: Icon(kIsWeb ? Icons.upload_file : Icons.camera_alt),
             ),
     );
@@ -418,6 +428,7 @@ class _PhotoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final flagCountAsync = ref.watch(photoFlagCountProvider(photo.id));
 
     return Card(
@@ -459,7 +470,7 @@ class _PhotoCard extends ConsumerWidget {
                       const SizedBox(width: 4),
                       flagCountAsync.when(
                         data: (count) => Text(
-                          '$count个旗子',
+                          l10n.flagCount(count),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -473,7 +484,7 @@ class _PhotoCard extends ConsumerWidget {
                           ),
                         ),
                         error: (_, __) => Text(
-                          '0个旗子',
+                          l10n.flagCount(0),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],

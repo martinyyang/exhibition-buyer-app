@@ -296,5 +296,58 @@
   },
   "registerTeamNameHint": "填入团队全名，或买手分享的6位邀请码",
   "teamNameOrInviteCode": "团队名称 / 6位邀请码",
-  "formulaSettings": "公式设置"
+  "formulaSettings": "公式设置",
+  "exchangeFormulaManagement": "汇率公式管理",
+  "teamInfoNotFound": "未找到团队信息",
+  "currentFormula": "当前使用的公式",
+  "noFormulaSet": "尚未设置公式",
+  "setNewFormula": "设置新公式",
+  "formulaPlaceholder": "示例公式",
+  "useRmbVariable": "使用 RMB 作为人民币价格变量",
+  "supportedOperators": "支持的运算符: + - * / ( )",
+  "previewCalculationResult": "预览计算结果",
+  "formulaHistory": "公式历史",
+  "noHistory": "暂无历史记录",
+  "loadHistoryFailed": "加载历史记录失败: {error}",
+  "@loadHistoryFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "formulaSavedSuccess": "公式保存成功",
+  "saveFailed": "保存失败: {error}",
+  "@saveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "formulaInstructions": "公式说明",
+  "formulaInstructionRmb": "• 使用 RMB 代表人民币价格",
+  "formulaInstructionOperators": "• 支持运算符：+ - * / ( )",
+  "gotIt": "知道了",
+  "pleaseEnterFormula": "请输入公式",
+  "formulaFormatError": "公式格式错误",
+  "updatePriceFailed": "更新报价失败: {error}",
+  "@updatePriceFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "updateTargetPriceFailed": "更新目标价失败: {error}",
+  "@updateTargetPriceFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "cameraButton": "拍照",
+  "uploadPhotoButton": "上传照片",
+  "takePhotoAction": "拍照",
+  "chooseFromGallery": "从相册选择",
+  "uploadPhotoFailed": "拍照失败: {error}",
+  "@uploadPhotoFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "resetView": "重置视图"
 }
