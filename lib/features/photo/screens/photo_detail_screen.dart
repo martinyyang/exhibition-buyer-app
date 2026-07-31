@@ -311,8 +311,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 if (_loadedImage == null) return const SizedBox.shrink();
 
                 // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
-                final imageAspect =
-                    _loadedImage!.width / _loadedImage!.height;
+                final imageAspect = _loadedImage!.width / _loadedImage!.height;
                 final containerAspect =
                     constraints.maxWidth / constraints.maxHeight;
 
@@ -338,7 +337,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 // 根据图片实际显示区域计算旗子位置
                 // 十字准星中心对齐到点击位置
-                final flagColor = flag.needsAttention ? Colors.red : Colors.blue;
+                final flagColor =
+                    flag.needsAttention ? Colors.red : Colors.blue;
 
                 return Positioned(
                   left: offsetX + clampedX * displayWidth - 20,
