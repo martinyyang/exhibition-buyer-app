@@ -233,6 +233,66 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     }
   }
 
+  Future<void> _togglePurchaseStatus(Flag flag, bool isPurchased) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final flagService = ref.read(flagServiceProvider);
+      await flagService.updateFlag(
+        flagId: flag.id,
+        isPurchased: isPurchased,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.updateFailed(e.toString()))),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteFlag(Flag flag) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // 显示确认对话框
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteFlagMessage(flag.number)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      final flagService = ref.read(flagServiceProvider);
+      await flagService.deleteFlag(flag.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.flagDeletedSuccess(flag.number))),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
+        );
+      }
+    }
+  }
+
   Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags) {
     if (photo == null) return const SizedBox.shrink();
 
@@ -419,6 +479,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
                       _updateFlagTargetPrice(flag, targetPrice),
+                  onPurchaseToggle: (flag, isPurchased) =>
+                      _togglePurchaseStatus(flag, isPurchased),
+                  onDelete: (flag) => _deleteFlag(flag),
                   onConvertedPriceTap: () => context.push('/formula'),
                 ),
         ),
@@ -487,6 +550,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
                       _updateFlagTargetPrice(flag, targetPrice),
+                  onPurchaseToggle: (flag, isPurchased) =>
+                      _togglePurchaseStatus(flag, isPurchased),
+                  onDelete: (flag) => _deleteFlag(flag),
                   onConvertedPriceTap: () => context.push('/formula'),
                 ),
         ),

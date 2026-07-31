@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../../shared/widgets/warning_badge.dart';
 import '../models/flag.dart';
 import '../../../core/utils/debouncer.dart';
 
@@ -10,6 +9,8 @@ class FlagTable extends StatefulWidget {
   final Function(Flag)? onRowTap;
   final Function(Flag, double)? onPriceUpdate;
   final Function(Flag, double)? onTargetPriceUpdate;
+  final Function(Flag, bool)? onPurchaseToggle;
+  final Function(Flag)? onDelete;
   final VoidCallback? onConvertedPriceTap;
 
   const FlagTable({
@@ -19,6 +20,8 @@ class FlagTable extends StatefulWidget {
     this.onRowTap,
     this.onPriceUpdate,
     this.onTargetPriceUpdate,
+    this.onPurchaseToggle,
+    this.onDelete,
     this.onConvertedPriceTap,
   });
 
@@ -178,43 +181,52 @@ class _FlagTableState extends State<FlagTable> {
               ),
             DataColumn(
               label: Text(
-                l10n.status,
+                l10n.purchased,
+                style: TextStyle(fontSize: isMobile ? 12 : 14),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                l10n.delete,
                 style: TextStyle(fontSize: isMobile ? 12 : 14),
               ),
             ),
           ],
           rows: widget.flags.map((flag) {
             return DataRow(
-              onSelectChanged: (_) {
-                if (widget.onRowTap != null) {
-                  widget.onRowTap!(flag);
-                }
-              },
               cells: [
                 // 编号列
                 DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: isMobile ? 24 : 32,
-                        height: isMobile ? 24 : 32,
-                        decoration: BoxDecoration(
-                          color: flag.needsAttention ? Colors.red : Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${flag.number}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: isMobile ? 11 : 14,
+                  InkWell(
+                    onTap: () {
+                      if (widget.onRowTap != null) {
+                        widget.onRowTap!(flag);
+                      }
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: isMobile ? 24 : 32,
+                          height: isMobile ? 24 : 32,
+                          decoration: BoxDecoration(
+                            color:
+                                flag.needsAttention ? Colors.red : Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${flag.number}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: isMobile ? 11 : 14,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 
@@ -330,30 +342,32 @@ class _FlagTableState extends State<FlagTable> {
                     ),
                   ),
 
-                // 状态列
+                // 已购买复选框列
                 DataCell(
-                  Container(
-                    constraints: BoxConstraints(minWidth: isMobile ? 40 : 60),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (flag.needsAttention)
-                          const WarningBadge(show: true)
-                        else if (flag.priceRmb != null &&
-                            flag.targetPrice != null)
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: isMobile ? 16 : 20,
-                          )
-                        else
-                          Icon(
-                            Icons.pending,
-                            color: Colors.grey[400],
-                            size: isMobile ? 16 : 20,
-                          ),
-                      ],
+                  Checkbox(
+                    value: flag.isPurchased,
+                    onChanged: widget.onPurchaseToggle != null
+                        ? (value) {
+                            if (value != null) {
+                              widget.onPurchaseToggle!(flag, value);
+                            }
+                          }
+                        : null,
+                  ),
+                ),
+
+                // 删除按钮列
+                DataCell(
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: isMobile ? 18 : 20,
+                      color: Colors.red[300],
                     ),
+                    onPressed: widget.onDelete != null
+                        ? () => widget.onDelete!(flag)
+                        : null,
+                    tooltip: l10n.delete,
                   ),
                 ),
               ],
