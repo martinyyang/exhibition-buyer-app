@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../shared/widgets/color_badge.dart';
 import '../models/booth.dart';
@@ -27,25 +28,26 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   bool _isCreating = false;
 
   void _showCreateBoothDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final numberController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('新建摊位'),
+        title: Text(l10n.createNewBooth),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: numberController,
-            decoration: const InputDecoration(
-              labelText: '摊位号',
-              hintText: '例如：B01',
+            decoration: InputDecoration(
+              labelText: l10n.boothNumber,
+              hintText: l10n.boothNumberHint,
             ),
             textCapitalization: TextCapitalization.characters,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '请输入摊位号';
+                return l10n.boothNumberRequired;
               }
               return null;
             },
@@ -54,7 +56,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -63,7 +65,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                 _createBooth(numberController.text);
               }
             },
-            child: const Text('创建'),
+            child: Text(l10n.create),
           ),
         ],
       ),
@@ -71,6 +73,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   Future<void> _createBooth(String boothNumber) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isCreating = true;
     });
@@ -110,14 +113,14 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         ref.invalidate(boothsProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('摊位 $boothNumber 创建成功')),
+          SnackBar(content: Text(l10n.boothCreatedSuccess(boothNumber))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('创建失败: $e'),
+            content: Text(l10n.createFailed(e.toString())),
             duration: const Duration(seconds: 5),
           ),
         );
@@ -137,6 +140,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   void _onBoothLongPress(Booth booth) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (context) => Column(
@@ -144,7 +148,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         children: [
           ListTile(
             leading: const Icon(Icons.edit),
-            title: const Text('编辑'),
+            title: Text(l10n.edit),
             onTap: () {
               Navigator.pop(context);
               _showEditBoothDialog(booth);
@@ -152,7 +156,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
-            title: const Text('删除', style: TextStyle(color: Colors.red)),
+            title: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
             onTap: () {
               Navigator.pop(context);
               _confirmDeleteBooth(booth);
@@ -164,25 +168,26 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   void _showEditBoothDialog(Booth booth) {
+    final l10n = AppLocalizations.of(context)!;
     final numberController = TextEditingController(text: booth.boothNumber);
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('编辑摊位'),
+        title: Text(l10n.edit),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: numberController,
-            decoration: const InputDecoration(
-              labelText: '摊位号',
-              hintText: '例如：B01',
+            decoration: InputDecoration(
+              labelText: l10n.boothNumber,
+              hintText: l10n.boothNumberHint,
             ),
             textCapitalization: TextCapitalization.characters,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '请输入摊位号';
+                return l10n.boothNumberRequired;
               }
               return null;
             },
@@ -191,7 +196,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -200,7 +205,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                 _editBooth(booth, numberController.text);
               }
             },
-            child: const Text('保存'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -208,6 +213,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   Future<void> _editBooth(Booth booth, String newBoothNumber) async {
+    final l10n = AppLocalizations.of(context)!;
     if (newBoothNumber == booth.boothNumber) {
       return; // 没有变化，不需要更新
     }
@@ -224,14 +230,14 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         ref.invalidate(boothsProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('摊位信息已更新')),
+          SnackBar(content: Text(l10n.supplierInfoUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('更新失败: $e'),
+            content: Text(l10n.uploadFailed(e.toString())),
             duration: const Duration(seconds: 5),
           ),
         );
@@ -240,15 +246,16 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   void _confirmDeleteBooth(Booth booth) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text('确定要删除摊位"${booth.boothNumber}"吗？\n所有照片和标注也会被删除。'),
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteBoothMessage(booth.boothNumber)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -256,7 +263,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
               _deleteBooth(booth);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -264,6 +271,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   Future<void> _deleteBooth(Booth booth) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final boothService = ref.read(boothServiceProvider);
       await boothService.deleteBooth(booth.id);
@@ -273,14 +281,14 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         ref.invalidate(boothsProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已删除摊位"${booth.boothNumber}"')),
+          SnackBar(content: Text(l10n.boothDeletedSuccess(booth.boothNumber))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('删除失败: $e'),
+            content: Text(l10n.deleteFailed(e.toString())),
             duration: const Duration(seconds: 5),
           ),
         );
@@ -290,14 +298,15 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // 获取当前用户的team_id
     final authService = ref.watch(authServiceProvider);
     final userId = authService.currentUserId;
 
     if (userId == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('摊位列表')),
-        body: const Center(child: Text('请先登录')),
+        appBar: AppBar(title: Text(l10n.boothListTitle)),
+        body: Center(child: Text(l10n.loginTitle)),
       );
     }
 
@@ -308,8 +317,8 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
       data: (event) {
         if (event == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('摊位列表')),
-            body: const Center(child: Text('场次不存在')),
+            appBar: AppBar(title: Text(l10n.boothListTitle)),
+            body: Center(child: Text(l10n.noEvents)),
           );
         }
 
@@ -326,7 +335,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('摊位列表', style: TextStyle(fontSize: 16)),
+                Text(l10n.boothListTitle, style: const TextStyle(fontSize: 16)),
                 Text(
                   event.name,
                   style: const TextStyle(
@@ -338,7 +347,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: _isCreating ? null : _showCreateBoothDialog,
-                tooltip: '新建摊位',
+                tooltip: l10n.createNewBooth,
               ),
             ],
           ),
@@ -356,7 +365,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        '暂无摊位',
+                        l10n.noBooths,
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[600],
@@ -364,7 +373,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '点击右上角+号创建第一个摊位',
+                        l10n.createFirstBooth,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[500],
@@ -395,11 +404,11 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                 children: [
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
-                  Text('加载失败: $error'),
+                  Text(l10n.loadFailed(error.toString())),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => ref.invalidate(boothsProvider),
-                    child: const Text('重试'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -409,14 +418,14 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
       },
       loading: () => Scaffold(
         appBar: AppBar(
-          title: const Text('摊位列表'),
+          title: Text(l10n.boothListTitle),
           leading: const SafeBackButton(fallbackPath: '/events'),
         ),
         body: const Center(child: LoadingIndicator()),
       ),
       error: (error, stack) => Scaffold(
         appBar: AppBar(
-          title: const Text('摊位列表'),
+          title: Text(l10n.boothListTitle),
           leading: const SafeBackButton(fallbackPath: '/events'),
         ),
         body: Center(
@@ -425,11 +434,11 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
             children: [
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 16),
-              Text('加载失败: $error'),
+              Text(l10n.loadFailed(error.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(eventProvider(widget.eventId)),
-                child: const Text('重试'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -453,6 +462,7 @@ class _BoothListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final photosAsync = ref.watch(photosProvider(booth.id));
 
     return Card(
@@ -484,7 +494,7 @@ class _BoothListItem extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '摊位 ${booth.boothNumber}',
+                          l10n.boothLabel(booth.boothNumber),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -493,21 +503,21 @@ class _BoothListItem extends ConsumerWidget {
                         const SizedBox(height: 4),
                         photosAsync.when(
                           data: (photos) => Text(
-                            '${photos.length}张照片',
+                            l10n.photoCountLabel(photos.length),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
                             ),
                           ),
                           loading: () => Text(
-                            '加载中...',
+                            l10n.loading,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
                             ),
                           ),
                           error: (_, __) => Text(
-                            '0张照片',
+                            l10n.photoCountLabel(0),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
