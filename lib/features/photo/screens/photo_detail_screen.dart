@@ -318,11 +318,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
             transformationController: _transformationController,
             minScale: 0.5,
             maxScale: 4.0,
-            child: Center(
-              child: GestureDetector(
-                onTapDown: (details) => _onPhotoTap(details),
-                child: _buildPhotoWithFlags(photo, flags),
-              ),
+            child: GestureDetector(
+              onTapDown: (details) => _onPhotoTap(details),
+              child: _buildPhotoWithFlags(photo, flags),
             ),
           ),
         ),
