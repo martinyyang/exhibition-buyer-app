@@ -33,8 +33,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   final GlobalKey _imageKey = GlobalKey();
   ui.Image? _loadedImage;
 
-  // 网格系统：每30像素一个格子
-  static const double _gridCellSize = 30.0;
+  // 网格系统：每15像素一个格子
+  static const double _gridCellSize = 15.0;
 
   @override
   void dispose() {
@@ -294,9 +294,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 final clampedY = flag.positionY.clamp(0.0, 1.0);
 
                 // 根据图片实际显示区域计算旗子位置
+                // 旗杆底部（尖端）对齐到点击位置
                 return Positioned(
                   left: offsetX + clampedX * displayWidth - 20,
-                  top: offsetY + clampedY * displayHeight - 40,
+                  top: offsetY + clampedY * displayHeight - 60,
                   child: GestureDetector(
                     onLongPress: () => _onFlagLongPress(flag),
                     child: Column(
