@@ -159,13 +159,11 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
       // 模拟应用进入后台
-      tester.binding
-          .handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
       await tester.pump();
 
       // 模拟应用恢复前台
-      tester.binding
-          .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // 验证应用仍然正常显示
