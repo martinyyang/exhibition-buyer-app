@@ -305,47 +305,76 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 final clampedY = flag.positionY.clamp(0.0, 1.0);
 
                 // 根据图片实际显示区域计算旗子位置
-                // 旗杆底部（尖端）对齐到点击位置
+                // 十字准星中心对齐到点击位置
+                final flagColor = flag.needsAttention ? Colors.red : Colors.blue;
+
                 return Positioned(
                   left: offsetX + clampedX * displayWidth - 20,
-                  top: offsetY + clampedY * displayHeight - 60,
+                  top: offsetY + clampedY * displayHeight - 20,
                   child: GestureDetector(
                     onLongPress: () => _onFlagLongPress(flag),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: flag.needsAttention ? Colors.red : Colors.blue,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${flag.number}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Stack(
+                        children: [
+                          // 空心圆圈
+                          Center(
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: flagColor,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        // 旗杆
-                        Container(
-                          width: 2,
-                          height: 20,
-                          color: flag.needsAttention ? Colors.red : Colors.blue,
-                        ),
-                      ],
+                          // 横向十字线
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            top: 19,
+                            child: Container(
+                              height: 2,
+                              color: flagColor,
+                            ),
+                          ),
+                          // 纵向十字线
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: 19,
+                            child: Container(
+                              width: 2,
+                              color: flagColor,
+                            ),
+                          ),
+                          // 中心数字（带白色背景）
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                              child: Text(
+                                '${flag.number}',
+                                style: TextStyle(
+                                  color: flagColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
