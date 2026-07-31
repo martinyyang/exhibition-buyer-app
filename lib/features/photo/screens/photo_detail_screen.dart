@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,6 +31,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   final TransformationController _transformationController =
       TransformationController();
   final GlobalKey _imageKey = GlobalKey();
+  ui.Image? _loadedImage;
 
   // 网格系统：每30像素一个格子
   static const double _gridCellSize = 30.0;
@@ -40,10 +42,33 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     super.dispose();
   }
 
-  Size? _getImageSize() {
+  // 获取图片的实际显示尺寸和位置（考虑BoxFit.contain的效果）
+  (Size, Offset)? _getActualImageBounds() {
     final RenderBox? renderBox =
         _imageKey.currentContext?.findRenderObject() as RenderBox?;
-    return renderBox?.size;
+    if (renderBox == null || _loadedImage == null) return null;
+
+    final containerSize = renderBox.size;
+    final imageAspect = _loadedImage!.width / _loadedImage!.height;
+    final containerAspect = containerSize.width / containerSize.height;
+
+    double displayWidth, displayHeight, offsetX, offsetY;
+
+    if (imageAspect > containerAspect) {
+      // 图片更宽，以宽度为准
+      displayWidth = containerSize.width;
+      displayHeight = containerSize.width / imageAspect;
+      offsetX = 0;
+      offsetY = (containerSize.height - displayHeight) / 2;
+    } else {
+      // 图片更高，以高度为准
+      displayHeight = containerSize.height;
+      displayWidth = containerSize.height * imageAspect;
+      offsetX = (containerSize.width - displayWidth) / 2;
+      offsetY = 0;
+    }
+
+    return (Size(displayWidth, displayHeight), Offset(offsetX, offsetY));
   }
 
   // 将像素坐标捕捉到最近的网格点，并转换为0-1相对坐标
@@ -68,13 +93,14 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   void _onPhotoTap(TapDownDetails details) {
-    final imageSize = _getImageSize();
-    if (imageSize == null) return;
+    final bounds = _getActualImageBounds();
+    if (bounds == null) return;
 
+    final (imageSize, imageOffset) = bounds;
     final RenderBox box =
         _imageKey.currentContext!.findRenderObject() as RenderBox;
 
-    // 获取相对于图片的局部坐标
+    // 获取相对于图片容器的局部坐标
     final localPosition = box.globalToLocal(details.globalPosition);
 
     // 应用 InteractiveViewer 变换矩阵的逆矩阵
@@ -86,9 +112,21 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       0,
     ));
 
+    // 减去图片在容器中的偏移量
+    final imageLocalX = transformed.x - imageOffset.dx;
+    final imageLocalY = transformed.y - imageOffset.dy;
+
+    // 检查点击是否在图片实际区域内
+    if (imageLocalX < 0 ||
+        imageLocalY < 0 ||
+        imageLocalX > imageSize.width ||
+        imageLocalY > imageSize.height) {
+      return; // 点击在空白区域，忽略
+    }
+
     // 捕捉到网格点并转换为相对坐标
     final snapped = _snapToGrid(
-      Offset(transformed.x, transformed.y),
+      Offset(imageLocalX, imageLocalY),
       imageSize,
     );
 
@@ -128,11 +166,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   void _onFlagRowTap(Flag flag) {
     // 点击表格行，聚焦到对应旗子位置
-    final imageSize = _getImageSize();
-    if (imageSize == null) return;
+    final bounds = _getActualImageBounds();
+    if (bounds == null) return;
 
-    final targetX = flag.positionX * imageSize.width;
-    final targetY = flag.positionY * imageSize.height;
+    final (imageSize, imageOffset) = bounds;
+    final targetX = imageOffset.dx + flag.positionX * imageSize.width;
+    final targetY = imageOffset.dy + flag.positionY * imageSize.height;
 
     // 计算变换矩阵，使旗子居中
     final matrix = Matrix4.identity()
@@ -203,18 +242,56 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   placeholder: (context, url) =>
                       const Center(child: LoadingIndicator()),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
+                  imageBuilder: (context, imageProvider) {
+                    // 加载图片以获取原始尺寸
+                    imageProvider
+                        .resolve(const ImageConfiguration())
+                        .addListener(ImageStreamListener((info, _) {
+                      if (mounted && _loadedImage == null) {
+                        setState(() {
+                          _loadedImage = info.image;
+                        });
+                      }
+                    }));
+                    return Image(image: imageProvider, fit: BoxFit.contain);
+                  },
                 ),
               ),
 
             // 旗子标记
             ...flags.map((flag) {
+              if (_loadedImage == null) return const SizedBox.shrink();
+
+              // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
+              final imageAspect =
+                  _loadedImage!.width / _loadedImage!.height;
+              final containerAspect =
+                  constraints.maxWidth / constraints.maxHeight;
+
+              double displayWidth, displayHeight, offsetX, offsetY;
+
+              if (imageAspect > containerAspect) {
+                // 图片更宽，以宽度为准
+                displayWidth = constraints.maxWidth;
+                displayHeight = constraints.maxWidth / imageAspect;
+                offsetX = 0;
+                offsetY = (constraints.maxHeight - displayHeight) / 2;
+              } else {
+                // 图片更高，以高度为准
+                displayHeight = constraints.maxHeight;
+                displayWidth = constraints.maxHeight * imageAspect;
+                offsetX = (constraints.maxWidth - displayWidth) / 2;
+                offsetY = 0;
+              }
+
               // 限制旗子坐标在有效范围内（0-1），防止显示到画面外
               final clampedX = flag.positionX.clamp(0.0, 1.0);
               final clampedY = flag.positionY.clamp(0.0, 1.0);
 
+              // 根据图片实际显示区域计算旗子位置
               return Positioned(
-                left: clampedX * constraints.maxWidth - 20,
-                top: clampedY * constraints.maxHeight - 40,
+                left: offsetX + clampedX * displayWidth - 20,
+                top: offsetY + clampedY * displayHeight - 40,
                 child: GestureDetector(
                   onLongPress: () => _onFlagLongPress(flag),
                   child: Column(
