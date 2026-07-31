@@ -105,18 +105,28 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     // 获取相对于图片容器的局部坐标
     final localPosition = box.globalToLocal(details.globalPosition);
 
-    // 应用 InteractiveViewer 变换矩阵的逆矩阵
-    final Matrix4 inverseMatrix =
-        Matrix4.inverted(_transformationController.value);
-    final Vector3 transformed = inverseMatrix.transform3(Vector3(
-      localPosition.dx,
-      localPosition.dy,
-      0,
-    ));
+    // 应用 InteractiveViewer 变换矩阵的逆矩阵（仅桌面端有InteractiveViewer）
+    double transformedX = localPosition.dx;
+    double transformedY = localPosition.dy;
+
+    // 检查是否有实际的缩放/平移变换（桌面端InteractiveViewer）
+    final matrix = _transformationController.value;
+    final hasTransform = matrix != Matrix4.identity();
+
+    if (hasTransform) {
+      final Matrix4 inverseMatrix = Matrix4.inverted(matrix);
+      final Vector3 transformed = inverseMatrix.transform3(Vector3(
+        localPosition.dx,
+        localPosition.dy,
+        0,
+      ));
+      transformedX = transformed.x;
+      transformedY = transformed.y;
+    }
 
     // 减去图片在容器中的偏移量
-    final imageLocalX = transformed.x - imageOffset.dx;
-    final imageLocalY = transformed.y - imageOffset.dy;
+    final imageLocalX = transformedX - imageOffset.dx;
+    final imageLocalY = transformedY - imageOffset.dy;
 
     // 检查点击是否在图片实际区域内
     if (imageLocalX < 0 ||
