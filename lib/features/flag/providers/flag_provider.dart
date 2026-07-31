@@ -104,7 +104,6 @@ final flagProvider = FutureProvider.family<Flag?, String>((ref, flagId) async {
 
 // 需要注意的旗子数量Provider（整个团队）
 final attentionFlagsCountProvider = FutureProvider<int>((ref) async {
-  final flagService = ref.watch(flagServiceProvider);
   final authService = ref.watch(authServiceProvider);
 
   final userId = authService.currentUserId;

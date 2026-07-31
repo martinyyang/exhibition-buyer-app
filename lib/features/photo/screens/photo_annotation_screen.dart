@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../flag/models/flag.dart';
 import '../../flag/providers/flag_provider.dart';
-import '../../flag/services/flag_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/photo_annotation_canvas.dart';
-import '../models/photo.dart';
 import '../providers/photo_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 

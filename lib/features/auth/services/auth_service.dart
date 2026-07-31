@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user.dart' as models;
 import '../../../core/utils/color_generator.dart';
