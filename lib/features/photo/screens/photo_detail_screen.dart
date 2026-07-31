@@ -10,6 +10,8 @@ import '../../flag/widgets/flag_table.dart';
 import '../../flag/models/flag.dart';
 import '../../flag/providers/flag_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../formula/providers/formula_provider.dart';
+import '../../formula/services/formula_calculator.dart';
 import '../models/photo.dart';
 import '../providers/photo_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
@@ -178,9 +180,32 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
+      final userData = await ref.read(currentUserDataProvider.future);
+      final teamId = userData?.teamId;
+
+      // 获取团队的当前公式
+      String? formula;
+      double? priceConverted;
+
+      if (teamId != null) {
+        final formulaAsync = ref.read(currentFormulaProvider(teamId));
+        formula = formulaAsync.value;
+
+        // 如果有公式，计算换算价格
+        if (formula != null && formula.isNotEmpty) {
+          try {
+            priceConverted = FormulaCalculator.calculate(formula, price);
+          } catch (e) {
+            // 公式计算失败，不更新换算价格
+          }
+        }
+      }
+
+      // 更新价格和换算价格
       await flagService.updateFlag(
         flagId: flag.id,
         priceRmb: price,
+        priceConverted: priceConverted,
       );
     } catch (e) {
       if (mounted) {
