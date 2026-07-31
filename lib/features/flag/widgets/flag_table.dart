@@ -123,7 +123,7 @@ class _FlagTableState extends State<FlagTable> {
                   ),
                 ),
 
-                // 报价列（买手端可编辑，远程端只读）
+                // 报价列（所有人都可以编辑）
                 if (!widget.isRemoteView)
                   DataCell(
                     SizedBox(
@@ -149,11 +149,29 @@ class _FlagTableState extends State<FlagTable> {
                     ),
                   ),
 
+                // 远程端：卖家报价可编辑
                 if (widget.isRemoteView)
                   DataCell(
-                    Text(
-                      flag.priceRmb != null ? '¥${flag.priceRmb}' : '-',
-                      style: const TextStyle(fontSize: 14),
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        controller: _priceControllers[flag.id],
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: '输入报价',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 8,
+                          ),
+                        ),
+                        onSubmitted: (value) {
+                          final price = double.tryParse(value);
+                          if (price != null && widget.onPriceUpdate != null) {
+                            widget.onPriceUpdate!(flag, price);
+                          }
+                        },
+                      ),
                     ),
                   ),
 

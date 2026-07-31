@@ -31,6 +31,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       TransformationController();
   final GlobalKey _imageKey = GlobalKey();
 
+  // 网格系统：每30像素一个格子
+  static const double _gridCellSize = 30.0;
+
   @override
   void dispose() {
     _transformationController.dispose();
@@ -43,8 +46,28 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     return renderBox?.size;
   }
 
+  // 将像素坐标捕捉到最近的网格点，并转换为0-1相对坐标
+  Offset _snapToGrid(Offset pixelPosition, Size imageSize) {
+    // 计算图片的网格数量
+    final gridCols = (imageSize.width / _gridCellSize).ceil();
+    final gridRows = (imageSize.height / _gridCellSize).ceil();
+
+    // 计算点击位置在哪个网格
+    final gridX = (pixelPosition.dx / _gridCellSize).round().clamp(0, gridCols);
+    final gridY = (pixelPosition.dy / _gridCellSize).round().clamp(0, gridRows);
+
+    // 转换回像素坐标（网格交叉点）
+    final snappedPixelX = gridX * _gridCellSize;
+    final snappedPixelY = gridY * _gridCellSize;
+
+    // 转换为0-1相对坐标
+    final relativeX = (snappedPixelX / imageSize.width).clamp(0.0, 1.0);
+    final relativeY = (snappedPixelY / imageSize.height).clamp(0.0, 1.0);
+
+    return Offset(relativeX, relativeY);
+  }
+
   void _onPhotoTap(TapDownDetails details) {
-    // 买手和远程用户都可以插旗标记
     final imageSize = _getImageSize();
     if (imageSize == null) return;
 
@@ -54,7 +77,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     // 获取相对于图片的局部坐标
     final localPosition = box.globalToLocal(details.globalPosition);
 
-    // 应用 InteractiveViewer 变换矩阵的逆矩阵，将视口坐标转换为图片原始坐标
+    // 应用 InteractiveViewer 变换矩阵的逆矩阵
     final Matrix4 inverseMatrix =
         Matrix4.inverted(_transformationController.value);
     final Vector3 transformed = inverseMatrix.transform3(Vector3(
@@ -63,11 +86,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       0,
     ));
 
-    // 转换为相对坐标（0-1），并限制在有效范围内
-    final relativeX = (transformed.x / imageSize.width).clamp(0.0, 1.0);
-    final relativeY = (transformed.y / imageSize.height).clamp(0.0, 1.0);
+    // 捕捉到网格点并转换为相对坐标
+    final snapped = _snapToGrid(
+      Offset(transformed.x, transformed.y),
+      imageSize,
+    );
 
-    _createFlag(relativeX, relativeY);
+    _createFlag(snapped.dx, snapped.dy);
   }
 
   Future<void> _createFlag(double x, double y) async {
