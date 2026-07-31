@@ -139,7 +139,7 @@ class _FlagTableState extends State<FlagTable> {
                             vertical: 8,
                           ),
                         ),
-                        onSubmitted: (value) {
+                        onChanged: (value) {
                           final price = double.tryParse(value);
                           if (price != null && widget.onPriceUpdate != null) {
                             widget.onPriceUpdate!(flag, price);
@@ -165,7 +165,7 @@ class _FlagTableState extends State<FlagTable> {
                             vertical: 8,
                           ),
                         ),
-                        onSubmitted: (value) {
+                        onChanged: (value) {
                           final price = double.tryParse(value);
                           if (price != null && widget.onPriceUpdate != null) {
                             widget.onPriceUpdate!(flag, price);
@@ -204,7 +204,7 @@ class _FlagTableState extends State<FlagTable> {
                             vertical: 8,
                           ),
                         ),
-                        onSubmitted: (value) {
+                        onChanged: (value) {
                           final targetPrice = double.tryParse(value);
                           if (targetPrice != null &&
                               widget.onTargetPriceUpdate != null) {
