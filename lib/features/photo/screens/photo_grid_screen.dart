@@ -11,6 +11,7 @@ import '../services/image_helper_service.dart';
 import '../providers/photo_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
+import '../../flag/providers/flag_provider.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -366,59 +367,10 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
                 itemCount: photos.length,
                 itemBuilder: (context, index) {
                   final photo = photos[index];
-                  return Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: InkWell(
-                      onTap: () => _onPhotoTap(photo),
-                      onLongPress: () => _onPhotoLongPress(photo),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: CachedNetworkImage(
-                              imageUrl: photo.url,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  const Center(child: LoadingIndicator()),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (photo.supplierName != null)
-                                  Text(
-                                    photo.supplierName!,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.flag, size: 14),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '0个旗子', // TODO: 显示实际旗子数量
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  return _PhotoCard(
+                    photo: photo,
+                    onTap: () => _onPhotoTap(photo),
+                    onLongPress: () => _onPhotoLongPress(photo),
                   );
                 },
               ),
@@ -449,6 +401,94 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
               tooltip: kIsWeb ? '上传照片' : '拍照',
               child: Icon(kIsWeb ? Icons.upload_file : Icons.camera_alt),
             ),
+    );
+  }
+}
+
+class _PhotoCard extends ConsumerWidget {
+  final Photo photo;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+
+  const _PhotoCard({
+    required this.photo,
+    required this.onTap,
+    required this.onLongPress,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final flagCountAsync = ref.watch(photoFlagCountProvider(photo.id));
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: CachedNetworkImage(
+                imageUrl: photo.url,
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    const Center(child: LoadingIndicator()),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (photo.supplierName != null)
+                    Text(
+                      photo.supplierName!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.flag, size: 14),
+                      const SizedBox(width: 4),
+                      flagCountAsync.when(
+                        data: (count) => Text(
+                          '$count个旗子',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        loading: () => Text(
+                          '...',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        error: (_, __) => Text(
+                          '0个旗子',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

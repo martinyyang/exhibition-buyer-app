@@ -83,3 +83,11 @@ final attentionFlagsCountProvider = FutureProvider<int>((ref) async {
   // TODO: 实现获取需要注意的旗子数量
   return 0;
 });
+
+// 单张照片的旗子数量Provider
+final photoFlagCountProvider =
+    FutureProvider.family<int, String>((ref, photoId) async {
+  final flagService = ref.watch(flagServiceProvider);
+  final flags = await flagService.getFlags(photoId);
+  return flags.length;
+});
