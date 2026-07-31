@@ -26,7 +26,7 @@ class TeamService {
   Future<Team> joinTeamByInviteCodeOrName(String input) async {
     final cleanInput = input.trim();
     if (cleanInput.isEmpty) {
-      throw Exception('邀请码或团队名称不能为空');
+      throw Exception('Invite code or team name cannot be empty');
     }
 
     final allTeamsResult = await _supabase.from('teams').select();

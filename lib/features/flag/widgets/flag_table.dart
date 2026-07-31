@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/warning_badge.dart';
 import '../models/flag.dart';
 import '../../../core/utils/debouncer.dart';
@@ -127,6 +128,7 @@ class _FlagTableState extends State<FlagTable> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // 检测屏幕宽度判断是否为移动端
     final isMobile = MediaQuery.of(context).size.width < 600;
 
@@ -143,40 +145,40 @@ class _FlagTableState extends State<FlagTable> {
           columns: [
             DataColumn(
               label: Text(
-                '编号',
+                l10n.number,
                 style: TextStyle(fontSize: isMobile ? 12 : 14),
               ),
             ),
             if (!widget.isRemoteView)
               DataColumn(
                 label: Text(
-                  '报价(¥)',
+                  l10n.priceRmb,
                   style: TextStyle(fontSize: isMobile ? 12 : 14),
                 ),
               ),
             if (widget.isRemoteView)
               DataColumn(
                 label: Text(
-                  '卖家报价',
+                  l10n.sellerPrice,
                   style: TextStyle(fontSize: isMobile ? 12 : 14),
                 ),
               ),
             DataColumn(
               label: Text(
-                '换算价',
+                l10n.convertedPrice,
                 style: TextStyle(fontSize: isMobile ? 12 : 14),
               ),
             ),
             if (widget.isRemoteView)
               DataColumn(
                 label: Text(
-                  '目标价',
+                  l10n.targetPrice,
                   style: TextStyle(fontSize: isMobile ? 12 : 14),
                 ),
               ),
             DataColumn(
               label: Text(
-                '状态',
+                l10n.status,
                 style: TextStyle(fontSize: isMobile ? 12 : 14),
               ),
             ),
@@ -226,7 +228,7 @@ class _FlagTableState extends State<FlagTable> {
                         keyboardType: TextInputType.number,
                         style: TextStyle(fontSize: isMobile ? 12 : 14),
                         decoration: InputDecoration(
-                          hintText: '输入报价',
+                          hintText: l10n.enterPrice,
                           hintStyle: TextStyle(fontSize: isMobile ? 11 : 14),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(
@@ -256,7 +258,7 @@ class _FlagTableState extends State<FlagTable> {
                         keyboardType: TextInputType.number,
                         style: TextStyle(fontSize: isMobile ? 12 : 14),
                         decoration: InputDecoration(
-                          hintText: '输入报价',
+                          hintText: l10n.enterPrice,
                           hintStyle: TextStyle(fontSize: isMobile ? 11 : 14),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(
@@ -307,7 +309,7 @@ class _FlagTableState extends State<FlagTable> {
                         keyboardType: TextInputType.number,
                         style: TextStyle(fontSize: isMobile ? 12 : 14),
                         decoration: InputDecoration(
-                          hintText: '目标价',
+                          hintText: l10n.targetPrice,
                           hintStyle: TextStyle(fontSize: isMobile ? 11 : 14),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(

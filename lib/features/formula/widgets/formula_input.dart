@@ -46,6 +46,7 @@ class _FormulaInputState extends State<FormulaInput> {
   }
 
   void _validateAndPreview() {
+    final l10n = AppLocalizations.of(context)!;
     final formula = _controller.text.trim();
 
     if (formula.isEmpty) {
@@ -59,7 +60,7 @@ class _FormulaInputState extends State<FormulaInput> {
     // 验证公式
     if (!FormulaCalculator.validateFormula(formula)) {
       setState(() {
-        _errorMessage = '公式错误，请检查';
+        _errorMessage = l10n.formulaFormatError;
         _previewResults = null;
       });
       return;
@@ -74,7 +75,7 @@ class _FormulaInputState extends State<FormulaInput> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = '公式错误: $e';
+        _errorMessage = l10n.formulaCalculationError(e.toString());
         _previewResults = null;
       });
     }

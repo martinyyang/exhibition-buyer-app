@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -17,7 +20,7 @@ class SplashScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              '展会买手协作',
+              l10n?.appTitle ?? 'Exhibition Buyer App',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -26,7 +29,7 @@ class SplashScreen extends StatelessWidget {
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
             Text(
-              '初始化中...',
+              l10n?.loading ?? 'Initializing...',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey,
                   ),

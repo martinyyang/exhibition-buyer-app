@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
-import '../../../shared/widgets/color_badge.dart';
 import '../models/booth.dart';
 import '../providers/booth_provider.dart';
-import '../services/booth_service.dart';
 import '../../event/providers/event_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
@@ -97,7 +95,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
       }
 
       if (teamId == null || userId == null) {
-        throw Exception('用户未登录或未加入团队');
+        throw Exception(l10n.userNotInTeam);
       }
 
       final boothService = ref.read(boothServiceProvider);

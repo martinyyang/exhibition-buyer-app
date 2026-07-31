@@ -2,14 +2,13 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:vector_math/vector_math_64.dart' show Vector3, Matrix4;
+import 'package:vector_math/vector_math_64.dart' show Matrix4;
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
 import '../../flag/models/flag.dart';
 import '../../flag/providers/flag_provider.dart';
-import '../../flag/services/flag_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/photo.dart';
 import '../providers/photo_provider.dart';
@@ -35,114 +34,19 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   final GlobalKey _imageKey = GlobalKey();
   ui.Image? _loadedImage;
 
-  // 网格系统：每15像素一个格子
-  static const double _gridCellSize = 15.0;
-
   @override
   void dispose() {
     _transformationController.dispose();
     super.dispose();
   }
 
-  // 获取图片的实际显示尺寸和位置（考虑BoxFit.contain的效果）
-  (Size, Offset)? _getActualImageBounds() {
-    final RenderBox? renderBox =
-        _imageKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null || _loadedImage == null) return null;
+  void _onPhotoTap(TapDownDetails details, Size containerSize) {
+    // 简单直接的相对坐标计算，与 photo_annotation_canvas 一致
+    final localPosition = details.localPosition;
+    final relativeX = (localPosition.dx / containerSize.width).clamp(0.0, 1.0);
+    final relativeY = (localPosition.dy / containerSize.height).clamp(0.0, 1.0);
 
-    final containerSize = renderBox.size;
-    final imageAspect = _loadedImage!.width / _loadedImage!.height;
-    final containerAspect = containerSize.width / containerSize.height;
-
-    double displayWidth, displayHeight, offsetX, offsetY;
-
-    if (imageAspect > containerAspect) {
-      // 图片更宽，以宽度为准
-      displayWidth = containerSize.width;
-      displayHeight = containerSize.width / imageAspect;
-      offsetX = 0;
-      offsetY = (containerSize.height - displayHeight) / 2;
-    } else {
-      // 图片更高，以高度为准
-      displayHeight = containerSize.height;
-      displayWidth = containerSize.height * imageAspect;
-      offsetX = (containerSize.width - displayWidth) / 2;
-      offsetY = 0;
-    }
-
-    return (Size(displayWidth, displayHeight), Offset(offsetX, offsetY));
-  }
-
-  // 将像素坐标捕捉到最近的网格点，并转换为0-1相对坐标
-  Offset _snapToGrid(Offset pixelPosition, Size imageSize) {
-    // 计算图片的网格数量
-    final gridCols = (imageSize.width / _gridCellSize).ceil();
-    final gridRows = (imageSize.height / _gridCellSize).ceil();
-
-    // 计算点击位置在哪个网格
-    final gridX = (pixelPosition.dx / _gridCellSize).round().clamp(0, gridCols);
-    final gridY = (pixelPosition.dy / _gridCellSize).round().clamp(0, gridRows);
-
-    // 转换回像素坐标（网格交叉点）
-    final snappedPixelX = gridX * _gridCellSize;
-    final snappedPixelY = gridY * _gridCellSize;
-
-    // 转换为0-1相对坐标
-    final relativeX = (snappedPixelX / imageSize.width).clamp(0.0, 1.0);
-    final relativeY = (snappedPixelY / imageSize.height).clamp(0.0, 1.0);
-
-    return Offset(relativeX, relativeY);
-  }
-
-  void _onPhotoTap(TapDownDetails details) {
-    final bounds = _getActualImageBounds();
-    if (bounds == null) return;
-
-    final (imageSize, imageOffset) = bounds;
-    final RenderBox box =
-        _imageKey.currentContext!.findRenderObject() as RenderBox;
-
-    // 获取相对于图片容器的局部坐标
-    final localPosition = box.globalToLocal(details.globalPosition);
-
-    // 应用 InteractiveViewer 变换矩阵的逆矩阵（仅桌面端有InteractiveViewer）
-    double transformedX = localPosition.dx;
-    double transformedY = localPosition.dy;
-
-    // 检查是否有实际的缩放/平移变换（桌面端InteractiveViewer）
-    final matrix = _transformationController.value;
-    final hasTransform = matrix != Matrix4.identity();
-
-    if (hasTransform) {
-      final Matrix4 inverseMatrix = Matrix4.inverted(matrix);
-      final Vector3 transformed = inverseMatrix.transform3(Vector3(
-        localPosition.dx,
-        localPosition.dy,
-        0,
-      ));
-      transformedX = transformed.x;
-      transformedY = transformed.y;
-    }
-
-    // 减去图片在容器中的偏移量
-    final imageLocalX = transformedX - imageOffset.dx;
-    final imageLocalY = transformedY - imageOffset.dy;
-
-    // 检查点击是否在图片实际区域内
-    if (imageLocalX < 0 ||
-        imageLocalY < 0 ||
-        imageLocalX > imageSize.width ||
-        imageLocalY > imageSize.height) {
-      return; // 点击在空白区域，忽略
-    }
-
-    // 捕捉到网格点并转换为相对坐标
-    final snapped = _snapToGrid(
-      Offset(imageLocalX, imageLocalY),
-      imageSize,
-    );
-
-    _createFlag(snapped.dx, snapped.dy);
+    _createFlag(relativeX, relativeY);
   }
 
   Future<void> _createFlag(double x, double y) async {
@@ -153,7 +57,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       final userId = supabaseService.client.auth.currentUser?.id;
 
       if (userId == null) {
-        throw Exception('用户未登录');
+        throw Exception(l10n.userNotInTeam);
       }
 
       await flagService.createFlag(
@@ -179,20 +83,37 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   void _onFlagRowTap(Flag flag) {
     // 点击表格行，聚焦到对应旗子位置
-    final bounds = _getActualImageBounds();
-    if (bounds == null) return;
+    if (_loadedImage == null) return;
 
-    final (imageSize, imageOffset) = bounds;
-
-    // 计算旗子在图片上的实际像素位置
-    final flagX = imageOffset.dx + flag.positionX * imageSize.width;
-    final flagY = imageOffset.dy + flag.positionY * imageSize.height;
-
-    // 获取容器大小（InteractiveViewer的可视区域）
+    // 获取容器大小
     final RenderBox? renderBox =
         _imageKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     final containerSize = renderBox.size;
+
+    // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
+    final imageAspect = _loadedImage!.width / _loadedImage!.height;
+    final containerAspect = containerSize.width / containerSize.height;
+
+    double displayWidth, displayHeight, offsetX, offsetY;
+
+    if (imageAspect > containerAspect) {
+      // 图片更宽，以宽度为准
+      displayWidth = containerSize.width;
+      displayHeight = containerSize.width / imageAspect;
+      offsetX = 0;
+      offsetY = (containerSize.height - displayHeight) / 2;
+    } else {
+      // 图片更高，以高度为准
+      displayHeight = containerSize.height;
+      displayWidth = containerSize.height * imageAspect;
+      offsetX = (containerSize.width - displayWidth) / 2;
+      offsetY = 0;
+    }
+
+    // 计算旗子在容器中的实际像素位置
+    final flagX = offsetX + flag.positionX * displayWidth;
+    final flagY = offsetY + flag.positionY * displayHeight;
 
     // 计算变换矩阵：先缩放2倍，然后平移使旗子居中到容器中心
     final scale = 2.0;
@@ -290,17 +211,20 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags) {
     if (photo == null) return const SizedBox.shrink();
 
-    return GestureDetector(
-      onTapDown: (details) => _onPhotoTap(details),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Stack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final containerSize = Size(
+          constraints.maxWidth,
+          constraints.maxHeight,
+        );
+
+        return GestureDetector(
+          onTapDown: (details) => _onPhotoTap(details, containerSize),
+          child: Stack(
             children: [
               // 照片
-              Container(
+              Positioned.fill(
                 key: _imageKey,
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
                 child: CachedNetworkImage(
                   imageUrl: photo.url,
                   fit: BoxFit.contain,
@@ -329,22 +253,21 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
                 final imageAspect = _loadedImage!.width / _loadedImage!.height;
-                final containerAspect =
-                    constraints.maxWidth / constraints.maxHeight;
+                final containerAspect = containerSize.width / containerSize.height;
 
                 double displayWidth, displayHeight, offsetX, offsetY;
 
                 if (imageAspect > containerAspect) {
                   // 图片更宽，以宽度为准
-                  displayWidth = constraints.maxWidth;
-                  displayHeight = constraints.maxWidth / imageAspect;
+                  displayWidth = containerSize.width;
+                  displayHeight = containerSize.width / imageAspect;
                   offsetX = 0;
-                  offsetY = (constraints.maxHeight - displayHeight) / 2;
+                  offsetY = (containerSize.height - displayHeight) / 2;
                 } else {
                   // 图片更高，以高度为准
-                  displayHeight = constraints.maxHeight;
-                  displayWidth = constraints.maxHeight * imageAspect;
-                  offsetX = (constraints.maxWidth - displayWidth) / 2;
+                  displayHeight = containerSize.height;
+                  displayWidth = containerSize.height * imageAspect;
+                  offsetX = (containerSize.width - displayWidth) / 2;
                   offsetY = 0;
                 }
 
@@ -353,7 +276,6 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 final clampedY = flag.positionY.clamp(0.0, 1.0);
 
                 // 根据图片实际显示区域计算旗子位置
-                // 十字准星中心对齐到点击位置
                 final flagColor =
                     flag.needsAttention ? Colors.red : Colors.blue;
 
@@ -429,9 +351,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 );
               }),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

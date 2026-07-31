@@ -349,5 +349,16 @@
       "error": {"type": "String"}
     }
   },
-  "resetView": "Reset View"
+  "resetView": "Reset View",
+  "formulaCalculationError": "Formula error: {error}",
+  "@formulaCalculationError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "formulaExamples": "Examples:",
+  "formulaExampleSimple": "Simple exchange rate conversion",
+  "formulaExampleDeduct": "Conversion after deducting fees",
+  "formulaExampleAddFee": "Add fixed fee",
+  "formulaExampleComplex": "Compound calculation"
 }

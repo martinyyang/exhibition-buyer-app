@@ -22,7 +22,7 @@ class AuthService {
     );
 
     if (response.user == null) {
-      throw Exception('登录失败');
+      throw Exception('Login failed');
     }
 
     // 获取用户详细信息
@@ -61,12 +61,12 @@ class AuthService {
           .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
-          throw Exception('注册请求超时，请检查网络连接');
+          throw Exception('Registration request timeout, please check network connection');
         },
       );
 
       if (response.user == null) {
-        throw Exception('注册失败：未返回用户信息');
+        throw Exception('Registration failed: User information not returned');
       }
 
       print('Auth user created: ${response.user!.id}');
@@ -82,7 +82,7 @@ class AuthService {
       await _supabase.from('users').insert(userData).timeout(
         const Duration(seconds: 30),
         onTimeout: () {
-          throw Exception('创建用户记录超时');
+          throw Exception('Create user record timeout');
         },
       );
 
@@ -96,7 +96,7 @@ class AuthService {
           .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
-          throw Exception('获取用户信息超时');
+          throw Exception('Get user information timeout');
         },
       );
 

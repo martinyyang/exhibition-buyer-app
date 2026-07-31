@@ -13,6 +13,7 @@ import '../providers/photo_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 import '../../flag/providers/flag_provider.dart';
+import '../../booth/providers/booth_provider.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -59,7 +60,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         final teamId = userData?.teamId;
 
         if (user == null || teamId == null) {
-          throw Exception('用户未登录或未加入团队');
+          throw Exception(l10n.userNotInTeam);
         }
 
         await photoService.uploadPhoto(
@@ -113,7 +114,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         final teamId = userData?.teamId;
 
         if (user == null || teamId == null) {
-          throw Exception('用户未登录或未加入团队');
+          throw Exception(l10n.userNotInTeam);
         }
 
         await photoService.uploadPhoto(
@@ -330,11 +331,20 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final photosAsync = ref.watch(photosProvider(widget.boothId));
+    final boothAsync = ref.watch(boothProvider(widget.boothId));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.photos),
-        leading: const SafeBackButton(fallbackPath: '/events'),
+        title: boothAsync.when(
+          data: (booth) => booth != null
+              ? Text(l10n.boothLabel(booth.boothNumber))
+              : Text(l10n.photos),
+          loading: () => Text(l10n.photos),
+          error: (_, __) => Text(l10n.photos),
+        ),
+        leading: SafeBackButton(
+          fallbackPath: '/events/${Uri.parse(GoRouterState.of(context).uri.toString()).pathSegments[1]}/booths',
+        ),
       ),
       body: photosAsync.when(
         data: (photos) => photos.isEmpty

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../flag/models/flag.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 
@@ -68,6 +69,7 @@ class PhotoAnnotationCanvas extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return LayoutBuilder(
       builder: (context, constraints) {
         final imageSize = Size(
@@ -106,7 +108,7 @@ class PhotoAnnotationCanvas extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '照片加载失败',
+                          l10n.loadFailed(''),
                           style: TextStyle(color: Colors.grey[600]),
                         ),
                       ],

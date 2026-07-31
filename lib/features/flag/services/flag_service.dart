@@ -145,7 +145,7 @@ class FlagService {
     if (needsAttention != null) updateData['needs_attention'] = needsAttention;
 
     if (updateData.isEmpty) {
-      throw ArgumentError('至少需要提供一个更新字段');
+      throw ArgumentError('At least one update field is required');
     }
 
     final result = await _supabase

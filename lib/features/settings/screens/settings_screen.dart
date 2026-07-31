@@ -77,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             error: (error, stack) => ListTile(
               leading: const Icon(Icons.error_outline, color: Colors.red),
-              title: const Text('用户信息加载异常'),
+              title: Text(l10n.loadFailed('User info')),
               subtitle: Text(error.toString()),
             ),
           ),

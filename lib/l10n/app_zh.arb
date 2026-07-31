@@ -349,5 +349,16 @@
       "error": {"type": "String"}
     }
   },
-  "resetView": "重置视图"
+  "resetView": "重置视图",
+  "formulaCalculationError": "公式错误: {error}",
+  "@formulaCalculationError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "formulaExamples": "示例：",
+  "formulaExampleSimple": "简单汇率换算",
+  "formulaExampleDeduct": "扣除费用后换算",
+  "formulaExampleAddFee": "加上固定费用",
+  "formulaExampleComplex": "复合计算"
 }
