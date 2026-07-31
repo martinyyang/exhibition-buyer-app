@@ -228,14 +228,19 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: [
-            // 照片
-            if (photo != null)
+    if (photo == null) return const SizedBox.shrink();
+
+    return GestureDetector(
+      onTapDown: (details) => _onPhotoTap(details),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              // 照片
               Container(
                 key: _imageKey,
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
                 child: CachedNetworkImage(
                   imageUrl: photo.url,
                   fit: BoxFit.contain,
@@ -258,84 +263,85 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 ),
               ),
 
-            // 旗子标记
-            ...flags.map((flag) {
-              if (_loadedImage == null) return const SizedBox.shrink();
+              // 旗子标记
+              ...flags.map((flag) {
+                if (_loadedImage == null) return const SizedBox.shrink();
 
-              // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
-              final imageAspect =
-                  _loadedImage!.width / _loadedImage!.height;
-              final containerAspect =
-                  constraints.maxWidth / constraints.maxHeight;
+                // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
+                final imageAspect =
+                    _loadedImage!.width / _loadedImage!.height;
+                final containerAspect =
+                    constraints.maxWidth / constraints.maxHeight;
 
-              double displayWidth, displayHeight, offsetX, offsetY;
+                double displayWidth, displayHeight, offsetX, offsetY;
 
-              if (imageAspect > containerAspect) {
-                // 图片更宽，以宽度为准
-                displayWidth = constraints.maxWidth;
-                displayHeight = constraints.maxWidth / imageAspect;
-                offsetX = 0;
-                offsetY = (constraints.maxHeight - displayHeight) / 2;
-              } else {
-                // 图片更高，以高度为准
-                displayHeight = constraints.maxHeight;
-                displayWidth = constraints.maxHeight * imageAspect;
-                offsetX = (constraints.maxWidth - displayWidth) / 2;
-                offsetY = 0;
-              }
+                if (imageAspect > containerAspect) {
+                  // 图片更宽，以宽度为准
+                  displayWidth = constraints.maxWidth;
+                  displayHeight = constraints.maxWidth / imageAspect;
+                  offsetX = 0;
+                  offsetY = (constraints.maxHeight - displayHeight) / 2;
+                } else {
+                  // 图片更高，以高度为准
+                  displayHeight = constraints.maxHeight;
+                  displayWidth = constraints.maxHeight * imageAspect;
+                  offsetX = (constraints.maxWidth - displayWidth) / 2;
+                  offsetY = 0;
+                }
 
-              // 限制旗子坐标在有效范围内（0-1），防止显示到画面外
-              final clampedX = flag.positionX.clamp(0.0, 1.0);
-              final clampedY = flag.positionY.clamp(0.0, 1.0);
+                // 限制旗子坐标在有效范围内（0-1），防止显示到画面外
+                final clampedX = flag.positionX.clamp(0.0, 1.0);
+                final clampedY = flag.positionY.clamp(0.0, 1.0);
 
-              // 根据图片实际显示区域计算旗子位置
-              return Positioned(
-                left: offsetX + clampedX * displayWidth - 20,
-                top: offsetY + clampedY * displayHeight - 40,
-                child: GestureDetector(
-                  onLongPress: () => _onFlagLongPress(flag),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: flag.needsAttention ? Colors.red : Colors.blue,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${flag.number}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                // 根据图片实际显示区域计算旗子位置
+                return Positioned(
+                  left: offsetX + clampedX * displayWidth - 20,
+                  top: offsetY + clampedY * displayHeight - 40,
+                  child: GestureDetector(
+                    onLongPress: () => _onFlagLongPress(flag),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: flag.needsAttention ? Colors.red : Colors.blue,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${flag.number}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      // 旗杆
-                      Container(
-                        width: 2,
-                        height: 20,
-                        color: flag.needsAttention ? Colors.red : Colors.blue,
-                      ),
-                    ],
+                        // 旗杆
+                        Container(
+                          width: 2,
+                          height: 20,
+                          color: flag.needsAttention ? Colors.red : Colors.blue,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
-          ],
-        );
-      },
+                );
+              }),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -349,10 +355,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
             transformationController: _transformationController,
             minScale: 0.5,
             maxScale: 4.0,
-            child: GestureDetector(
-              onTapDown: (details) => _onPhotoTap(details),
-              child: _buildPhotoWithFlags(photo, flags),
-            ),
+            child: _buildPhotoWithFlags(photo, flags),
           ),
         ),
 
@@ -395,10 +398,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
             transformationController: _transformationController,
             minScale: 0.5,
             maxScale: 4.0,
-            child: GestureDetector(
-              onTapDown: (details) => _onPhotoTap(details),
-              child: _buildPhotoWithFlags(photo, flags),
-            ),
+            child: _buildPhotoWithFlags(photo, flags),
           ),
         ),
 
