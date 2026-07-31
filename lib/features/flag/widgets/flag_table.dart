@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/warning_badge.dart';
 import '../models/flag.dart';
+import '../../../core/utils/debouncer.dart';
 
 class FlagTable extends StatefulWidget {
   final List<Flag> flags;
@@ -25,6 +26,8 @@ class FlagTable extends StatefulWidget {
 class _FlagTableState extends State<FlagTable> {
   final Map<String, TextEditingController> _priceControllers = {};
   final Map<String, TextEditingController> _targetPriceControllers = {};
+  final Debouncer _priceDebouncer = Debouncer(delay: Duration(milliseconds: 800));
+  final Debouncer _targetPriceDebouncer = Debouncer(delay: Duration(milliseconds: 800));
 
   @override
   void initState() {
@@ -36,8 +39,51 @@ class _FlagTableState extends State<FlagTable> {
   void didUpdateWidget(FlagTable oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.flags != widget.flags) {
-      _initControllers();
+      _updateControllersIfNeeded();
     }
+  }
+
+  void _updateControllersIfNeeded() {
+    // 只更新发生变化的controller，避免重置正在编辑的输入框
+    for (var flag in widget.flags) {
+      // 如果是新flag，创建controller
+      if (!_priceControllers.containsKey(flag.id)) {
+        _priceControllers[flag.id] = TextEditingController(
+          text: flag.priceRmb?.toString() ?? '',
+        );
+      } else {
+        // 只在值真正改变且不是当前焦点时更新
+        final controller = _priceControllers[flag.id]!;
+        final newValue = flag.priceRmb?.toString() ?? '';
+        if (controller.text != newValue && !controller.selection.isValid) {
+          controller.text = newValue;
+        }
+      }
+
+      if (!_targetPriceControllers.containsKey(flag.id)) {
+        _targetPriceControllers[flag.id] = TextEditingController(
+          text: flag.targetPrice?.toString() ?? '',
+        );
+      } else {
+        final controller = _targetPriceControllers[flag.id]!;
+        final newValue = flag.targetPrice?.toString() ?? '';
+        if (controller.text != newValue && !controller.selection.isValid) {
+          controller.text = newValue;
+        }
+      }
+    }
+
+    // 清理已删除flag的controller
+    _priceControllers.removeWhere((id, controller) {
+      final exists = widget.flags.any((f) => f.id == id);
+      if (!exists) controller.dispose();
+      return !exists;
+    });
+    _targetPriceControllers.removeWhere((id, controller) {
+      final exists = widget.flags.any((f) => f.id == id);
+      if (!exists) controller.dispose();
+      return !exists;
+    });
   }
 
   void _initControllers() {
@@ -70,6 +116,8 @@ class _FlagTableState extends State<FlagTable> {
     for (var controller in _targetPriceControllers.values) {
       controller.dispose();
     }
+    _priceDebouncer.dispose();
+    _targetPriceDebouncer.dispose();
     super.dispose();
   }
 
@@ -183,10 +231,12 @@ class _FlagTableState extends State<FlagTable> {
                           ),
                         ),
                         onChanged: (value) {
-                          final price = double.tryParse(value);
-                          if (price != null && widget.onPriceUpdate != null) {
-                            widget.onPriceUpdate!(flag, price);
-                          }
+                          _priceDebouncer.run(() {
+                            final price = double.tryParse(value);
+                            if (price != null && widget.onPriceUpdate != null) {
+                              widget.onPriceUpdate!(flag, price);
+                            }
+                          });
                         },
                       ),
                     ),
@@ -211,10 +261,12 @@ class _FlagTableState extends State<FlagTable> {
                           ),
                         ),
                         onChanged: (value) {
-                          final price = double.tryParse(value);
-                          if (price != null && widget.onPriceUpdate != null) {
-                            widget.onPriceUpdate!(flag, price);
-                          }
+                          _priceDebouncer.run(() {
+                            final price = double.tryParse(value);
+                            if (price != null && widget.onPriceUpdate != null) {
+                              widget.onPriceUpdate!(flag, price);
+                            }
+                          });
                         },
                       ),
                     ),
@@ -252,11 +304,13 @@ class _FlagTableState extends State<FlagTable> {
                           ),
                         ),
                         onChanged: (value) {
-                          final targetPrice = double.tryParse(value);
-                          if (targetPrice != null &&
-                              widget.onTargetPriceUpdate != null) {
-                            widget.onTargetPriceUpdate!(flag, targetPrice);
-                          }
+                          _targetPriceDebouncer.run(() {
+                            final targetPrice = double.tryParse(value);
+                            if (targetPrice != null &&
+                                widget.onTargetPriceUpdate != null) {
+                              widget.onTargetPriceUpdate!(flag, targetPrice);
+                            }
+                          });
                         },
                       ),
                     ),
