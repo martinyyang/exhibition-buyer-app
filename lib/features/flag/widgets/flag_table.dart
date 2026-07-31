@@ -75,19 +75,59 @@ class _FlagTableState extends State<FlagTable> {
 
   @override
   Widget build(BuildContext context) {
+    // 检测屏幕宽度判断是否为移动端
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
+          headingRowHeight: isMobile ? 32 : 56,
+          dataRowHeight: isMobile ? 40 : 56,
           headingRowColor: MaterialStateProperty.all(Colors.grey[100]),
+          columnSpacing: isMobile ? 12 : 56,
+          horizontalMargin: isMobile ? 8 : 24,
           columns: [
-            const DataColumn(label: Text('编号')),
-            if (!widget.isRemoteView) const DataColumn(label: Text('报价(¥)')),
-            if (widget.isRemoteView) const DataColumn(label: Text('卖家报价')),
-            const DataColumn(label: Text('换算价')),
-            if (widget.isRemoteView) const DataColumn(label: Text('目标价')),
-            const DataColumn(label: Text('状态')),
+            DataColumn(
+              label: Text(
+                '编号',
+                style: TextStyle(fontSize: isMobile ? 12 : 14),
+              ),
+            ),
+            if (!widget.isRemoteView)
+              DataColumn(
+                label: Text(
+                  '报价(¥)',
+                  style: TextStyle(fontSize: isMobile ? 12 : 14),
+                ),
+              ),
+            if (widget.isRemoteView)
+              DataColumn(
+                label: Text(
+                  '卖家报价',
+                  style: TextStyle(fontSize: isMobile ? 12 : 14),
+                ),
+              ),
+            DataColumn(
+              label: Text(
+                '换算价',
+                style: TextStyle(fontSize: isMobile ? 12 : 14),
+              ),
+            ),
+            if (widget.isRemoteView)
+              DataColumn(
+                label: Text(
+                  '目标价',
+                  style: TextStyle(fontSize: isMobile ? 12 : 14),
+                ),
+              ),
+            DataColumn(
+              label: Text(
+                '状态',
+                style: TextStyle(fontSize: isMobile ? 12 : 14),
+              ),
+            ),
           ],
           rows: widget.flags.map((flag) {
             return DataRow(
@@ -103,8 +143,8 @@ class _FlagTableState extends State<FlagTable> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 32,
-                        height: 32,
+                        width: isMobile ? 24 : 32,
+                        height: isMobile ? 24 : 32,
                         decoration: BoxDecoration(
                           color: flag.needsAttention ? Colors.red : Colors.blue,
                           shape: BoxShape.circle,
@@ -112,9 +152,10 @@ class _FlagTableState extends State<FlagTable> {
                         child: Center(
                           child: Text(
                             '${flag.number}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
+                              fontSize: isMobile ? 11 : 14,
                             ),
                           ),
                         ),
@@ -127,16 +168,18 @@ class _FlagTableState extends State<FlagTable> {
                 if (!widget.isRemoteView)
                   DataCell(
                     SizedBox(
-                      width: 100,
+                      width: isMobile ? 70 : 100,
                       child: TextField(
                         controller: _priceControllers[flag.id],
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
+                        style: TextStyle(fontSize: isMobile ? 12 : 14),
+                        decoration: InputDecoration(
                           hintText: '输入报价',
+                          hintStyle: TextStyle(fontSize: isMobile ? 11 : 14),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
+                            horizontal: isMobile ? 4 : 8,
+                            vertical: isMobile ? 4 : 8,
                           ),
                         ),
                         onChanged: (value) {
@@ -153,16 +196,18 @@ class _FlagTableState extends State<FlagTable> {
                 if (widget.isRemoteView)
                   DataCell(
                     SizedBox(
-                      width: 100,
+                      width: isMobile ? 70 : 100,
                       child: TextField(
                         controller: _priceControllers[flag.id],
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
+                        style: TextStyle(fontSize: isMobile ? 12 : 14),
+                        decoration: InputDecoration(
                           hintText: '输入报价',
+                          hintStyle: TextStyle(fontSize: isMobile ? 11 : 14),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
+                            horizontal: isMobile ? 4 : 8,
+                            vertical: isMobile ? 4 : 8,
                           ),
                         ),
                         onChanged: (value) {
@@ -182,7 +227,7 @@ class _FlagTableState extends State<FlagTable> {
                         ? flag.priceConverted!.toStringAsFixed(2)
                         : '-',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: isMobile ? 12 : 14,
                       color: Colors.grey[700],
                     ),
                   ),
@@ -192,16 +237,18 @@ class _FlagTableState extends State<FlagTable> {
                 if (widget.isRemoteView)
                   DataCell(
                     SizedBox(
-                      width: 100,
+                      width: isMobile ? 70 : 100,
                       child: TextField(
                         controller: _targetPriceControllers[flag.id],
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
+                        style: TextStyle(fontSize: isMobile ? 12 : 14),
+                        decoration: InputDecoration(
                           hintText: '目标价',
+                          hintStyle: TextStyle(fontSize: isMobile ? 11 : 14),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
+                            horizontal: isMobile ? 4 : 8,
+                            vertical: isMobile ? 4 : 8,
                           ),
                         ),
                         onChanged: (value) {
@@ -227,13 +274,13 @@ class _FlagTableState extends State<FlagTable> {
                         Icon(
                           Icons.check_circle,
                           color: Colors.green,
-                          size: 20,
+                          size: isMobile ? 16 : 20,
                         )
                       else
                         Icon(
                           Icons.pending,
                           color: Colors.grey[400],
-                          size: 20,
+                          size: isMobile ? 16 : 20,
                         ),
                     ],
                   ),

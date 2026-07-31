@@ -389,15 +389,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   Widget _buildMobileLayout(Photo? photo, List<Flag> flags) {
     return Column(
       children: [
-        // 上半部分：照片
+        // 上半部分：照片（移动端禁用InteractiveViewer避免手势冲突）
         Expanded(
           flex: 3,
-          child: InteractiveViewer(
-            transformationController: _transformationController,
-            minScale: 0.5,
-            maxScale: 4.0,
-            child: _buildPhotoWithFlags(photo, flags),
-          ),
+          child: _buildPhotoWithFlags(photo, flags),
         ),
 
         const Divider(height: 1),
@@ -435,11 +430,28 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         // 左侧：照片
         Expanded(
           flex: 2,
-          child: InteractiveViewer(
-            transformationController: _transformationController,
-            minScale: 0.5,
-            maxScale: 4.0,
-            child: _buildPhotoWithFlags(photo, flags),
+          child: Stack(
+            children: [
+              InteractiveViewer(
+                transformationController: _transformationController,
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: _buildPhotoWithFlags(photo, flags),
+              ),
+              // 重置视图按钮
+              Positioned(
+                top: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  mini: true,
+                  onPressed: () {
+                    _transformationController.value = Matrix4.identity();
+                  },
+                  tooltip: '重置视图',
+                  child: const Icon(Icons.refresh, size: 20),
+                ),
+              ),
+            ],
           ),
         ),
 
