@@ -238,6 +238,38 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     }
   }
 
+  Future<void> _updateFlagPrice(Flag flag, double price) async {
+    try {
+      final flagService = ref.read(flagServiceProvider);
+      await flagService.updateFlag(
+        flagId: flag.id,
+        priceRmb: price,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('更新报价失败: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _updateFlagTargetPrice(Flag flag, double targetPrice) async {
+    try {
+      final flagService = ref.read(flagServiceProvider);
+      await flagService.updateFlag(
+        flagId: flag.id,
+        targetPrice: targetPrice,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('更新目标价失败: $e')),
+        );
+      }
+    }
+  }
+
   Widget _buildPhotoWithFlags(Photo? photo, List<Flag> flags) {
     if (photo == null) return const SizedBox.shrink();
 
@@ -418,6 +450,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   flags: flags,
                   isRemoteView: widget.isRemoteView,
                   onRowTap: (flag) => _onFlagRowTap(flag),
+                  onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
+                  onTargetPriceUpdate: (flag, targetPrice) =>
+                      _updateFlagTargetPrice(flag, targetPrice),
                 ),
         ),
       ],
@@ -481,6 +516,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   flags: flags,
                   isRemoteView: widget.isRemoteView,
                   onRowTap: (flag) => _onFlagRowTap(flag),
+                  onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
+                  onTargetPriceUpdate: (flag, targetPrice) =>
+                      _updateFlagTargetPrice(flag, targetPrice),
                 ),
         ),
       ],
