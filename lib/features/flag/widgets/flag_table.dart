@@ -140,8 +140,8 @@ class _FlagTableState extends State<FlagTable> {
           headingRowHeight: isMobile ? 32 : 56,
           dataRowHeight: isMobile ? 40 : 56,
           headingRowColor: MaterialStateProperty.all(Colors.grey[100]),
-          columnSpacing: isMobile ? 12 : 56,
-          horizontalMargin: isMobile ? 8 : 24,
+          columnSpacing: isMobile ? 12 : 32,
+          horizontalMargin: isMobile ? 8 : 16,
           columns: [
             DataColumn(
               label: Text(
@@ -332,25 +332,28 @@ class _FlagTableState extends State<FlagTable> {
 
                 // 状态列
                 DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (flag.needsAttention)
-                        const WarningBadge(show: true)
-                      else if (flag.priceRmb != null &&
-                          flag.targetPrice != null)
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                          size: isMobile ? 16 : 20,
-                        )
-                      else
-                        Icon(
-                          Icons.pending,
-                          color: Colors.grey[400],
-                          size: isMobile ? 16 : 20,
-                        ),
-                    ],
+                  Container(
+                    constraints: BoxConstraints(minWidth: isMobile ? 40 : 60),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (flag.needsAttention)
+                          const WarningBadge(show: true)
+                        else if (flag.priceRmb != null &&
+                            flag.targetPrice != null)
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: isMobile ? 16 : 20,
+                          )
+                        else
+                          Icon(
+                            Icons.pending,
+                            color: Colors.grey[400],
+                            size: isMobile ? 16 : 20,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ],
