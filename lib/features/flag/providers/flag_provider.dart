@@ -30,10 +30,40 @@ class FlagsNotifier extends StateNotifier<AsyncValue<List<Flag>>> {
     // 初始加载
     await refresh();
 
-    // 订阅实时更新
+    // 订阅实时更新 - 优化：只更新变化的flag，不重新加载整个列表
     _channel = _realtimeService.subscribeToFlags(_photoId, (payload) {
-      // 数据变化时重新加载
-      refresh();
+      // 智能更新：只修改变化的flag，避免整体刷新
+      final currentState = state;
+      if (currentState is AsyncData<List<Flag>>) {
+        final currentFlags = currentState.value;
+
+        // Supabase payload 结构: eventType (INSERT/UPDATE/DELETE)
+        final eventType = payload.eventType;
+
+        if (eventType == PostgresChangeEvent.update) {
+          // 更新已有flag
+          final updatedFlag = Flag.fromJson(payload.newRecord);
+          final updatedList = currentFlags.map((flag) {
+            return flag.id == updatedFlag.id ? updatedFlag : flag;
+          }).toList();
+          state = AsyncValue.data(updatedList);
+        } else if (eventType == PostgresChangeEvent.insert) {
+          // 添加新flag
+          final newFlag = Flag.fromJson(payload.newRecord);
+          final updatedList = [...currentFlags, newFlag];
+          updatedList.sort((a, b) => a.number.compareTo(b.number));
+          state = AsyncValue.data(updatedList);
+        } else if (eventType == PostgresChangeEvent.delete) {
+          // 删除flag
+          final deletedId = payload.oldRecord['id'] as String;
+          final updatedList =
+              currentFlags.where((f) => f.id != deletedId).toList();
+          state = AsyncValue.data(updatedList);
+        }
+      } else {
+        // 如果状态不是data，则重新加载
+        refresh();
+      }
     });
   }
 
