@@ -9,6 +9,7 @@ import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.da
 import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.dart';
 import 'package:exhibition_buyer_app/features/photo/screens/photo_detail_screen.dart';
 import 'package:exhibition_buyer_app/features/settings/screens/settings_screen.dart';
+import 'package:exhibition_buyer_app/features/formula/screens/formula_management_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart';
 
 // 路由Provider
@@ -118,6 +119,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+
+      // 公式管理页
+      GoRoute(
+        path: '/formula',
+        name: 'formula',
+        builder: (context, state) => const FormulaManagementScreen(),
       ),
     ],
 

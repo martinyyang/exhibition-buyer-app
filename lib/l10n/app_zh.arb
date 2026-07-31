@@ -295,5 +295,6 @@
     }
   },
   "registerTeamNameHint": "填入团队全名，或买手分享的6位邀请码",
-  "teamNameOrInviteCode": "团队名称 / 6位邀请码"
+  "teamNameOrInviteCode": "团队名称 / 6位邀请码",
+  "formulaSettings": "公式设置"
 }

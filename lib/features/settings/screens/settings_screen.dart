@@ -105,6 +105,14 @@ class SettingsScreen extends ConsumerWidget {
               _showLanguageDialog(context, ref, l10n, currentLocale);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.calculate),
+            title: Text(l10n.formulaSettings),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              context.push('/formula');
+            },
+          ),
         ],
       ),
     );

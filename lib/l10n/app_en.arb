@@ -295,5 +295,6 @@
     }
   },
   "registerTeamNameHint": "Enter team name or 6-digit invite code",
-  "teamNameOrInviteCode": "Team Name / 6-digit Invite Code"
+  "teamNameOrInviteCode": "Team Name / 6-digit Invite Code",
+  "formulaSettings": "Formula Settings"
 }
