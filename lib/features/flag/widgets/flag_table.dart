@@ -26,8 +26,10 @@ class FlagTable extends StatefulWidget {
 class _FlagTableState extends State<FlagTable> {
   final Map<String, TextEditingController> _priceControllers = {};
   final Map<String, TextEditingController> _targetPriceControllers = {};
-  final Debouncer _priceDebouncer = Debouncer(delay: Duration(milliseconds: 800));
-  final Debouncer _targetPriceDebouncer = Debouncer(delay: Duration(milliseconds: 800));
+  final Debouncer _priceDebouncer =
+      Debouncer(delay: Duration(milliseconds: 800));
+  final Debouncer _targetPriceDebouncer =
+      Debouncer(delay: Duration(milliseconds: 800));
 
   @override
   void initState() {

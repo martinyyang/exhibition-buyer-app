@@ -434,8 +434,7 @@ class _PhotoCard extends ConsumerWidget {
                 fit: BoxFit.cover,
                 placeholder: (context, url) =>
                     const Center(child: LoadingIndicator()),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
             Padding(
