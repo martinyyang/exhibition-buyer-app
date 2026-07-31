@@ -9,6 +9,7 @@ class FlagTable extends StatefulWidget {
   final Function(Flag)? onRowTap;
   final Function(Flag, double)? onPriceUpdate;
   final Function(Flag, double)? onTargetPriceUpdate;
+  final VoidCallback? onConvertedPriceTap;
 
   const FlagTable({
     super.key,
@@ -17,6 +18,7 @@ class FlagTable extends StatefulWidget {
     this.onRowTap,
     this.onPriceUpdate,
     this.onTargetPriceUpdate,
+    this.onConvertedPriceTap,
   });
 
   @override
@@ -274,15 +276,23 @@ class _FlagTableState extends State<FlagTable> {
                     ),
                   ),
 
-                // 换算价列（只读）
+                // 换算价列（点击跳转到公式设置）
                 DataCell(
-                  Text(
-                    flag.priceConverted != null
-                        ? flag.priceConverted!.toStringAsFixed(2)
-                        : '-',
-                    style: TextStyle(
-                      fontSize: isMobile ? 12 : 14,
-                      color: Colors.grey[700],
+                  InkWell(
+                    onTap: widget.onConvertedPriceTap,
+                    child: Text(
+                      flag.priceConverted != null
+                          ? flag.priceConverted!.toStringAsFixed(2)
+                          : '-',
+                      style: TextStyle(
+                        fontSize: isMobile ? 12 : 14,
+                        color: flag.priceConverted == null
+                            ? Colors.blue
+                            : Colors.grey[700],
+                        decoration: flag.priceConverted == null
+                            ? TextDecoration.underline
+                            : null,
+                      ),
                     ),
                   ),
                 ),

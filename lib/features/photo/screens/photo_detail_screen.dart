@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3, Matrix4;
+import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
 import '../../flag/models/flag.dart';
@@ -453,6 +454,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
                       _updateFlagTargetPrice(flag, targetPrice),
+                  onConvertedPriceTap: () => context.push('/formula'),
                 ),
         ),
       ],
@@ -519,6 +521,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
                       _updateFlagTargetPrice(flag, targetPrice),
+                  onConvertedPriceTap: () => context.push('/formula'),
                 ),
         ),
       ],
