@@ -170,14 +170,25 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     if (bounds == null) return;
 
     final (imageSize, imageOffset) = bounds;
-    final targetX = imageOffset.dx + flag.positionX * imageSize.width;
-    final targetY = imageOffset.dy + flag.positionY * imageSize.height;
 
-    // 计算变换矩阵，使旗子居中
+    // 计算旗子在图片上的实际像素位置
+    final flagX = imageOffset.dx + flag.positionX * imageSize.width;
+    final flagY = imageOffset.dy + flag.positionY * imageSize.height;
+
+    // 获取容器大小（InteractiveViewer的可视区域）
+    final RenderBox? renderBox =
+        _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final containerSize = renderBox.size;
+
+    // 计算变换矩阵：先缩放2倍，然后平移使旗子居中到容器中心
+    final scale = 2.0;
     final matrix = Matrix4.identity()
       ..translate(
-          -targetX + imageSize.width / 2, -targetY + imageSize.height / 2)
-      ..scale(2.0); // 放大2倍
+        containerSize.width / 2 - flagX * scale,
+        containerSize.height / 2 - flagY * scale,
+      )
+      ..scale(scale);
 
     _transformationController.value = matrix;
   }
