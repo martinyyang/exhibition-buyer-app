@@ -14,7 +14,7 @@ void main() {
       // 启动应用
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -32,7 +32,7 @@ void main() {
     testWidgets('登录页面渲染测试 - 验证登录页面正常显示', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -55,7 +55,7 @@ void main() {
     testWidgets('.env 配置加载测试 - 验证环境变量正常加载', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -72,7 +72,7 @@ void main() {
     testWidgets('网络初始化测试 - 验证网络模块能正常初始化', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -88,7 +88,7 @@ void main() {
     testWidgets('页面导航测试 - 验证基础导航功能正常', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -112,7 +112,7 @@ void main() {
       for (int i = 0; i < 3; i++) {
         await tester.pumpWidget(
           const ProviderScope(
-            child: MyApp(),
+            child: ExhibitionBuyerApp(),
           ),
         );
 
@@ -132,7 +132,7 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
       await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -152,19 +152,19 @@ void main() {
     testWidgets('热重启测试 - 验证应用状态恢复', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
       // 模拟应用进入后台
-      await tester.binding
+      tester.binding
           .handleAppLifecycleStateChanged(AppLifecycleState.paused);
       await tester.pump();
 
       // 模拟应用恢复前台
-      await tester.binding
+      tester.binding
           .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -175,7 +175,7 @@ void main() {
     testWidgets('快速点击测试 - 验证应用不会因快速点击崩溃', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -200,7 +200,7 @@ void main() {
     testWidgets('长时间运行测试 - 验证应用长期运行稳定性', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -221,7 +221,7 @@ void main() {
     testWidgets('表单输入测试 - 验证输入框正常工作', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -249,7 +249,7 @@ void main() {
     testWidgets('滚动测试 - 验证列表滚动正常', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
@@ -271,7 +271,7 @@ void main() {
     testWidgets('对话框测试 - 验证弹窗能正常显示和关闭', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MyApp(),
+          child: ExhibitionBuyerApp(),
         ),
       );
 
