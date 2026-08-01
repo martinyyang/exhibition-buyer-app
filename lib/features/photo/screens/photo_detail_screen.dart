@@ -162,6 +162,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       final flagService = ref.read(flagServiceProvider);
       await flagService.deleteFlag(flag.id);
 
+      // 刷新旗子列表
+      ref.invalidate(flagsProvider(widget.photoId));
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.flagDeletedSuccess(flag.number))),
@@ -278,6 +281,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     try {
       final flagService = ref.read(flagServiceProvider);
       await flagService.deleteFlag(flag.id);
+
+      // 刷新旗子列表
+      ref.invalidate(flagsProvider(widget.photoId));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
