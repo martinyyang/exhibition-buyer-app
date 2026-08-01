@@ -44,16 +44,50 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   }
 
   void _onPhotoTap(TapDownDetails details, Size containerSize) {
-    // 简单直接的相对坐标计算，与 photo_annotation_canvas 一致
+    if (_loadedImage == null) return;
+
     final localPosition = details.localPosition;
 
-    // 应用基于容器百分比的网格对齐以提高精度
-    final gridCellSize = containerSize.width * _gridCellSizePercent;
-    final snappedX = (localPosition.dx / gridCellSize).round() * gridCellSize;
-    final snappedY = (localPosition.dy / gridCellSize).round() * gridCellSize;
+    // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
+    final imageAspect = _loadedImage!.width / _loadedImage!.height;
+    final containerAspect = containerSize.width / containerSize.height;
 
-    final relativeX = (snappedX / containerSize.width).clamp(0.0, 1.0);
-    final relativeY = (snappedY / containerSize.height).clamp(0.0, 1.0);
+    double displayWidth, displayHeight, offsetX, offsetY;
+
+    if (imageAspect > containerAspect) {
+      // 图片更宽，以宽度为准
+      displayWidth = containerSize.width;
+      displayHeight = containerSize.width / imageAspect;
+      offsetX = 0;
+      offsetY = (containerSize.height - displayHeight) / 2;
+    } else {
+      // 图片更高，以高度为准
+      displayHeight = containerSize.height;
+      displayWidth = containerSize.height * imageAspect;
+      offsetX = (containerSize.width - displayWidth) / 2;
+      offsetY = 0;
+    }
+
+    // 检查点击是否在图片显示区域内
+    if (localPosition.dx < offsetX ||
+        localPosition.dx > offsetX + displayWidth ||
+        localPosition.dy < offsetY ||
+        localPosition.dy > offsetY + displayHeight) {
+      return; // 点击在图片外，不处理
+    }
+
+    // 转换为图片内的相对坐标
+    final imageLocalX = localPosition.dx - offsetX;
+    final imageLocalY = localPosition.dy - offsetY;
+
+    // 应用基于图片显示尺寸的网格对齐
+    final gridCellSize = displayWidth * _gridCellSizePercent;
+    final snappedX = (imageLocalX / gridCellSize).round() * gridCellSize;
+    final snappedY = (imageLocalY / gridCellSize).round() * gridCellSize;
+
+    // 转换为相对坐标（0-1）
+    final relativeX = (snappedX / displayWidth).clamp(0.0, 1.0);
+    final relativeY = (snappedY / displayHeight).clamp(0.0, 1.0);
 
     _createFlag(relativeX, relativeY);
   }
