@@ -414,7 +414,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 return Positioned(
                   left: offsetX + clampedX * displayWidth - 20,
-                  top: offsetY + clampedY * displayHeight - 60,
+                  top: offsetY + clampedY * displayHeight - 20,
                   child: GestureDetector(
                     onLongPress: () => _onFlagLongPress(flag),
                     child: SizedBox(
