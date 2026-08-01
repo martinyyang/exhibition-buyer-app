@@ -49813,8 +49813,8 @@ B.b.O(p,J.dW(this.c,new A.aKw(q,r),t.l7))
 return A.jH(s,A.iD(B.c4,p,B.m,B.bV),B.a_,!1,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,new A.aKx(q,r),s,s,s,s,!1,B.bS)},
 $S:547}
 A.aKx.prototype={
-$1(a){var s=this.b,r=a.c,q=B.d.ae(r.a/15),p=B.d.ae(r.b/15)
-this.a.C5(B.d.j1(q*15/s.a,0,1),B.d.j1(p*15/s.b,0,1))
+$1(a){var s=this.b,r=a.c,q=s.a,p=q*0.015,o=B.d.ae(r.a/p),n=B.d.ae(r.b/p)
+this.a.C5(B.d.j1(o*p/q,0,1),B.d.j1(n*p/s.b,0,1))
 return null},
 $S:37}
 A.aKv.prototype={
