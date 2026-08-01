@@ -31,7 +31,7 @@ class PhotoDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
-  static const double _gridCellSize = 15.0;
+  static const double _gridCellSizePercent = 0.015; // 1.5% of container size
   final TransformationController _transformationController =
       TransformationController();
   final GlobalKey _imageKey = GlobalKey();
@@ -47,9 +47,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     // 简单直接的相对坐标计算，与 photo_annotation_canvas 一致
     final localPosition = details.localPosition;
 
-    // 应用15px网格对齐以提高精度
-    final snappedX = (localPosition.dx / _gridCellSize).round() * _gridCellSize;
-    final snappedY = (localPosition.dy / _gridCellSize).round() * _gridCellSize;
+    // 应用基于容器百分比的网格对齐以提高精度
+    final gridCellSize = containerSize.width * _gridCellSizePercent;
+    final snappedX = (localPosition.dx / gridCellSize).round() * gridCellSize;
+    final snappedY = (localPosition.dy / gridCellSize).round() * gridCellSize;
 
     final relativeX = (snappedX / containerSize.width).clamp(0.0, 1.0);
     final relativeY = (snappedY / containerSize.height).clamp(0.0, 1.0);
