@@ -344,9 +344,8 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         ),
         leading: boothAsync.when(
           data: (booth) => SafeBackButton(
-            fallbackPath: booth != null
-                ? '/events/${booth.eventId}/booths'
-                : '/events',
+            fallbackPath:
+                booth != null ? '/events/${booth.eventId}/booths' : '/events',
           ),
           loading: () => const SafeBackButton(fallbackPath: '/events'),
           error: (_, __) => const SafeBackButton(fallbackPath: '/events'),
