@@ -31,6 +31,7 @@ class PhotoDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
+  static const double _gridCellSize = 15.0;
   final TransformationController _transformationController =
       TransformationController();
   final GlobalKey _imageKey = GlobalKey();
@@ -45,8 +46,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   void _onPhotoTap(TapDownDetails details, Size containerSize) {
     // 简单直接的相对坐标计算，与 photo_annotation_canvas 一致
     final localPosition = details.localPosition;
-    final relativeX = (localPosition.dx / containerSize.width).clamp(0.0, 1.0);
-    final relativeY = (localPosition.dy / containerSize.height).clamp(0.0, 1.0);
+
+    // 应用15px网格对齐以提高精度
+    final snappedX = (localPosition.dx / _gridCellSize).round() * _gridCellSize;
+    final snappedY = (localPosition.dy / _gridCellSize).round() * _gridCellSize;
+
+    final relativeX = (snappedX / containerSize.width).clamp(0.0, 1.0);
+    final relativeY = (snappedY / containerSize.height).clamp(0.0, 1.0);
 
     _createFlag(relativeX, relativeY);
   }
@@ -373,7 +379,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 return Positioned(
                   left: offsetX + clampedX * displayWidth - 20,
-                  top: offsetY + clampedY * displayHeight - 20,
+                  top: offsetY + clampedY * displayHeight - 60,
                   child: GestureDetector(
                     onLongPress: () => _onFlagLongPress(flag),
                     child: SizedBox(
