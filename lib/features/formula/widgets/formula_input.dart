@@ -6,12 +6,14 @@ class FormulaInput extends StatefulWidget {
   final String? initialFormula;
   final List<String>? historyFormulas;
   final Function(String)? onSave;
+  final bool enabled;
 
   const FormulaInput({
     super.key,
     this.initialFormula,
     this.historyFormulas,
     this.onSave,
+    this.enabled = true,
   });
 
   @override
@@ -117,6 +119,7 @@ class _FormulaInputState extends State<FormulaInput> {
         // 公式输入框
         TextField(
           controller: _controller,
+          enabled: widget.enabled,
           decoration: InputDecoration(
             labelText: l10n.formulaSettings,
             hintText: l10n.formulaPlaceholder,
@@ -203,7 +206,7 @@ class _FormulaInputState extends State<FormulaInput> {
                   formula,
                   style: const TextStyle(fontSize: 12),
                 ),
-                onPressed: () => _onHistoryFormulaTap(formula),
+                onPressed: widget.enabled ? () => _onHistoryFormulaTap(formula) : null,
               );
             }).toList(),
           ),
@@ -215,7 +218,7 @@ class _FormulaInputState extends State<FormulaInput> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _onSave,
+              onPressed: widget.enabled ? _onSave : null,
               child: Text(l10n.save),
             ),
           ),

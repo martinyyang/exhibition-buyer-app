@@ -14,6 +14,7 @@ class FormulaManagementScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final currentUser = ref.watch(currentUserDataProvider);
     final teamId = currentUser.value?.teamId;
+    final isTeamCreator = currentUser.value?.isTeamCreator ?? false;
 
     if (teamId == null) {
       return Scaffold(
@@ -42,6 +43,31 @@ class FormulaManagementScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 权限提示（如果不是团队创建者）
+              if (!isTeamCreator)
+                Card(
+                  color: Colors.orange.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.orange.shade700),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Only the team creator can modify the exchange formula.',
+                            style: TextStyle(
+                              color: Colors.orange.shade900,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if (!isTeamCreator) const SizedBox(height: 16),
+
               // 当前公式卡片
               Card(
                 child: Padding(
@@ -113,6 +139,7 @@ class FormulaManagementScreen extends ConsumerWidget {
                   historyFormulas: history,
                   onSave: (formula) =>
                       _saveFormula(context, ref, teamId, formula),
+                  enabled: isTeamCreator,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) =>

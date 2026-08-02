@@ -7,6 +7,7 @@ class User extends BaseModel {
   final String? dailyColor;
   final DateTime? colorAssignedDate;
   final DateTime? lastSeen;
+  final bool isTeamCreator;
 
   User({
     required super.id,
@@ -17,6 +18,7 @@ class User extends BaseModel {
     this.dailyColor,
     this.colorAssignedDate,
     this.lastSeen,
+    this.isTeamCreator = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class User extends BaseModel {
       lastSeen: json['last_seen'] != null
           ? BaseModel.parseTimestamp(json['last_seen'])
           : null,
+      isTeamCreator: json['is_team_creator'] as bool? ?? false,
     );
   }
 
@@ -47,6 +50,7 @@ class User extends BaseModel {
       'color_assigned_date': colorAssignedDate?.toIso8601String().split('T')[0],
       'last_seen': lastSeen?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
+      'is_team_creator': isTeamCreator,
     };
   }
 
@@ -59,6 +63,7 @@ class User extends BaseModel {
     DateTime? colorAssignedDate,
     DateTime? lastSeen,
     DateTime? createdAt,
+    bool? isTeamCreator,
   }) {
     return User(
       id: id ?? this.id,
@@ -69,6 +74,7 @@ class User extends BaseModel {
       dailyColor: dailyColor ?? this.dailyColor,
       colorAssignedDate: colorAssignedDate ?? this.colorAssignedDate,
       lastSeen: lastSeen ?? this.lastSeen,
+      isTeamCreator: isTeamCreator ?? this.isTeamCreator,
     );
   }
 
