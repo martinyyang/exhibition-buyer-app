@@ -37,6 +37,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   final GlobalKey _imageKey = GlobalKey();
   ui.Image? _loadedImage;
   bool _areFlagsVisible = true; // 旗子显示状态
+  bool _isCreatingFlag = false; // 防止连续点击创建重复旗子
 
   @override
   void dispose() {
@@ -96,6 +97,14 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   Future<void> _createFlag(double x, double y) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // 防止连续点击创建重复旗子
+    if (_isCreatingFlag) return;
+
+    setState(() {
+      _isCreatingFlag = true;
+    });
+
     try {
       final flagService = ref.read(flagServiceProvider);
       final supabaseService = ref.read(supabaseServiceProvider);
@@ -122,6 +131,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.addFailed(e.toString()))),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCreatingFlag = false;
+        });
       }
     }
   }
