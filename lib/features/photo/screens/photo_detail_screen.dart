@@ -2,8 +2,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:vector_math/vector_math_64.dart' show Matrix4;
-import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
@@ -34,12 +32,16 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   static const double _gridCellSizePercent = 0.015; // 1.5% of container size
   final TransformationController _transformationController =
       TransformationController();
+  final TransformationController _mobileTransformationController =
+      TransformationController();
   final GlobalKey _imageKey = GlobalKey();
   ui.Image? _loadedImage;
+  bool _areFlagsVisible = true; // 旗子显示状态
 
   @override
   void dispose() {
     _transformationController.dispose();
+    _mobileTransformationController.dispose();
     super.dispose();
   }
 
@@ -159,7 +161,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     final flagY = offsetY + flag.positionY * displayHeight;
 
     // 计算变换矩阵：先缩放2倍，然后平移使旗子居中到容器中心
-    final scale = 2.0;
+    const scale = 2.0;
     final matrix = Matrix4.identity()
       ..translate(
         containerSize.width / 2 - flagX * scale,
@@ -381,9 +383,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 ),
               ),
 
-              // 旗子标记
+              // 旗子标记（根据可见性状态显示/隐藏）
               ...flags.map((flag) {
                 if (_loadedImage == null) return const SizedBox.shrink();
+                if (!_areFlagsVisible) return const SizedBox.shrink();
 
                 // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
                 final imageAspect = _loadedImage!.width / _loadedImage!.height;
@@ -418,6 +421,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   left: offsetX + clampedX * displayWidth - 20,
                   top: offsetY + clampedY * displayHeight - 20,
                   child: GestureDetector(
+                    key: const Key('flag_marker'),
                     onLongPress: () => _onFlagLongPress(flag),
                     child: SizedBox(
                       width: 40,
@@ -496,10 +500,55 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
-        // 上半部分：照片（移动端禁用InteractiveViewer避免手势冲突）
+        // 上半部分：照片（移动端启用InteractiveViewer支持放大）
         Expanded(
           flex: 3,
-          child: _buildPhotoWithFlags(photo, flags),
+          child: Stack(
+            children: [
+              InteractiveViewer(
+                transformationController: _mobileTransformationController,
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: _buildPhotoWithFlags(photo, flags),
+              ),
+              // 右上角按钮组
+              Positioned(
+                top: 16,
+                right: 16,
+                child: Column(
+                  children: [
+                    // 重置视图按钮
+                    FloatingActionButton(
+                      mini: true,
+                      heroTag: 'reset_mobile_view',
+                      onPressed: () {
+                        _mobileTransformationController.value = Matrix4.identity();
+                      },
+                      tooltip: l10n.resetView,
+                      child: const Icon(Icons.refresh, size: 20),
+                    ),
+                    const SizedBox(height: 8),
+                    // 切换旗子显示按钮
+                    FloatingActionButton(
+                      key: const Key('toggle_flags_button'),
+                      mini: true,
+                      heroTag: 'toggle_flags',
+                      onPressed: () {
+                        setState(() {
+                          _areFlagsVisible = !_areFlagsVisible;
+                        });
+                      },
+                      tooltip: _areFlagsVisible ? '隐藏旗子' : '显示旗子',
+                      child: Icon(
+                        _areFlagsVisible ? Icons.visibility_off : Icons.visibility,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
 
         const Divider(height: 1),
@@ -554,17 +603,40 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 maxScale: 4.0,
                 child: _buildPhotoWithFlags(photo, flags),
               ),
-              // 重置视图按钮
+              // 右上角按钮组
               Positioned(
                 top: 16,
                 right: 16,
-                child: FloatingActionButton(
-                  mini: true,
-                  onPressed: () {
-                    _transformationController.value = Matrix4.identity();
-                  },
-                  tooltip: l10n.resetView,
-                  child: const Icon(Icons.refresh, size: 20),
+                child: Column(
+                  children: [
+                    // 重置视图按钮
+                    FloatingActionButton(
+                      mini: true,
+                      heroTag: 'reset_desktop_view',
+                      onPressed: () {
+                        _transformationController.value = Matrix4.identity();
+                      },
+                      tooltip: l10n.resetView,
+                      child: const Icon(Icons.refresh, size: 20),
+                    ),
+                    const SizedBox(height: 8),
+                    // 切换旗子显示按钮
+                    FloatingActionButton(
+                      key: const Key('toggle_flags_button'),
+                      mini: true,
+                      heroTag: 'toggle_flags_desktop',
+                      onPressed: () {
+                        setState(() {
+                          _areFlagsVisible = !_areFlagsVisible;
+                        });
+                      },
+                      tooltip: _areFlagsVisible ? '隐藏旗子' : '显示旗子',
+                      child: Icon(
+                        _areFlagsVisible ? Icons.visibility_off : Icons.visibility,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
