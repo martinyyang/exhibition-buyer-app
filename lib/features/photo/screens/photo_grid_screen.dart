@@ -31,12 +31,15 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   bool _isUploading = false;
 
   Future<void> _takePhoto() async {
-    if (kIsWeb) {
-      // Web 端：直接打开文件选择器
-      await _pickImageFromGallery();
-    } else {
-      // 移动端：显示相机/相册选择对话框
+    // 检测是否是移动设备（包括移动浏览器）
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    if (isMobile) {
+      // 移动端（原生应用或移动浏览器）：显示相机/相册选择对话框
       await _showImageSourceDialog();
+    } else {
+      // 桌面端 Web：直接打开文件选择器
+      await _pickImageFromGallery();
     }
   }
 
@@ -421,10 +424,16 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
               onPressed: null,
               child: LoadingIndicator(),
             )
-          : FloatingActionButton(
-              onPressed: _takePhoto,
-              tooltip: kIsWeb ? l10n.uploadPhotoButton : l10n.cameraButton,
-              child: Icon(kIsWeb ? Icons.upload_file : Icons.camera_alt),
+          : Builder(
+              builder: (context) {
+                final isMobile = MediaQuery.of(context).size.width < 600;
+                return FloatingActionButton(
+                  onPressed: _takePhoto,
+                  tooltip:
+                      isMobile ? l10n.cameraButton : l10n.uploadPhotoButton,
+                  child: Icon(isMobile ? Icons.camera_alt : Icons.upload_file),
+                );
+              },
             ),
     );
   }

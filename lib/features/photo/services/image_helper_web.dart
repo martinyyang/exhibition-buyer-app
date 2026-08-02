@@ -5,16 +5,16 @@ import 'image_helper_interface.dart';
 /// Web 端图片处理服务实现
 ///
 /// 使用 XFile 在内存中处理，避免文件系统依赖
-/// 仅支持文件选择器（Web 不支持相机）
+/// 支持文件选择器和移动端相机调用
 class ImageHelperWeb implements ImageHelperInterface {
   final ImagePicker _picker = ImagePicker();
 
   @override
   Future<XFile?> pickImage({required ImageSource source}) async {
     try {
-      // Web 端忽略 source 参数，始终使用文件选择器
+      // Web 端支持传入 source 参数，移动浏览器可以调用相机
       final XFile? pickedFile = await _picker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         maxWidth: 1920,
         imageQuality: 85,
       );
