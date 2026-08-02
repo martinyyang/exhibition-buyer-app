@@ -38,13 +38,29 @@ class ExchangeSettingsService {
         .eq('team_id', teamId)
         .eq('valid_date', todayStr);
 
-    // 使用upsert：如果已存在相同的公式记录则更新，否则插入
-    await _supabase.from('exchange_settings').upsert({
-      'team_id': teamId,
-      'formula': formula,
-      'valid_date': todayStr,
-      'is_active': true,
-    }, onConflict: 'team_id,valid_date,formula');
+    // 检查是否已存在相同的公式记录
+    final existing = await _supabase
+        .from('exchange_settings')
+        .select()
+        .eq('team_id', teamId)
+        .eq('valid_date', todayStr)
+        .eq('formula', formula)
+        .maybeSingle();
+
+    if (existing != null) {
+      // 如果存在，更新为active
+      await _supabase
+          .from('exchange_settings')
+          .update({'is_active': true}).eq('id', existing['id']);
+    } else {
+      // 如果不存在，插入新记录
+      await _supabase.from('exchange_settings').insert({
+        'team_id': teamId,
+        'formula': formula,
+        'valid_date': todayStr,
+        'is_active': true,
+      });
+    }
 
     // 同时保存到历史记录
     await _historyService.saveFormula(formula, teamId);
