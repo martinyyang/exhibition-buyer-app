@@ -233,9 +233,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
       if (teamId != null) {
         // 等待公式加载完成
-        final formulaAsync =
-            await ref.read(currentFormulaProvider(teamId).future);
-        formula = formulaAsync;
+        await ref.read(currentFormulaProvider(teamId).notifier).refresh();
+        final formulaAsync = ref.read(currentFormulaProvider(teamId));
+        formula = formulaAsync.value;
 
         // 如果有公式，计算换算价格
         if (formula != null && formula.isNotEmpty) {
