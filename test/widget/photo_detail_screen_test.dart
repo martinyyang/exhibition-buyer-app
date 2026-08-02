@@ -73,7 +73,7 @@ void main() {
       createdAt: DateTime.now(),
     );
 
-    final testFlags = [
+    final List<Flag> testFlags = [
       Flag(
         id: 'flag1',
         photoId: 'test-photo-id',
