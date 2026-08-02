@@ -1,42 +1,10 @@
-# Database Migrations
-
-## How to Apply Migrations
-
-### Option 1: Using Supabase Dashboard (Recommended)
-
-1. Go to your Supabase project dashboard
-2. Navigate to **SQL Editor**
-3. Copy the content of the migration file
-4. Paste and execute the SQL
-
-### Option 2: Using Supabase CLI
-
-```bash
-# Login to Supabase
-supabase login
-
-# Link to your project
-supabase link --project-ref YOUR_PROJECT_REF
-
-# Push migrations
-supabase db push
-```
-
-## Latest Migration
-
-**20260802000000_fix_formula_history_rls.sql**
-- Fixes RLS policies for `formula_history` table
-- Adds NULL check for team_id to prevent policy violations
-- Ensures team members can properly insert and update formula history
-
-## Quick Apply (Copy-Paste to SQL Editor)
-
-```sql
 -- Fix formula_history RLS policies
+-- Drop existing policies if they exist
 DROP POLICY IF EXISTS "Team members can view formula history" ON formula_history;
 DROP POLICY IF EXISTS "Team members can insert formula history" ON formula_history;
 DROP POLICY IF EXISTS "Team members can update formula history" ON formula_history;
 
+-- Recreate policies with proper checks
 CREATE POLICY "Team members can view formula history"
   ON formula_history FOR SELECT
   USING (
@@ -60,6 +28,6 @@ CREATE POLICY "Team members can update formula history"
       SELECT team_id FROM users WHERE id = auth.uid() AND team_id IS NOT NULL
     )
   );
-```
 
-After running this migration, formula saving should work without RLS policy violations.
+-- Add comment
+COMMENT ON TABLE formula_history IS 'Stores formula usage history for teams with RLS enabled';
