@@ -31,21 +31,20 @@ class ExchangeSettingsService {
     final todayStr =
         '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
-    // 先将同team_id的今天其他公式is_active设为false
+    // 先将同team_id的今天所有公式is_active设为false
     await _supabase
         .from('exchange_settings')
         .update({'is_active': false})
         .eq('team_id', teamId)
-        .eq('valid_date', todayStr)
-        .neq('formula', formula);
+        .eq('valid_date', todayStr);
 
-    // 插入新的exchange_setting记录
-    await _supabase.from('exchange_settings').insert({
+    // 使用upsert：如果已存在相同的公式记录则更新，否则插入
+    await _supabase.from('exchange_settings').upsert({
       'team_id': teamId,
       'formula': formula,
       'valid_date': todayStr,
       'is_active': true,
-    });
+    }, onConflict: 'team_id,valid_date,formula');
 
     // 同时保存到历史记录
     await _historyService.saveFormula(formula, teamId);
