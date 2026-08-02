@@ -184,7 +184,71 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       )
       ..scale(scale);
 
-    _transformationController.value = matrix;
+    // 根据屏幕宽度判断是移动端还是桌面端，更新相应的controller
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    if (isMobile) {
+      _mobileTransformationController.value = matrix;
+    } else {
+      _transformationController.value = matrix;
+    }
+  }
+
+  void _zoomIn() {
+    // 放大：在当前缩放基础上增加0.5倍
+    final currentMatrix = _mobileTransformationController.value;
+    final currentScale = currentMatrix.getMaxScaleOnAxis();
+
+    // 限制最大缩放为4倍
+    if (currentScale >= 4.0) return;
+
+    final newScale = (currentScale + 0.5).clamp(0.5, 4.0);
+    final scaleFactor = newScale / currentScale;
+
+    // 获取当前视图中心点
+    final RenderBox? renderBox =
+        _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final containerSize = renderBox.size;
+    final centerX = containerSize.width / 2;
+    final centerY = containerSize.height / 2;
+
+    // 以视图中心为基准进行缩放
+    final newMatrix = Matrix4.identity()
+      ..translate(centerX, centerY)
+      ..scale(scaleFactor)
+      ..translate(-centerX, -centerY)
+      ..multiply(currentMatrix);
+
+    _mobileTransformationController.value = newMatrix;
+  }
+
+  void _zoomOut() {
+    // 缩小：在当前缩放基础上减少0.5倍
+    final currentMatrix = _mobileTransformationController.value;
+    final currentScale = currentMatrix.getMaxScaleOnAxis();
+
+    // 限制最小缩放为0.5倍
+    if (currentScale <= 0.5) return;
+
+    final newScale = (currentScale - 0.5).clamp(0.5, 4.0);
+    final scaleFactor = newScale / currentScale;
+
+    // 获取当前视图中心点
+    final RenderBox? renderBox =
+        _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final containerSize = renderBox.size;
+    final centerX = containerSize.width / 2;
+    final centerY = containerSize.height / 2;
+
+    // 以视图中心为基准进行缩放
+    final newMatrix = Matrix4.identity()
+      ..translate(centerX, centerY)
+      ..scale(scaleFactor)
+      ..translate(-centerX, -centerY)
+      ..multiply(currentMatrix);
+
+    _mobileTransformationController.value = newMatrix;
   }
 
   void _onFlagLongPress(Flag flag) {
@@ -526,6 +590,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 transformationController: _mobileTransformationController,
                 minScale: 0.5,
                 maxScale: 4.0,
+                panEnabled: true,
+                scaleEnabled: false, // 禁用双指缩放手势
                 child: _buildPhotoWithFlags(photo, flags),
               ),
               // 右上角按钮组
@@ -544,6 +610,24 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       },
                       tooltip: l10n.resetView,
                       child: const Icon(Icons.refresh, size: 20),
+                    ),
+                    const SizedBox(height: 8),
+                    // 放大按钮
+                    FloatingActionButton(
+                      mini: true,
+                      heroTag: 'zoom_in',
+                      onPressed: _zoomIn,
+                      tooltip: '放大',
+                      child: const Icon(Icons.zoom_in, size: 20),
+                    ),
+                    const SizedBox(height: 8),
+                    // 缩小按钮
+                    FloatingActionButton(
+                      mini: true,
+                      heroTag: 'zoom_out',
+                      onPressed: _zoomOut,
+                      tooltip: '缩小',
+                      child: const Icon(Icons.zoom_out, size: 20),
                     ),
                     const SizedBox(height: 8),
                     // 切换旗子显示按钮
