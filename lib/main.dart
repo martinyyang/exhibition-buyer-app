@@ -19,11 +19,24 @@ void main() async {
       await dotenv.load(fileName: '.env');
       print('✓ Loaded .env file successfully');
 
-      supabaseUrl = dotenv.env['SUPABASE_URL'];
+      // 优先使用代理URL（如果配置了），否则使用直连URL
+      final proxyUrl = dotenv.env['SUPABASE_PROXY_URL'];
+      final directUrl = dotenv.env['SUPABASE_URL'];
+
+      // 选择URL：代理URL存在且不为空时使用代理，否则使用直连
+      if (proxyUrl != null && proxyUrl.isNotEmpty) {
+        supabaseUrl = proxyUrl;
+        print('✓ Using Supabase proxy URL (China-optimized)');
+      } else {
+        supabaseUrl = directUrl;
+        print('✓ Using direct Supabase URL');
+      }
+
       supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
 
       print('Environment variables:');
-      print('  SUPABASE_URL: ${supabaseUrl != null ? "✓ found" : "✗ missing"}');
+      print('  SUPABASE_URL: ${directUrl != null ? "✓ found" : "✗ missing"}');
+      print('  SUPABASE_PROXY_URL: ${proxyUrl != null && proxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
       print(
           '  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
       print('  Total keys: ${dotenv.env.keys.length}');
@@ -45,7 +58,7 @@ void main() async {
     }
 
     print('Initializing Supabase...');
-    print('  URL: ${supabaseUrl.substring(0, 30)}...');
+    print('  URL: ${supabaseUrl.length > 30 ? supabaseUrl.substring(0, 30) : supabaseUrl}...');
 
     await Supabase.initialize(
       url: supabaseUrl,
