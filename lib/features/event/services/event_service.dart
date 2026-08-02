@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/event.dart';
+import '../../../core/config/network_config.dart';
 
 class EventService {
   final SupabaseClient _supabase;
@@ -29,8 +30,15 @@ class EventService {
       'is_active': setAsActive,
     };
 
-    final result =
-        await _supabase.from('events').insert(eventData).select().single();
+    final result = await _supabase
+        .from('events')
+        .insert(eventData)
+        .select()
+        .single()
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('创建场次超时'),
+        );
 
     return Event.fromJson(result);
   }
@@ -56,7 +64,11 @@ class EventService {
         .from('events')
         .select()
         .eq('team_id', teamId)
-        .order('start_date', ascending: false);
+        .order('start_date', ascending: false)
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('获取场次列表超时'),
+        );
 
     return result.map((json) => Event.fromJson(json)).toList();
   }

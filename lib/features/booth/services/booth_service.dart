@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/booth.dart';
+import '../../../core/config/network_config.dart';
 
 class BoothService {
   final SupabaseClient _supabase;
@@ -20,8 +21,15 @@ class BoothService {
       'created_by': createdBy,
     };
 
-    final result =
-        await _supabase.from('booths').insert(boothData).select().single();
+    final result = await _supabase
+        .from('booths')
+        .insert(boothData)
+        .select()
+        .single()
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('创建摊位超时'),
+        );
 
     return Booth.fromJson(result);
   }
@@ -36,7 +44,11 @@ class BoothService {
         .select()
         .eq('event_id', eventId)
         .eq('team_id', teamId)
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('获取摊位列表超时'),
+        );
 
     return (result as List).map((json) => Booth.fromJson(json)).toList();
   }

@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/flag.dart';
 import '../../formula/services/formula_calculator.dart';
+import '../../../core/config/network_config.dart';
 
 class FlagService {
   final SupabaseClient _supabase;
@@ -25,8 +26,15 @@ class FlagService {
       'created_by': createdBy,
     };
 
-    final inserted =
-        await _supabase.from('flags').insert(flagData).select().single();
+    final inserted = await _supabase
+        .from('flags')
+        .insert(flagData)
+        .select()
+        .single()
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('创建旗子超时'),
+        );
 
     return Flag.fromJson(inserted);
   }
@@ -37,7 +45,11 @@ class FlagService {
         .from('flags')
         .select()
         .eq('photo_id', photoId)
-        .order('number', ascending: true);
+        .order('number', ascending: true)
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('获取旗子列表超时'),
+        );
 
     return result.map((json) => Flag.fromJson(json)).toList();
   }
@@ -155,7 +167,11 @@ class FlagService {
         .update(updateData)
         .eq('id', flagId)
         .select()
-        .single();
+        .single()
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('更新旗子超时'),
+        );
 
     return Flag.fromJson(result);
   }

@@ -1,7 +1,9 @@
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:typed_data';
 import '../models/photo.dart';
+import '../../../core/config/network_config.dart';
 
 class PhotoService {
   final SupabaseClient _supabase;
@@ -12,6 +14,7 @@ class PhotoService {
   /// 上传照片并创建记录
   ///
   /// 使用 XFile 支持跨平台（Mobile 和 Web）
+  /// 自动压缩图片以优化中国网络环境下的上传速度
   Future<Photo> uploadPhoto({
     required XFile photoFile,
     required String boothId,
@@ -26,8 +29,8 @@ class PhotoService {
     final fileName = '${timestamp}_$uuid.jpg';
     final filePath = '$teamId/$boothId/$fileName';
 
-    // 读取文件为字节数组（跨平台方式）
-    final bytes = await photoFile.readAsBytes();
+    // 压缩图片以加快上传速度（针对中国网络环境优化）
+    final bytes = await _compressImage(photoFile);
 
     // 上传到Supabase Storage
     await _supabase.storage.from('photos').uploadBinary(
@@ -42,7 +45,7 @@ class PhotoService {
     // 获取公共URL
     final publicUrl = _supabase.storage.from('photos').getPublicUrl(filePath);
 
-    // 创建照片记录
+    // 创建照片记录（添加超时保护）
     final photoData = {
       'booth_id': boothId,
       'url': publicUrl,
@@ -51,8 +54,15 @@ class PhotoService {
       'uploaded_by': uploadedBy,
     };
 
-    final result =
-        await _supabase.from('photos').insert(photoData).select().single();
+    final result = await _supabase
+        .from('photos')
+        .insert(photoData)
+        .select()
+        .single()
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('创建照片记录超时'),
+        );
 
     return Photo.fromJson(result);
   }
@@ -63,7 +73,11 @@ class PhotoService {
         .from('photos')
         .select()
         .eq('booth_id', boothId)
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('获取照片列表超时'),
+        );
 
     return (result as List).map((json) => Photo.fromJson(json)).toList();
   }
@@ -87,9 +101,12 @@ class PhotoService {
     String? supplierLogoUrl,
   }) async {
     final updateData = <String, dynamic>{};
-    if (supplierName != null) updateData['supplier_name'] = supplierName;
-    if (supplierLogoUrl != null)
+    if (supplierName != null) {
+      updateData['supplier_name'] = supplierName;
+    }
+    if (supplierLogoUrl != null) {
       updateData['supplier_logo_url'] = supplierLogoUrl;
+    }
 
     final result = await _supabase
         .from('photos')
@@ -160,10 +177,10 @@ class PhotoService {
     final fileName = '${timestamp}_$uuid.jpg';
     final filePath = 'suppliers/$fileName';
 
-    // 读取文件字节
-    final bytes = await logoFile.readAsBytes();
+    // 压缩Logo图片
+    final bytes = await _compressImage(logoFile);
 
-    // 上传到Supabase Storage
+    // 上传到Supabase Storage（添加超时保护）
     await _supabase.storage.from('photos').uploadBinary(
           filePath,
           bytes,
@@ -171,6 +188,9 @@ class PhotoService {
             contentType: 'image/jpeg',
             upsert: false,
           ),
+        ).timeout(
+          NetworkConfig.mediumTimeout,
+          onTimeout: () => throw Exception('上传Logo超时'),
         );
 
     // 获取公共URL
@@ -190,26 +210,48 @@ class PhotoService {
     return (result as List).map((json) => Photo.fromJson(json)).toList();
   }
 
-  /// 从image_picker选择并压缩照片（可选功能，需要image_picker和flutter_image_compress）
-  /// 这个方法可以在UI层调用，然后将压缩后的文件传给uploadPhoto
-  /// 示例实现在PhotoService中作为工具方法提供
-  /*
-  Future<File?> pickAndCompressPhoto({ImageSource source = ImageSource.gallery}) async {
-    final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: source);
+  /// 压缩图片以优化上传速度
+  /// 针对中国网络环境，自动压缩大图片
+  Future<Uint8List> _compressImage(XFile file) async {
+    try {
+      // 获取原始文件大小
+      final bytes = await file.readAsBytes();
+      final fileSizeInMB = bytes.length / (1024 * 1024);
 
-    if (pickedFile == null) return null;
+      // 如果文件小于1MB，直接返回原始字节
+      if (fileSizeInMB < 1.0) {
+        return Uint8List.fromList(bytes);
+      }
 
-    // 压缩照片
-    final compressedFile = await FlutterImageCompress.compressAndGetFile(
-      pickedFile.path,
-      '${(await getTemporaryDirectory()).path}/${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
-      quality: 85,
-      minWidth: 1920,
-      minHeight: 1080,
-    );
+      // 对于移动端，使用flutter_image_compress压缩
+      if (!_isWeb()) {
+        final result = await FlutterImageCompress.compressWithFile(
+          file.path,
+          quality: NetworkConfig.imageQuality,
+          minWidth: NetworkConfig.maxImageWidth,
+          minHeight: NetworkConfig.maxImageHeight,
+        );
 
-    return compressedFile != null ? File(compressedFile.path) : null;
+        if (result != null) {
+          return result;
+        }
+      }
+
+      // Web端或压缩失败时返回原始字节
+      return Uint8List.fromList(bytes);
+    } catch (e) {
+      // 压缩失败时返回原始字节
+      final bytes = await file.readAsBytes();
+      return Uint8List.fromList(bytes);
+    }
   }
-  */
+
+  /// 检测是否为Web平台
+  bool _isWeb() {
+    try {
+      return identical(0, 0.0); // Web平台特征
+    } catch (e) {
+      return false;
+    }
+  }
 }

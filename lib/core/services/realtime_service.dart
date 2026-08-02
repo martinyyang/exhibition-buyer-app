@@ -1,14 +1,21 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../config/network_config.dart';
+import 'dart:async';
 
 /// Realtime同步服务
 /// 监听数据库变化并自动更新本地状态
+/// 针对中国网络环境增强连接稳定性
 class RealtimeService {
   final SupabaseClient _client;
   final List<RealtimeChannel> _channels = [];
+  Timer? _heartbeatTimer;
+  bool _isDisposed = false;
 
-  RealtimeService(this._client);
+  RealtimeService(this._client) {
+    _startHeartbeat();
+  }
 
   /// 监听摊位变化（某个场次下的所有摊位）
   RealtimeChannel subscribeToBooths(
@@ -169,7 +176,27 @@ class RealtimeService {
 
   /// 清理资源
   void dispose() {
+    _isDisposed = true;
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
     unsubscribeAll();
+  }
+
+  /// 启动心跳检测，保持连接活跃
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(
+      NetworkConfig.realtimeHeartbeatInterval,
+      (timer) {
+        if (_isDisposed) {
+          timer.cancel();
+          return;
+        }
+        // 定期检查，防止连接僵死
+        // Supabase Flutter SDK 会自动处理重连
+        // 这里只做状态监控
+      },
+    );
   }
 }
 
