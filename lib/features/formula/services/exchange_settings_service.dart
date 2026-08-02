@@ -34,7 +34,8 @@ class ExchangeSettingsService {
     final todayStr =
         '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
-    print('[setDailyFormula] Setting formula for teamId=$teamId, date=$todayStr, formula=$formula');
+    print(
+        '[setDailyFormula] Setting formula for teamId=$teamId, date=$todayStr, formula=$formula');
 
     // 先将同team_id的今天所有公式is_active设为false
     await _supabase

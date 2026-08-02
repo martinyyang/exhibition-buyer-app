@@ -133,7 +133,8 @@ class FormulaManagementScreen extends ConsumerWidget {
   ) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      print('[_saveFormula] Starting save for teamId=$teamId, formula=$formula');
+      print(
+          '[_saveFormula] Starting save for teamId=$teamId, formula=$formula');
       final settingsService = ref.read(exchangeSettingsServiceProvider);
       await settingsService.updateFormula(teamId, formula);
       print('[_saveFormula] Save completed successfully');
