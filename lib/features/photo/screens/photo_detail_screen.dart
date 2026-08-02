@@ -522,7 +522,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       mini: true,
                       heroTag: 'reset_mobile_view',
                       onPressed: () {
-                        _mobileTransformationController.value = Matrix4.identity();
+                        _mobileTransformationController.value =
+                            Matrix4.identity();
                       },
                       tooltip: l10n.resetView,
                       child: const Icon(Icons.refresh, size: 20),
@@ -540,7 +541,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       },
                       tooltip: _areFlagsVisible ? '隐藏旗子' : '显示旗子',
                       child: Icon(
-                        _areFlagsVisible ? Icons.visibility_off : Icons.visibility,
+                        _areFlagsVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         size: 20,
                       ),
                     ),
@@ -632,7 +635,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                       },
                       tooltip: _areFlagsVisible ? '隐藏旗子' : '显示旗子',
                       child: Icon(
-                        _areFlagsVisible ? Icons.visibility_off : Icons.visibility,
+                        _areFlagsVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         size: 20,
                       ),
                     ),
