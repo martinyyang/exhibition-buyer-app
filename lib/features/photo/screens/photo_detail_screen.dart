@@ -386,7 +386,6 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               // 旗子标记（根据可见性状态显示/隐藏）
               ...flags.map((flag) {
                 if (_loadedImage == null) return const SizedBox.shrink();
-                if (!_areFlagsVisible) return const SizedBox.shrink();
 
                 // 计算图片在容器中的实际显示尺寸和位置（BoxFit.contain效果）
                 final imageAspect = _loadedImage!.width / _loadedImage!.height;
@@ -420,70 +419,73 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 return Positioned(
                   left: offsetX + clampedX * displayWidth - 20,
                   top: offsetY + clampedY * displayHeight - 20,
-                  child: GestureDetector(
-                    key: const Key('flag_marker'),
-                    onLongPress: () => _onFlagLongPress(flag),
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Stack(
-                        children: [
-                          // 空心圆圈
-                          Center(
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: flagColor,
-                                  width: 2,
+                  child: Visibility(
+                    visible: _areFlagsVisible,
+                    child: GestureDetector(
+                      key: const Key('flag_marker'),
+                      onLongPress: () => _onFlagLongPress(flag),
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Stack(
+                          children: [
+                            // 空心圆圈
+                            Center(
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: flagColor,
+                                    width: 2,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          // 横向十字线
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: 19,
-                            child: Container(
-                              height: 2,
-                              color: flagColor,
-                            ),
-                          ),
-                          // 纵向十字线
-                          Positioned(
-                            top: 0,
-                            bottom: 0,
-                            left: 19,
-                            child: Container(
-                              width: 2,
-                              color: flagColor,
-                            ),
-                          ),
-                          // 中心数字（带白色背景）
-                          Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
+                            // 横向十字线
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: 19,
+                              child: Container(
+                                height: 2,
+                                color: flagColor,
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(3),
+                            ),
+                            // 纵向十字线
+                            Positioned(
+                              top: 0,
+                              bottom: 0,
+                              left: 19,
+                              child: Container(
+                                width: 2,
+                                color: flagColor,
                               ),
-                              child: Text(
-                                '${flag.number}',
-                                style: TextStyle(
-                                  color: flagColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                            ),
+                            // 中心数字（带白色背景）
+                            Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                child: Text(
+                                  '${flag.number}',
+                                  style: TextStyle(
+                                    color: flagColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
