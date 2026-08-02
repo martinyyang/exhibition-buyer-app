@@ -9,7 +9,7 @@ class FlagTable extends StatefulWidget {
   final Function(Flag)? onRowTap;
   final Function(Flag, double)? onPriceUpdate;
   final Function(Flag, double)? onTargetPriceUpdate;
-  final Function(Flag, bool)? onPurchaseToggle;
+  final Function(Flag, String?)? onPurchaseStatusChange;
   final Function(Flag)? onDelete;
   final VoidCallback? onConvertedPriceTap;
 
@@ -20,7 +20,7 @@ class FlagTable extends StatefulWidget {
     this.onRowTap,
     this.onPriceUpdate,
     this.onTargetPriceUpdate,
-    this.onPurchaseToggle,
+    this.onPurchaseStatusChange,
     this.onDelete,
     this.onConvertedPriceTap,
   });
@@ -344,15 +344,44 @@ class _FlagTableState extends State<FlagTable> {
                     ),
                   ),
 
-                // 已购买复选框列
+                // 购买状态下拉菜单列
                 DataCell(
-                  Checkbox(
-                    value: flag.isPurchased,
-                    onChanged: widget.onPurchaseToggle != null
+                  DropdownButton<String>(
+                    value: flag.purchaseStatus?.isEmpty ?? true
+                        ? null
+                        : flag.purchaseStatus,
+                    hint: Text(
+                      '',
+                      style: TextStyle(fontSize: isMobile ? 12 : 14),
+                    ),
+                    isExpanded: false,
+                    underline: Container(),
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: null,
+                        child: Text(
+                          '',
+                          style: TextStyle(fontSize: isMobile ? 12 : 14),
+                        ),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: 'Purchased',
+                        child: Text(
+                          'Purchased',
+                          style: TextStyle(fontSize: isMobile ? 12 : 14),
+                        ),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: 'sold out',
+                        child: Text(
+                          'sold out',
+                          style: TextStyle(fontSize: isMobile ? 12 : 14),
+                        ),
+                      ),
+                    ],
+                    onChanged: widget.onPurchaseStatusChange != null
                         ? (value) {
-                            if (value != null) {
-                              widget.onPurchaseToggle!(flag, value);
-                            }
+                            widget.onPurchaseStatusChange!(flag, value);
                           }
                         : null,
                   ),

@@ -146,7 +146,7 @@ class FlagService {
     double? positionX,
     double? positionY,
     bool? needsAttention,
-    bool? isPurchased,
+    String? purchaseStatus,
   }) async {
     final updateData = <String, dynamic>{};
 
@@ -156,7 +156,7 @@ class FlagService {
     if (positionX != null) updateData['position_x'] = positionX;
     if (positionY != null) updateData['position_y'] = positionY;
     if (needsAttention != null) updateData['needs_attention'] = needsAttention;
-    if (isPurchased != null) updateData['is_purchased'] = isPurchased;
+    if (purchaseStatus != null) updateData['purchase_status'] = purchaseStatus;
 
     if (updateData.isEmpty) {
       throw ArgumentError('At least one update field is required');

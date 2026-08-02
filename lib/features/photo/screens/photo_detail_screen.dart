@@ -296,13 +296,13 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
     }
   }
 
-  Future<void> _togglePurchaseStatus(Flag flag, bool isPurchased) async {
+  Future<void> _updatePurchaseStatus(Flag flag, String? status) async {
     final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
       await flagService.updateFlag(
         flagId: flag.id,
-        isPurchased: isPurchased,
+        purchaseStatus: status,
       );
     } catch (e) {
       if (mounted) {
@@ -597,8 +597,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
                       _updateFlagTargetPrice(flag, targetPrice),
-                  onPurchaseToggle: (flag, isPurchased) =>
-                      _togglePurchaseStatus(flag, isPurchased),
+                  onPurchaseStatusChange: (flag, status) =>
+                      _updatePurchaseStatus(flag, status),
                   onDelete: (flag) => _deleteFlag(flag),
                   // TODO: 暂时移除转换价格功能
                   // onConvertedPriceTap: () => context.push('/formula'),
@@ -694,8 +694,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
                       _updateFlagTargetPrice(flag, targetPrice),
-                  onPurchaseToggle: (flag, isPurchased) =>
-                      _togglePurchaseStatus(flag, isPurchased),
+                  onPurchaseStatusChange: (flag, status) =>
+                      _updatePurchaseStatus(flag, status),
                   onDelete: (flag) => _deleteFlag(flag),
                   // TODO: 暂时移除转换价格功能
                   // onConvertedPriceTap: () => context.push('/formula'),

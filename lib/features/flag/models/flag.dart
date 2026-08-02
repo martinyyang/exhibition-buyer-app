@@ -11,7 +11,7 @@ class Flag extends BaseModel {
   final DateTime? targetPriceUpdatedAt;
   final DateTime? buyerPriceUpdatedAt;
   final bool needsAttention;
-  final bool isPurchased;
+  final String? purchaseStatus; // "Purchased", "sold out", or null/empty
   final String createdBy;
 
   Flag({
@@ -27,7 +27,7 @@ class Flag extends BaseModel {
     this.targetPriceUpdatedAt,
     this.buyerPriceUpdatedAt,
     required this.needsAttention,
-    required this.isPurchased,
+    this.purchaseStatus,
     required this.createdBy,
   });
 
@@ -55,7 +55,7 @@ class Flag extends BaseModel {
           ? BaseModel.parseTimestamp(json['buyer_price_updated_at'])
           : null,
       needsAttention: json['needs_attention'] as bool? ?? false,
-      isPurchased: json['is_purchased'] as bool? ?? false,
+      purchaseStatus: json['purchase_status'] as String?,
       createdBy: json['created_by'] as String,
     );
   }
@@ -74,7 +74,7 @@ class Flag extends BaseModel {
       'target_price_updated_at': targetPriceUpdatedAt?.toIso8601String(),
       'buyer_price_updated_at': buyerPriceUpdatedAt?.toIso8601String(),
       'needs_attention': needsAttention,
-      'is_purchased': isPurchased,
+      'purchase_status': purchaseStatus,
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),
     };
@@ -92,7 +92,7 @@ class Flag extends BaseModel {
     DateTime? targetPriceUpdatedAt,
     DateTime? buyerPriceUpdatedAt,
     bool? needsAttention,
-    bool? isPurchased,
+    String? purchaseStatus,
     String? createdBy,
     DateTime? createdAt,
   }) {
@@ -109,7 +109,7 @@ class Flag extends BaseModel {
       targetPriceUpdatedAt: targetPriceUpdatedAt ?? this.targetPriceUpdatedAt,
       buyerPriceUpdatedAt: buyerPriceUpdatedAt ?? this.buyerPriceUpdatedAt,
       needsAttention: needsAttention ?? this.needsAttention,
-      isPurchased: isPurchased ?? this.isPurchased,
+      purchaseStatus: purchaseStatus ?? this.purchaseStatus,
       createdBy: createdBy ?? this.createdBy,
     );
   }
