@@ -189,8 +189,7 @@ void main() {
       expect(find.text('RMB/6.75'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('Multiple formulas in history',
-        (WidgetTester tester) async {
+    testWidgets('Multiple formulas in history', (WidgetTester tester) async {
       // Start the app
       app.main();
       await tester.pumpAndSettle();

@@ -206,7 +206,8 @@ class _FormulaInputState extends State<FormulaInput> {
                   formula,
                   style: const TextStyle(fontSize: 12),
                 ),
-                onPressed: widget.enabled ? () => _onHistoryFormulaTap(formula) : null,
+                onPressed:
+                    widget.enabled ? () => _onHistoryFormulaTap(formula) : null,
               );
             }).toList(),
           ),
