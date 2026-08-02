@@ -166,12 +166,13 @@ class _FlagTableState extends State<FlagTable> {
                   style: TextStyle(fontSize: isMobile ? 12 : 14),
                 ),
               ),
-            DataColumn(
-              label: Text(
-                l10n.convertedPrice,
-                style: TextStyle(fontSize: isMobile ? 12 : 14),
-              ),
-            ),
+            // TODO: 暂时移除转换价格功能
+            // DataColumn(
+            //   label: Text(
+            //     l10n.convertedPrice,
+            //     style: TextStyle(fontSize: isMobile ? 12 : 14),
+            //   ),
+            // ),
             if (widget.isRemoteView)
               DataColumn(
                 label: Text(
@@ -290,26 +291,27 @@ class _FlagTableState extends State<FlagTable> {
                     ),
                   ),
 
+                // TODO: 暂时移除转换价格功能
                 // 换算价列（点击跳转到公式设置）
-                DataCell(
-                  InkWell(
-                    onTap: widget.onConvertedPriceTap,
-                    child: Text(
-                      flag.priceConverted != null
-                          ? flag.priceConverted!.toStringAsFixed(2)
-                          : '-',
-                      style: TextStyle(
-                        fontSize: isMobile ? 12 : 14,
-                        color: flag.priceConverted == null
-                            ? Colors.blue
-                            : Colors.grey[700],
-                        decoration: flag.priceConverted == null
-                            ? TextDecoration.underline
-                            : null,
-                      ),
-                    ),
-                  ),
-                ),
+                // DataCell(
+                //   InkWell(
+                //     onTap: widget.onConvertedPriceTap,
+                //     child: Text(
+                //       flag.priceConverted != null
+                //           ? flag.priceConverted!.toStringAsFixed(2)
+                //           : '-',
+                //       style: TextStyle(
+                //         fontSize: isMobile ? 12 : 14,
+                //         color: flag.priceConverted == null
+                //             ? Colors.blue
+                //             : Colors.grey[700],
+                //         decoration: flag.priceConverted == null
+                //             ? TextDecoration.underline
+                //             : null,
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
                 // 目标价列（远程端可编辑）
                 if (widget.isRemoteView)

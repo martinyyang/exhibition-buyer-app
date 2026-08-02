@@ -531,7 +531,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPurchaseToggle: (flag, isPurchased) =>
                       _togglePurchaseStatus(flag, isPurchased),
                   onDelete: (flag) => _deleteFlag(flag),
-                  onConvertedPriceTap: () => context.push('/formula'),
+                  // TODO: 暂时移除转换价格功能
+                  // onConvertedPriceTap: () => context.push('/formula'),
                 ),
         ),
       ],
@@ -602,7 +603,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   onPurchaseToggle: (flag, isPurchased) =>
                       _togglePurchaseStatus(flag, isPurchased),
                   onDelete: (flag) => _deleteFlag(flag),
-                  onConvertedPriceTap: () => context.push('/formula'),
+                  // TODO: 暂时移除转换价格功能
+                  // onConvertedPriceTap: () => context.push('/formula'),
                 ),
         ),
       ],

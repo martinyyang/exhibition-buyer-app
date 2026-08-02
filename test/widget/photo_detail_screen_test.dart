@@ -83,6 +83,7 @@ void main() {
         priceRmb: 50.0,
         priceConverted: 7.5,
         needsAttention: false,
+        isPurchased: false,
         createdBy: 'test-user-id',
         createdAt: DateTime.now(),
       ),
