@@ -38,9 +38,7 @@ class NetworkStatusIndicator extends ConsumerWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            networkStatus.isConnected
-                ? '${networkStatus.latencyMs}ms'
-                : '断线',
+            networkStatus.isConnected ? '${networkStatus.latencyMs}ms' : '断线',
             style: TextStyle(
               fontSize: 12,
               color: networkStatus.connectionColor,
@@ -90,7 +88,8 @@ class NetworkStatusBanner extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.white, size: 20),
+                  icon:
+                      const Icon(Icons.refresh, color: Colors.white, size: 20),
                   onPressed: () {
                     networkStatus.refresh();
                   },
@@ -108,7 +107,8 @@ class NetworkStatusBanner extends ConsumerWidget {
             color: Colors.orange.shade700,
             child: Row(
               children: [
-                const Icon(Icons.wifi_tethering_error, color: Colors.white, size: 18),
+                const Icon(Icons.wifi_tethering_error,
+                    color: Colors.white, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

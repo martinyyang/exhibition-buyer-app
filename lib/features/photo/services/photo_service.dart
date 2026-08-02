@@ -181,14 +181,17 @@ class PhotoService {
     final bytes = await _compressImage(logoFile);
 
     // 上传到Supabase Storage（添加超时保护）
-    await _supabase.storage.from('photos').uploadBinary(
+    await _supabase.storage
+        .from('photos')
+        .uploadBinary(
           filePath,
           bytes,
           fileOptions: const FileOptions(
             contentType: 'image/jpeg',
             upsert: false,
           ),
-        ).timeout(
+        )
+        .timeout(
           NetworkConfig.mediumTimeout,
           onTimeout: () => throw Exception('上传Logo超时'),
         );

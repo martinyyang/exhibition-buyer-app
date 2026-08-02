@@ -64,11 +64,7 @@ class NetworkStatusService extends ChangeNotifier {
       final startTime = DateTime.now();
 
       // 执行一个简单的查询测试连接
-      await _client
-          .from('users')
-          .select('id')
-          .limit(1)
-          .timeout(
+      await _client.from('users').select('id').limit(1).timeout(
             const Duration(seconds: 5),
             onTimeout: () => throw Exception('连接超时'),
           );
@@ -107,7 +103,8 @@ class NetworkStatusService extends ChangeNotifier {
 }
 
 /// 网络状态 Provider
-final networkStatusServiceProvider = ChangeNotifierProvider<NetworkStatusService>((ref) {
+final networkStatusServiceProvider =
+    ChangeNotifierProvider<NetworkStatusService>((ref) {
   final supabaseService = ref.watch(supabaseServiceProvider);
   final service = NetworkStatusService(supabaseService.client);
 
