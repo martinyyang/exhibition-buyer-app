@@ -133,8 +133,10 @@ class FormulaManagementScreen extends ConsumerWidget {
   ) async {
     final l10n = AppLocalizations.of(context)!;
     try {
+      print('[_saveFormula] Starting save for teamId=$teamId, formula=$formula');
       final settingsService = ref.read(exchangeSettingsServiceProvider);
       await settingsService.updateFormula(teamId, formula);
+      print('[_saveFormula] Save completed successfully');
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -143,9 +145,13 @@ class FormulaManagementScreen extends ConsumerWidget {
       }
 
       // 刷新数据
+      print('[_saveFormula] Invalidating providers');
       ref.invalidate(currentFormulaProvider(teamId));
       ref.invalidate(formulaHistoryProvider(teamId));
-    } catch (e) {
+      print('[_saveFormula] Providers invalidated');
+    } catch (e, stackTrace) {
+      print('[_saveFormula] Error: $e');
+      print('[_saveFormula] Stack trace: $stackTrace');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.saveFailed(e.toString()))),

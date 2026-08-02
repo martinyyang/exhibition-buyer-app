@@ -14,6 +14,8 @@ class ExchangeSettingsService {
     final todayStr =
         '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
+    print('[getCurrentFormula] Querying for teamId=$teamId, date=$todayStr');
+
     final result = await _supabase
         .from('exchange_settings')
         .select()
@@ -22,6 +24,7 @@ class ExchangeSettingsService {
         .eq('is_active', true)
         .maybeSingle();
 
+    print('[getCurrentFormula] Result: $result');
     return result?['formula'] as String?;
   }
 
@@ -31,12 +34,16 @@ class ExchangeSettingsService {
     final todayStr =
         '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
+    print('[setDailyFormula] Setting formula for teamId=$teamId, date=$todayStr, formula=$formula');
+
     // 先将同team_id的今天所有公式is_active设为false
     await _supabase
         .from('exchange_settings')
         .update({'is_active': false})
         .eq('team_id', teamId)
         .eq('valid_date', todayStr);
+
+    print('[setDailyFormula] Deactivated existing formulas');
 
     // 检查是否已存在相同的公式记录
     final existing = await _supabase
@@ -47,23 +54,28 @@ class ExchangeSettingsService {
         .eq('formula', formula)
         .maybeSingle();
 
+    print('[setDailyFormula] Existing record: $existing');
+
     if (existing != null) {
       // 如果存在，更新为active
       await _supabase
           .from('exchange_settings')
           .update({'is_active': true}).eq('id', existing['id']);
+      print('[setDailyFormula] Updated existing record to active');
     } else {
       // 如果不存在，插入新记录
-      await _supabase.from('exchange_settings').insert({
+      final insertResult = await _supabase.from('exchange_settings').insert({
         'team_id': teamId,
         'formula': formula,
         'valid_date': todayStr,
         'is_active': true,
-      });
+      }).select();
+      print('[setDailyFormula] Inserted new record: $insertResult');
     }
 
     // 同时保存到历史记录
     await _historyService.saveFormula(formula, teamId);
+    print('[setDailyFormula] Saved to history');
   }
 
   /// 使用当前公式计算价格
