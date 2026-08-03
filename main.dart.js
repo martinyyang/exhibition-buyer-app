@@ -8612,7 +8612,7 @@ n=null
 q=7
 s=10
 return A.l($.Op().GA(".env"),$async$abs)
-case 10:A.cI("\u2713 Loaded .env file successfully")
+case 10:A.cI("\u2713 Loaded .env file successfully (local development)")
 m=$.Op().gFD().h(0,"SUPABASE_PROXY_URL")
 l=$.Op().gFD().h(0,"SUPABASE_URL")
 if(m!=null&&J.bA(m)!==0){o=m
