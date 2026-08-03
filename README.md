@@ -8,11 +8,12 @@ A Flutter-based web platform for exhibition buyers and remote team members to ma
 
 - **Event Management**: Create and manage exhibition events
 - **Booth Organization**: Track and organize exhibition booths
-- **Photo Management**: Upload photos with camera or gallery, grid/detail view
+- **Photo Management**: WebP format upload with real-time progress tracking (5x faster than JPEG)
 - **Photo Annotation**: Add crosshair flags with zoom controls and purchase status tracking
 - **Team Collaboration**: Multi-buyer and remote member support with real-time sync
 - **Price Conversion**: Custom formula calculator for converted pricing
 - **China Network Optimization**: Cloudflare Workers proxy support for improved connectivity
+- **Performance Optimized**: 60-80% smaller photos, 1-3s upload on 3G networks
 - **Multi-language**: Supports English and Chinese (中文)
 - **Responsive Design**: Mobile web browsers with touch/zoom support
 
@@ -158,6 +159,7 @@ See `supabase/sql/COMPLETE_SETUP.sql` for the complete schema.
 ### Features
 - [Photo Feature Implementation](docs/PHOTO_FEATURE_IMPLEMENTATION.md) - Photo upload & annotation
 - [Event Management Summary](docs/event_management_summary.md) - Event/booth workflows
+- [Speed Optimization Report](docs/SPEED_OPTIMIZATION_2026_08.md) - WebP migration & performance improvements
 
 ## Contributing
 

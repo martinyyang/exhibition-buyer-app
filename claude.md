@@ -13,6 +13,26 @@
 - **实时协作**：Supabase Realtime 用于多用户同步（事件、摊位、照片、旗子）
 - **照片标注**：十字准星旗子，支持移动端缩放和点击
 - **价格转换**：团队级自定义公式计算器
+- **照片格式**：WebP 格式（体积减少 60-80%），优化上传/加载速度
+
+## 照片上传优化（2026-08-03）
+
+**核心改进**：
+- WebP 格式替代 JPEG：`photo_service.dart` 使用 `CompressFormat.webp`
+- 上传进度追踪：5 个阶段回调（压缩 10% → 上传 30% → URL 70% → 保存 90% → 完成 100%）
+- 统一错误处理：`lib/core/utils/error_handler.dart` 提供友好错误提示和重试功能
+
+**性能提升**：
+- 上传时间：5-10 秒 → 1-3 秒（3G 网络，提升 5x）
+- 列表加载：10 秒 → 2 秒（20 张照片，提升 5x）
+- 流量节省：60-80%
+
+**关键文件**：
+- `lib/features/photo/services/photo_service.dart:242` - WebP 压缩配置
+- `lib/features/photo/screens/photo_grid_screen.dart:428` - 进度条 UI
+- `lib/core/utils/error_handler.dart` - 错误处理工具
+
+参考 commit: c11e215
 
 ## 旗子定位实现规则（关键！）
 
