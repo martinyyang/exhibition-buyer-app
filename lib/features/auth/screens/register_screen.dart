@@ -21,6 +21,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _teamIdController = TextEditingController();
+  final _teamPasswordController = TextEditingController();
   String _selectedRole = 'buyer';
   bool _isLoading = false;
 
@@ -30,6 +31,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _teamIdController.dispose();
+    _teamPasswordController.dispose();
     super.dispose();
   }
 
@@ -95,13 +97,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     try {
       final l10n = AppLocalizations.of(context)!;
 
-      // 直接使用用户输入的团队 ID 注册
+      // 先验证团队名/邀请码 + 密码
+      final teamService = ref.read(teamServiceProvider);
+      final teamIdentifier = _teamIdController.text.trim();
+      final teamPassword = _teamPasswordController.text.trim();
+
+      final team = await teamService.findAndVerifyTeam(
+        identifier: teamIdentifier,
+        password: teamPassword,
+      );
+
+      if (team == null) {
+        throw Exception(l10n.teamNotFoundOrPasswordIncorrect);
+      }
+
+      // 验证成功后注册用户
       final authService = ref.read(authServiceProvider);
       await authService.signUp(
         email: _emailController.text,
         password: _passwordController.text,
         role: _selectedRole,
-        teamId: _teamIdController.text.trim(),
+        teamId: team.id,
       );
 
       // 刷新全局当前用户状态 Provider
@@ -227,13 +243,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _teamIdController,
                   decoration: InputDecoration(
                     labelText: l10n.teamNameOrInviteCode,
-                    hintText: 'Enter Team ID (get from admin)',
+                    hintText: l10n.enterTeamNameOrInviteCode,
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.group),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter Team ID';
+                      return l10n.pleaseEnterTeamNameOrInviteCode;
+                    }
+                    return null;
+                  },
+                  enabled: !_isLoading,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _teamPasswordController,
+                  decoration: InputDecoration(
+                    labelText: l10n.teamPassword,
+                    hintText: l10n.enterTeamPassword,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.vpn_key),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.pleaseEnterTeamPassword;
                     }
                     return null;
                   },

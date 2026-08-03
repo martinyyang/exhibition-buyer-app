@@ -390,5 +390,9 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+  "enterTeamNameOrInviteCode": "Enter team name or 6-digit invite code",
+  "pleaseEnterTeamNameOrInviteCode": "Please enter team name or invite code",
+  "pleaseEnterTeamPassword": "Please enter team password",
+  "teamNotFoundOrPasswordIncorrect": "Team not found or password incorrect"
 }

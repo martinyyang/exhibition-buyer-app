@@ -390,5 +390,9 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+  "enterTeamNameOrInviteCode": "输入团队名称或6位邀请码",
+  "pleaseEnterTeamNameOrInviteCode": "请输入团队名称或邀请码",
+  "pleaseEnterTeamPassword": "请输入团队密码",
+  "teamNotFoundOrPasswordIncorrect": "未找到团队或密码错误"
 }
