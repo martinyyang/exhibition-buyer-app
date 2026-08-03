@@ -23,6 +23,7 @@ A Flutter-based web platform for exhibition buyers and remote team members to ma
 - **State Management**: Riverpod
 - **Backend**: Supabase (PostgreSQL + Realtime + Storage)
 - **Authentication**: Supabase Auth
+- **Deployment**: Cloudflare Pages (automatic deployment from GitHub)
 - **Testing**: flutter_test, mocktail
 
 ## Test Coverage
@@ -71,6 +72,22 @@ SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
 See [docs/CLOUDFLARE_PROXY_SETUP.md](docs/CLOUDFLARE_PROXY_SETUP.md) for proxy configuration.
+
+## Deployment
+
+### Production Deployment (Cloudflare Pages)
+
+The application is deployed on Cloudflare Pages with automatic deployment from GitHub:
+
+- **Production URL**: `https://exhibition-buyer-app.pages.dev`
+- **Auto-deploy**: Every push to `master` branch triggers deployment
+- **Environment Variables**: Configured in Cloudflare Pages dashboard (not in `.env`)
+
+For deployment setup and configuration, see [docs/CLOUDFLARE_PAGES_DEPLOYMENT.md](docs/CLOUDFLARE_PAGES_DEPLOYMENT.md).
+
+### Local Development
+
+For local development, use the `.env` file as described in step 3 above.
 
 ### 4. Set up Supabase database
 
