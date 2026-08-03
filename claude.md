@@ -9,30 +9,55 @@
 ## 项目架构关键点
 
 - **Web 优先平台**：主要针对 Web 浏览器和移动端 Web，不开发原生 APK
+- **部署平台**：Cloudflare Pages 自动部署（推送 master 分支触发），生产环境变量在 Cloudflare 控制台配置
+- **环境变量加载**：
+  - 生产环境（Cloudflare Pages）：编译时变量 `String.fromEnvironment`
+  - 本地开发：`.env` 文件（`flutter_dotenv`）
+  - 自动检测运行环境，无需手动切换
 - **中国网络优化**：支持 Cloudflare Workers 代理，通过 `SUPABASE_PROXY_URL` 环境变量启用
 - **实时协作**：Supabase Realtime 用于多用户同步（事件、摊位、照片、旗子）
 - **照片标注**：十字准星旗子，支持移动端缩放和点击
 - **价格转换**：团队级自定义公式计算器
 - **照片格式**：WebP 格式（体积减少 60-80%），优化上传/加载速度
+- **团队管理**：
+  - 团队密码：必填功能，用于安全验证（`teams.password` 字段，NOT NULL）
+  - 邀请码：团队 ID 前 6 位大写字母（`Team.inviteCode` getter）
+  - 加入团队：需要团队名/邀请码 + 密码双重验证
+  - 找回邀请码：`/team-retrieve` 路由，输入团队 ID + 密码验证
 
-## 照片上传优化（2026-08-03）
+## 更新历史
 
-**核心改进**：
+### 2026-08-03
+
+#### 团队密码安全验证（commit: ceb3cb0, 659cc5f）
+- `teams.password` 改为必填（NOT NULL），防止仅凭团队名加入
+- 加入团队需要：团队名/邀请码 + 密码双重验证
+- 支持两种加入方式：
+  - 团队名 + 密码（智能匹配，处理同名团队）
+  - 邀请码（6位大写）+ 密码
+- 登录页新增"加入团队"表单，无需注册即可加入
+- 现有团队自动分配默认密码（`LEGACY_TEAM_<8-char-id>`）
+- 数据库迁移：`20260803000001` 添加字段，`20260803000002` 设置必填
+
+#### 团队密码和邀请码找回（commit: ea39bae）
+- 新增 `teams.password` 字段（可选，明文存储）
+- 新增 `/team-retrieve` 路由和 `TeamRetrieveScreen` 页面
+- 团队创建时可设置密码，或使用系统生成的建议密码
+- 通过团队 ID + 密码验证即可查看邀请码
+- 国际化：团队创建和找回页面支持英语
+- 登录页面邮箱字段添加 `AutofillHints.username` 支持浏览器密码管理器
+
+### Cloudflare Pages 部署支持（commit: f2fce8b, 9bed4e6）
+- `lib/main.dart` 支持编译时环境变量（`String.fromEnvironment`）
+- 自动检测运行环境：Cloudflare Pages vs 本地开发
+- 新增 `docs/CLOUDFLARE_PAGES_DEPLOYMENT.md` 完整部署指南
+- README 添加部署章节，说明生产环境 URL 和环境变量配置方式
+
+### 照片上传优化（commit: c11e215）
 - WebP 格式替代 JPEG：`photo_service.dart` 使用 `CompressFormat.webp`
 - 上传进度追踪：5 个阶段回调（压缩 10% → 上传 30% → URL 70% → 保存 90% → 完成 100%）
 - 统一错误处理：`lib/core/utils/error_handler.dart` 提供友好错误提示和重试功能
-
-**性能提升**：
-- 上传时间：5-10 秒 → 1-3 秒（3G 网络，提升 5x）
-- 列表加载：10 秒 → 2 秒（20 张照片，提升 5x）
-- 流量节省：60-80%
-
-**关键文件**：
-- `lib/features/photo/services/photo_service.dart:242` - WebP 压缩配置
-- `lib/features/photo/screens/photo_grid_screen.dart:428` - 进度条 UI
-- `lib/core/utils/error_handler.dart` - 错误处理工具
-
-参考 commit: c11e215
+- 性能提升：上传时间 5-10 秒 → 1-3 秒（3G 网络），流量节省 60-80%
 
 ## 旗子定位实现规则（关键！）
 
