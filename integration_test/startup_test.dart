@@ -31,7 +31,7 @@ void main() {
       // 验证应用成功启动（显示Splash或Login页面）
       // 应该看到应用标题或登录表单
       expect(
-        find.byType(MaterialApp).or(find.byType(ProviderScope)),
+        find.byType(MaterialApp),
         findsWidgets,
       );
 
@@ -107,11 +107,10 @@ void main() {
       // 等待Splash屏幕消失，登录页面显示
       // 应该看到登录相关元素
       final hasEmailField = find.byType(TextFormField);
-      final hasLoginButton = find.text('登录').or(find.text('Login'));
 
-      // 至少应该有输入框或登录按钮
+      // 至少应该有输入框
       expect(
-        hasEmailField.or(hasLoginButton),
+        hasEmailField,
         findsWidgets,
         reason: '应用启动后应显示登录页面或相关元素',
       );
@@ -128,13 +127,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       // 此时可能显示Splash或已经进入登录页面
-      final hasSplash = find.byIcon(Icons.storefront).or(
-            find.text('初始化中...'),
-          );
       final hasLogin = find.byType(TextFormField);
 
       expect(
-        hasSplash.or(hasLogin),
+        hasLogin,
         findsWidgets,
         reason: '应用启动时应显示启动屏幕或登录页面',
       );
@@ -223,7 +219,7 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsNothing);
 
       // 验证应用正常运行
-      final hasUI = find.byType(MaterialApp).or(find.byType(Scaffold));
+      final hasUI = find.byType(Scaffold);
       expect(hasUI, findsWidgets);
 
       print('✓ 错误处理逻辑存在（正常启动时不触发）');
