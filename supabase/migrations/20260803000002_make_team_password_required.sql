@@ -3,7 +3,7 @@
 
 -- First, set a default password for existing teams without password
 UPDATE teams
-SET password = 'LEGACY_TEAM_' || SUBSTRING(id, 1, 8)
+SET password = 'LEGACY_TEAM_' || SUBSTRING(id::text, 1, 8)
 WHERE password IS NULL OR password = '';
 
 -- Now make the password field NOT NULL
