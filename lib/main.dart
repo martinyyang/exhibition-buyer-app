@@ -15,36 +15,63 @@ void main() async {
     String? supabaseUrl;
     String? supabaseKey;
 
-    try {
-      await dotenv.load(fileName: '.env');
-      print('✓ Loaded .env file successfully');
+    // Web 部署（Cloudflare Pages）使用编译时环境变量
+    // 本地开发使用 .env 文件
+    const webSupabaseUrl = String.fromEnvironment('SUPABASE_URL');
+    const webSupabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+    const webSupabaseProxyUrl = String.fromEnvironment('SUPABASE_PROXY_URL');
 
-      // 优先使用代理URL（如果配置了），否则使用直连URL
-      final proxyUrl = dotenv.env['SUPABASE_PROXY_URL'];
-      final directUrl = dotenv.env['SUPABASE_URL'];
+    if (webSupabaseUrl.isNotEmpty && webSupabaseAnonKey.isNotEmpty) {
+      // 使用编译时环境变量（Cloudflare Pages 部署）
+      print('✓ Using compile-time environment variables (Cloudflare Pages)');
 
-      // 选择URL：代理URL存在且不为空时使用代理，否则使用直连
-      if (proxyUrl != null && proxyUrl.isNotEmpty) {
-        supabaseUrl = proxyUrl;
+      if (webSupabaseProxyUrl.isNotEmpty) {
+        supabaseUrl = webSupabaseProxyUrl;
         print('✓ Using Supabase proxy URL (China-optimized)');
       } else {
-        supabaseUrl = directUrl;
+        supabaseUrl = webSupabaseUrl;
         print('✓ Using direct Supabase URL');
       }
 
-      supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+      supabaseKey = webSupabaseAnonKey;
 
       print('Environment variables:');
-      print('  SUPABASE_URL: ${directUrl != null ? "✓ found" : "✗ missing"}');
-      print('  SUPABASE_PROXY_URL: ${proxyUrl != null && proxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
-      print(
-          '  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
-      print('  Total keys: ${dotenv.env.keys.length}');
-    } catch (e) {
-      print('⚠ Failed to load .env file: $e');
-      throw Exception(
-          'Failed to load .env file. Please create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY. '
-          'See .env.example for template.');
+      print('  SUPABASE_URL: ✓ found');
+      print('  SUPABASE_PROXY_URL: ${webSupabaseProxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
+      print('  SUPABASE_ANON_KEY: ✓ found');
+    } else {
+      // 本地开发：使用 .env 文件
+      try {
+        await dotenv.load(fileName: '.env');
+        print('✓ Loaded .env file successfully (local development)');
+
+        // 优先使用代理URL（如果配置了），否则使用直连URL
+        final proxyUrl = dotenv.env['SUPABASE_PROXY_URL'];
+        final directUrl = dotenv.env['SUPABASE_URL'];
+
+        // 选择URL：代理URL存在且不为空时使用代理，否则使用直连
+        if (proxyUrl != null && proxyUrl.isNotEmpty) {
+          supabaseUrl = proxyUrl;
+          print('✓ Using Supabase proxy URL (China-optimized)');
+        } else {
+          supabaseUrl = directUrl;
+          print('✓ Using direct Supabase URL');
+        }
+
+        supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+        print('Environment variables:');
+        print('  SUPABASE_URL: ${directUrl != null ? "✓ found" : "✗ missing"}');
+        print('  SUPABASE_PROXY_URL: ${proxyUrl != null && proxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
+        print(
+            '  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
+        print('  Total keys: ${dotenv.env.keys.length}');
+      } catch (e) {
+        print('⚠ Failed to load .env file: $e');
+        throw Exception(
+            'Failed to load .env file. Please create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY. '
+            'See .env.example for template.');
+      }
     }
 
     // 验证环境变量
