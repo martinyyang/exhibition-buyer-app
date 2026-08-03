@@ -5,6 +5,7 @@ import 'package:exhibition_buyer_app/features/splash/screens/splash_screen.dart'
 import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/register_screen.dart';
 import 'package:exhibition_buyer_app/features/team/screens/team_create_screen.dart';
+import 'package:exhibition_buyer_app/features/team/screens/team_retrieve_screen.dart';
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
 import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.dart';
 import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.dart';
@@ -36,13 +37,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         return isLoggedIn ? '/events' : '/login';
       }
 
-      // 未登录且不在登录页/注册页/团队创建页 -> 跳转到登录页
+      // 未登录且不在登录页/注册页/团队创建页/找回邀请码页 -> 跳转到登录页
       if (!isInitializing &&
           !isLoggedIn &&
           !isLoggingIn &&
           !isRegistering &&
           !isSplash &&
-          state.matchedLocation != '/team-create') {
+          state.matchedLocation != '/team-create' &&
+          state.matchedLocation != '/team-retrieve') {
         return '/login';
       }
 
@@ -80,6 +82,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/team-create',
         name: 'team-create',
         builder: (context, state) => const TeamCreateScreen(),
+      ),
+
+      // 找回邀请码页
+      GoRoute(
+        path: '/team-retrieve',
+        name: 'team-retrieve',
+        builder: (context, state) => const TeamRetrieveScreen(),
       ),
 
       // 场次选择页

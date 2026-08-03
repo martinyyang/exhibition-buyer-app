@@ -120,7 +120,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
+                    autofillHints: const [AutofillHints.email, AutofillHints.username],
+                    textInputAction: TextInputAction.next,
                     validator: _validateEmail,
                     enabled: !_isLoading,
                   ),
@@ -176,9 +177,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       context.push('/team-create');
                     },
                     icon: const Icon(Icons.group_add, size: 24),
-                    label: const Text(
-                      'Create New Team',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    label: Text(
+                      l10n.createNewTeam,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -187,10 +188,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'First time? Create a team to get an ID\nthen share it with members to register',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  Text(
+                    l10n.firstTimeCreateTeam,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                     textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton.icon(
+                    onPressed: _isLoading ? null : () {
+                      context.push('/team-retrieve');
+                    },
+                    icon: const Icon(Icons.key, size: 20),
+                    label: Text(
+                      l10n.retrieveInviteCode,
+                      style: const TextStyle(fontSize: 14),
+                    ),
                   ),
                 ],
               ),

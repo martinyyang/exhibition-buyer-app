@@ -8,8 +8,11 @@ class TeamService {
   TeamService(this._supabase);
 
   /// 创建新小组
-  Future<Team> createTeam({required String name}) async {
-    final teamData = {'name': name};
+  Future<Team> createTeam({required String name, String? password}) async {
+    final teamData = {
+      'name': name,
+      if (password != null) 'password': password,
+    };
 
     final result =
         await _supabase.from('teams').insert(teamData).select().single();
@@ -47,8 +50,24 @@ class TeamService {
       }
     }
 
-    // 3. 都不匹配时创建新团队
+    // 3. 都不匹配时创建新团队（不设密码）
     return await createTeam(name: cleanInput);
+  }
+
+  /// 验证团队密码并返回团队信息（用于查看邀请码）
+  Future<Team?> verifyTeamPassword({
+    required String teamId,
+    required String password,
+  }) async {
+    final result = await _supabase
+        .from('teams')
+        .select()
+        .eq('id', teamId)
+        .eq('password', password)
+        .maybeSingle();
+
+    if (result == null) return null;
+    return Team.fromJson(result);
   }
 
   /// 获取小组信息

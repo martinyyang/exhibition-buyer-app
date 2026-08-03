@@ -3,37 +3,31 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/team_provider.dart';
-import 'dart:math';
+import '../../auth/models/team.dart';
 
-class TeamCreateScreen extends ConsumerStatefulWidget {
-  const TeamCreateScreen({super.key});
+/// 通过密码找回团队邀请码的界面
+class TeamRetrieveScreen extends ConsumerStatefulWidget {
+  const TeamRetrieveScreen({super.key});
 
   @override
-  ConsumerState<TeamCreateScreen> createState() => _TeamCreateScreenState();
+  ConsumerState<TeamRetrieveScreen> createState() => _TeamRetrieveScreenState();
 }
 
-class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
+class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _teamNameController = TextEditingController();
+  final _teamIdController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  String? _createdTeamId;
-  String? _suggestedPassword;
+  Team? _retrievedTeam;
 
   @override
   void dispose() {
-    _teamNameController.dispose();
+    _teamIdController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  String _generatePassword() {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = Random.secure();
-    return List.generate(12, (index) => chars[random.nextInt(chars.length)]).join();
-  }
-
-  Future<void> _createTeam() async {
+  Future<void> _verifyPassword() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -44,32 +38,32 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
 
     try {
       final teamService = ref.read(teamServiceProvider);
-      final password = _passwordController.text.trim();
-      final team = await teamService.createTeam(
-        name: _teamNameController.text.trim(),
-        password: password.isEmpty ? null : password,
+      final team = await teamService.verifyTeamPassword(
+        teamId: _teamIdController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
-      setState(() {
-        _createdTeamId = team.id;
-        _suggestedPassword = password.isEmpty ? _generatePassword() : password;
-      });
-
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.teamCreationSuccess),
-            backgroundColor: Colors.green,
-          ),
-        );
+      if (team == null) {
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.passwordIncorrect),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _retrievedTeam = team;
+        });
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.createFailed(e.toString())}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -83,12 +77,12 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
     }
   }
 
-  void _copyTeamId() {
-    if (_createdTeamId != null) {
-      Clipboard.setData(ClipboardData(text: _createdTeamId!));
+  void _copyInviteCode() {
+    if (_retrievedTeam != null) {
+      Clipboard.setData(ClipboardData(text: _retrievedTeam!.inviteCode));
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.teamIdCopied)),
+        SnackBar(content: Text(l10n.inviteCodeCopied(_retrievedTeam!.inviteCode))),
       );
     }
   }
@@ -99,7 +93,7 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.createTeam),
+        title: Text(l10n.retrieveInviteCode),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -110,13 +104,13 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Icon(
-                  Icons.group_add,
+                  Icons.key,
                   size: 80,
                   color: Colors.blue,
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  l10n.createNewTeam,
+                  l10n.retrieveInviteCode,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -125,24 +119,24 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  l10n.teamCreationSuccess,
+                  l10n.enterTeamPassword,
                   style: const TextStyle(color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
 
-                if (_createdTeamId == null) ...[
+                if (_retrievedTeam == null) ...[
                   TextFormField(
-                    controller: _teamNameController,
+                    controller: _teamIdController,
                     decoration: InputDecoration(
-                      labelText: l10n.teamName,
-                      hintText: l10n.teamNameHint,
+                      labelText: l10n.inviteCode,
+                      hintText: 'e.g., 3F8A91',
                       border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.business),
+                      prefixIcon: const Icon(Icons.badge),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return l10n.pleaseEnterTeamName;
+                        return l10n.teamCodeOrNameRequired;
                       }
                       return null;
                     },
@@ -152,16 +146,22 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
-                      labelText: l10n.teamPasswordOptional,
-                      hintText: l10n.teamPasswordHint,
+                      labelText: l10n.teamPassword,
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.lock),
                     ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.pleaseEnterPassword;
+                      }
+                      return null;
+                    },
                     enabled: !_isLoading,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _createTeam,
+                    onPressed: _isLoading ? null : _verifyPassword,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(16),
                       backgroundColor: Colors.blue,
@@ -177,7 +177,7 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                             ),
                           )
                         : Text(
-                            l10n.createTeam,
+                            l10n.verify,
                             style: const TextStyle(fontSize: 16),
                           ),
                   ),
@@ -198,16 +198,11 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          l10n.teamCreatedSuccessMessage,
+                          '${l10n.teamName}: ${_retrievedTeam!.name}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${l10n.teamName}: ${_teamNameController.text}',
-                          style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 16),
                         const Divider(),
@@ -228,17 +223,18 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: SelectableText(
-                            _createdTeamId!,
+                            _retrievedTeam!.inviteCode,
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'monospace',
+                              letterSpacing: 2,
                             ),
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
-                          onPressed: _copyTeamId,
+                          onPressed: _copyInviteCode,
                           icon: const Icon(Icons.copy),
                           label: Text(l10n.copyInviteCode),
                           style: ElevatedButton.styleFrom(
@@ -250,61 +246,6 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const Divider(),
-                        const SizedBox(height: 16),
-                        Text(
-                          l10n.suggestedPassword,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: SelectableText(
-                            _suggestedPassword!,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: _suggestedPassword!));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.passwordCopied)),
-                            );
-                          },
-                          icon: const Icon(Icons.copy),
-                          label: Text(l10n.copyPassword),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          l10n.shareTeamIdMessage,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
                       ],
                     ),
                   ),
@@ -312,12 +253,12 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                   OutlinedButton(
                     onPressed: () {
                       setState(() {
-                        _createdTeamId = null;
-                        _teamNameController.clear();
+                        _retrievedTeam = null;
+                        _teamIdController.clear();
                         _passwordController.clear();
                       });
                     },
-                    child: Text(l10n.createAnotherTeam),
+                    child: Text(l10n.retrieveInviteCode),
                   ),
                 ],
               ],
