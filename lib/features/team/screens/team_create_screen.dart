@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/team_provider.dart';
-import 'dart:math';
 
 class TeamCreateScreen extends ConsumerStatefulWidget {
   const TeamCreateScreen({super.key});
@@ -18,19 +17,13 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _createdTeamId;
-  String? _suggestedPassword;
+  String? _createdInviteCode;
 
   @override
   void dispose() {
     _teamNameController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  String _generatePassword() {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = Random.secure();
-    return List.generate(12, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
   Future<void> _createTeam() async {
@@ -47,12 +40,12 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
       final password = _passwordController.text.trim();
       final team = await teamService.createTeam(
         name: _teamNameController.text.trim(),
-        password: password.isEmpty ? null : password,
+        password: password,
       );
 
       setState(() {
         _createdTeamId = team.id;
-        _suggestedPassword = password.isEmpty ? _generatePassword() : password;
+        _createdInviteCode = team.inviteCode;
       });
 
       if (mounted) {
@@ -83,12 +76,12 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
     }
   }
 
-  void _copyTeamId() {
-    if (_createdTeamId != null) {
-      Clipboard.setData(ClipboardData(text: _createdTeamId!));
+  void _copyInviteCode() {
+    if (_createdInviteCode != null) {
+      Clipboard.setData(ClipboardData(text: _createdInviteCode!));
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.teamIdCopied)),
+        SnackBar(content: Text(l10n.inviteCodeCopied)),
       );
     }
   }
@@ -152,11 +145,18 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
-                      labelText: l10n.teamPasswordOptional,
+                      labelText: l10n.teamPassword,
                       hintText: l10n.teamPasswordHint,
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.lock),
                     ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.pleaseEnterPassword;
+                      }
+                      return null;
+                    },
                     enabled: !_isLoading,
                   ),
                   const SizedBox(height: 24),
@@ -228,17 +228,23 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: SelectableText(
-                            _createdTeamId!,
+                            _createdInviteCode!,
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'monospace',
+                              letterSpacing: 2,
                             ),
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
-                          onPressed: _copyTeamId,
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: _createdInviteCode!));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.inviteCodeCopied)),
+                            );
+                          },
                           icon: const Icon(Icons.copy),
                           label: Text(l10n.copyInviteCode),
                           style: ElevatedButton.styleFrom(
@@ -254,7 +260,7 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                         const Divider(),
                         const SizedBox(height: 16),
                         Text(
-                          l10n.suggestedPassword,
+                          l10n.teamPassword,
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -269,7 +275,7 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: SelectableText(
-                            _suggestedPassword!,
+                            _passwordController.text,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -280,7 +286,7 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: _suggestedPassword!));
+                            Clipboard.setData(ClipboardData(text: _passwordController.text));
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(l10n.passwordCopied)),
                             );

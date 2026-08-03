@@ -366,20 +366,29 @@
   "createNewTeam": "创建新团队",
   "teamCreationSuccess": "团队创建成功！请将团队ID分享给成员",
   "teamPassword": "团队密码",
-  "teamPasswordHint": "设置密码以便日后找回邀请码",
-  "teamPasswordOptional": "团队密码（可选）",
+  "teamPasswordHint": "密码必填，用于安全验证",
   "suggestedPassword": "建议密码",
   "copyPassword": "复制密码",
   "passwordCopied": "密码已复制到剪贴板",
   "teamIdCopied": "团队ID已复制到剪贴板",
   "createAnotherTeam": "创建另一个团队",
   "teamCreatedSuccessMessage": "团队创建成功！",
-  "shareTeamIdMessage": "将此ID和密码发送给团队成员\n他们可以在注册时输入以加入团队",
+  "shareTeamIdMessage": "将邀请码和密码分享给成员\n加入团队需要同时提供这两项",
   "firstTimeCreateTeam": "首次使用？创建团队获取ID\n然后分享给成员注册",
   "retrieveInviteCode": "找回邀请码",
   "enterTeamPassword": "输入团队密码查看邀请码",
   "verify": "验证",
   "inviteCode": "邀请码",
   "passwordIncorrect": "密码错误",
-  "teamNotFound": "未找到团队"
+  "teamNotFound": "未找到团队",
+  "joinTeam": "加入团队",
+  "teamNameOrInviteCodeHint": "例如: AB12CD 或 苹果团队",
+  "pleaseEnterTeamInfo": "请输入团队名称/邀请码和密码",
+  "joinTeamSuccess": "成功加入团队",
+  "joinTeamFailed": "加入团队失败: {error}",
+  "@joinTeamFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

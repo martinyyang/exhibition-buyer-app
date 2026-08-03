@@ -8,10 +8,14 @@ class TeamService {
   TeamService(this._supabase);
 
   /// 创建新小组
-  Future<Team> createTeam({required String name, String? password}) async {
+  Future<Team> createTeam({required String name, required String password}) async {
+    if (password.isEmpty) {
+      throw Exception('Password is required');
+    }
+
     final teamData = {
       'name': name,
-      if (password != null) 'password': password,
+      'password': password,
     };
 
     final result =
@@ -20,38 +24,59 @@ class TeamService {
     return Team.fromJson(result);
   }
 
-  /// 智能查找或创建小组：优先凭 6 位邀请码或名称精准匹配，否则创建新团队
-  Future<Team> getOrCreateTeamByName({required String name}) async {
-    return await joinTeamByInviteCodeOrName(name);
-  }
+  /// 通过团队名或邀请码 + 密码加入团队
+  Future<Team> joinTeamByIdentifierAndPassword({
+    required String identifier,
+    required String password,
+  }) async {
+    final cleanIdentifier = identifier.trim();
+    final cleanPassword = password.trim();
 
-  /// 凭邀请码 (Invite Code) 或团队名称加入团队
-  Future<Team> joinTeamByInviteCodeOrName(String input) async {
-    final cleanInput = input.trim();
-    if (cleanInput.isEmpty) {
-      throw Exception('Invite code or team name cannot be empty');
+    if (cleanIdentifier.isEmpty || cleanPassword.isEmpty) {
+      throw Exception('Team identifier and password cannot be empty');
     }
 
     final allTeamsResult = await _supabase.from('teams').select();
     final allTeams =
         (allTeamsResult as List).map((json) => Team.fromJson(json)).toList();
 
-    // 1. 优先按 6 位邀请码匹配
-    for (final team in allTeams) {
-      if (team.inviteCode.toUpperCase() == cleanInput.toUpperCase()) {
-        return team;
-      }
-    }
+    // 检查是否是 6 位邀请码（全大写字母/数字）
+    final isInviteCode = cleanIdentifier.length == 6 &&
+        RegExp(r'^[A-Z0-9]+$').hasMatch(cleanIdentifier.toUpperCase());
 
-    // 2. 匹配已有团队名称
-    for (final team in allTeams) {
-      if (team.name.trim().toLowerCase() == cleanInput.toLowerCase()) {
-        return team;
+    if (isInviteCode) {
+      // 按邀请码查找
+      for (final team in allTeams) {
+        if (team.inviteCode.toUpperCase() == cleanIdentifier.toUpperCase()) {
+          // 验证密码
+          if (team.password == cleanPassword) {
+            return team;
+          } else {
+            throw Exception('Incorrect password for this team');
+          }
+        }
       }
-    }
+      throw Exception('Team not found with this invite code');
+    } else {
+      // 按团队名查找
+      final matchingTeams = allTeams
+          .where((team) =>
+              team.name.trim().toLowerCase() == cleanIdentifier.toLowerCase())
+          .toList();
 
-    // 3. 都不匹配时创建新团队（不设密码）
-    return await createTeam(name: cleanInput);
+      if (matchingTeams.isEmpty) {
+        throw Exception('Team not found with this name');
+      }
+
+      // 找到匹配密码的团队
+      for (final team in matchingTeams) {
+        if (team.password == cleanPassword) {
+          return team;
+        }
+      }
+
+      throw Exception('Incorrect password for this team');
+    }
   }
 
   /// 验证团队密码并返回团队信息（用于查看邀请码）

@@ -366,20 +366,29 @@
   "createNewTeam": "Create New Team",
   "teamCreationSuccess": "Team created successfully! Share the Team ID with members",
   "teamPassword": "Team Password",
-  "teamPasswordHint": "Set a password to retrieve invite code later",
-  "teamPasswordOptional": "Team Password (Optional)",
+  "teamPasswordHint": "Password is required for security",
   "suggestedPassword": "Suggested Password",
   "copyPassword": "Copy Password",
   "passwordCopied": "Password copied to clipboard",
   "teamIdCopied": "Team ID copied to clipboard",
   "createAnotherTeam": "Create Another Team",
   "teamCreatedSuccessMessage": "Team Created Successfully!",
-  "shareTeamIdMessage": "Send this ID and Password to team members\nThey can enter them when registering to join",
+  "shareTeamIdMessage": "Share the Invite Code and Password with members\nThey need both to join the team",
   "firstTimeCreateTeam": "First time? Create a team to get an ID\nthen share it with members to register",
   "retrieveInviteCode": "Retrieve Invite Code",
   "enterTeamPassword": "Enter team password to view invite code",
   "verify": "Verify",
   "inviteCode": "Invite Code",
   "passwordIncorrect": "Password incorrect",
-  "teamNotFound": "Team not found"
+  "teamNotFound": "Team not found",
+  "joinTeam": "Join Team",
+  "teamNameOrInviteCodeHint": "e.g., AB12CD or Apple Team",
+  "pleaseEnterTeamInfo": "Please enter team name/invite code and password",
+  "joinTeamSuccess": "Successfully joined team",
+  "joinTeamFailed": "Failed to join team: {error}",
+  "@joinTeamFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

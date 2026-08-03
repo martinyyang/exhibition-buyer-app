@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user.dart' as models;
 import '../../../core/utils/color_generator.dart';
+import '../../team/services/team_service.dart';
 
 class AuthService {
   final SupabaseClient _supabase;
@@ -182,6 +183,38 @@ class AuthService {
         .maybeSingle();
 
     return userDoc?['daily_color'] as String?;
+  }
+
+  /// 通过团队名或邀请码 + 密码加入团队
+  Future<models.User> joinTeamWithIdentifier({
+    required String identifier,
+    required String password,
+  }) async {
+    final currentUser = _supabase.auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('User not authenticated');
+    }
+
+    // 创建 TeamService 实例
+    final teamService = TeamService(_supabase);
+
+    // 查找并验证团队
+    final team = await teamService.joinTeamByIdentifierAndPassword(
+      identifier: identifier,
+      password: password,
+    );
+
+    // 更新用户的 team_id
+    await teamService.updateUserTeam(currentUser.id, team.id);
+
+    // 返回更新后的用户信息
+    final userDoc = await _supabase
+        .from('users')
+        .select()
+        .eq('id', currentUser.id)
+        .single();
+
+    return models.User.fromJson(userDoc);
   }
 
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
