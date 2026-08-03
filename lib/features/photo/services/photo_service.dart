@@ -22,27 +22,31 @@ class PhotoService {
     required String uploadedBy,
     String? supplierName,
     String? supplierLogoUrl,
+    Function(double progress)? onProgress,
   }) async {
-    // 生成唯一文件名：{team_id}/{booth_id}/{timestamp}_{uuid}.jpg
+    // 生成唯一文件名：{team_id}/{booth_id}/{timestamp}_{uuid}.webp
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final uuid = _uuid.v4();
-    final fileName = '${timestamp}_$uuid.jpg';
+    final fileName = '${timestamp}_$uuid.webp';
     final filePath = '$teamId/$boothId/$fileName';
 
-    // 压缩图片以加快上传速度（针对中国网络环境优化）
+    // 压缩阶段
+    onProgress?.call(0.1);
     final bytes = await _compressImage(photoFile);
 
-    // 上传到Supabase Storage
+    // 上传阶段
+    onProgress?.call(0.3);
     await _supabase.storage.from('photos').uploadBinary(
           filePath,
           bytes,
           fileOptions: const FileOptions(
-            contentType: 'image/jpeg',
+            contentType: 'image/webp',
             upsert: false,
           ),
         );
 
     // 获取公共URL
+    onProgress?.call(0.7);
     final publicUrl = _supabase.storage.from('photos').getPublicUrl(filePath);
 
     // 创建照片记录（添加超时保护）
@@ -54,6 +58,7 @@ class PhotoService {
       'uploaded_by': uploadedBy,
     };
 
+    onProgress?.call(0.9);
     final result = await _supabase
         .from('photos')
         .insert(photoData)
@@ -64,6 +69,7 @@ class PhotoService {
           onTimeout: () => throw Exception('创建照片记录超时'),
         );
 
+    onProgress?.call(1.0);
     return Photo.fromJson(result);
   }
 
@@ -171,10 +177,10 @@ class PhotoService {
 
   /// 上传供应商Logo
   Future<String> uploadSupplierLogo(XFile logoFile) async {
-    // 生成唯一文件名：suppliers/{timestamp}_{uuid}.jpg
+    // 生成唯一文件名：suppliers/{timestamp}_{uuid}.webp
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final uuid = _uuid.v4();
-    final fileName = '${timestamp}_$uuid.jpg';
+    final fileName = '${timestamp}_$uuid.webp';
     final filePath = 'suppliers/$fileName';
 
     // 压缩Logo图片
@@ -187,7 +193,7 @@ class PhotoService {
           filePath,
           bytes,
           fileOptions: const FileOptions(
-            contentType: 'image/jpeg',
+            contentType: 'image/webp',
             upsert: false,
           ),
         )
@@ -214,25 +220,26 @@ class PhotoService {
   }
 
   /// 压缩图片以优化上传速度
-  /// 针对中国网络环境，自动压缩大图片
+  /// 针对中国网络环境，自动压缩大图片并使用 WebP 格式
   Future<Uint8List> _compressImage(XFile file) async {
     try {
       // 获取原始文件大小
       final bytes = await file.readAsBytes();
       final fileSizeInMB = bytes.length / (1024 * 1024);
 
-      // 如果文件小于1MB，直接返回原始字节
-      if (fileSizeInMB < 1.0) {
+      // 如果文件小于 500KB，直接返回原始字节
+      if (fileSizeInMB < 0.5) {
         return Uint8List.fromList(bytes);
       }
 
-      // 对于移动端，使用flutter_image_compress压缩
+      // 对于移动端，使用 flutter_image_compress 压缩为 WebP 格式
       if (!_isWeb()) {
         final result = await FlutterImageCompress.compressWithFile(
           file.path,
           quality: NetworkConfig.imageQuality,
           minWidth: NetworkConfig.maxImageWidth,
           minHeight: NetworkConfig.maxImageHeight,
+          format: CompressFormat.webp, // 使用 WebP 格式，体积减少 60-80%
         );
 
         if (result != null) {

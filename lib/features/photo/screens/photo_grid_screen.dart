@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../core/utils/responsive.dart';
+import '../../../core/utils/error_handler.dart';
 import '../models/photo.dart';
 import '../services/image_helper_service.dart';
 import '../providers/photo_provider.dart';
@@ -29,6 +29,7 @@ class PhotoGridScreen extends ConsumerStatefulWidget {
 
 class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   bool _isUploading = false;
+  double _uploadProgress = 0.0;
 
   Future<void> _takePhoto() async {
     // 检测是否是移动设备（包括移动浏览器）
@@ -71,6 +72,11 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           boothId: widget.boothId,
           teamId: teamId,
           uploadedBy: user.id,
+          onProgress: (progress) {
+            setState(() {
+              _uploadProgress = progress;
+            });
+          },
         );
 
         if (mounted) {
@@ -84,14 +90,13 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.uploadFailed(e.toString()))),
-        );
+        ErrorHandler.show(context, e, onRetry: _pickImageFromGallery);
       }
     } finally {
       if (mounted) {
         setState(() {
           _isUploading = false;
+          _uploadProgress = 0.0;
         });
       }
     }
@@ -125,6 +130,11 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           boothId: widget.boothId,
           teamId: teamId,
           uploadedBy: user.id,
+          onProgress: (progress) {
+            setState(() {
+              _uploadProgress = progress;
+            });
+          },
         );
 
         if (mounted) {
@@ -138,14 +148,13 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.uploadPhotoFailed(e.toString()))),
-        );
+        ErrorHandler.show(context, e, onRetry: _pickImageFromCamera);
       }
     } finally {
       if (mounted) {
         setState(() {
           _isUploading = false;
+          _uploadProgress = 0.0;
         });
       }
     }
@@ -278,9 +287,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.uploadFailed(e.toString()))),
-        );
+        ErrorHandler.show(context, e);
       }
     }
   }
@@ -323,9 +330,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
-        );
+        ErrorHandler.show(context, e);
       }
     }
   }
@@ -420,9 +425,27 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         ),
       ),
       floatingActionButton: _isUploading
-          ? const FloatingActionButton(
+          ? FloatingActionButton(
               onPressed: null,
-              child: LoadingIndicator(),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: CircularProgressIndicator(
+                      value: _uploadProgress,
+                      strokeWidth: 3,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  Text(
+                    '${(_uploadProgress * 100).toInt()}%',
+                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             )
           : Builder(
               builder: (context) {
