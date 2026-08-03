@@ -1,20 +1,20 @@
-# Exhibition Buyer Collaboration Platform (Web Focus)
-
-> 💡 **项目战略说明 (Strategic Focus)**：
-> **当前项目全力主攻 Web 网页版平台 (Buyer & Remote Web Collaboration Platform)，暂时不开发和构建原生移动端 APP。所有的功能开发、实时协同与端到端测试均以 Web 端为最高优先级。**
+# Exhibition Buyer Collaboration Platform
 
 A Flutter-based web platform for exhibition buyers and remote team members to manage events, booths, photos, and annotations with real-time collaboration features.
+
+> 💡 **Project Focus**: Web platform with mobile browser support. Native mobile apps are not currently in development.
 
 ## Features
 
 - **Event Management**: Create and manage exhibition events
 - **Booth Organization**: Track and organize exhibition booths
-- **Photo Management**: Upload and view booth photos in grid layout
-- **Photo Annotation**: Add colored flags to photos for marking items of interest
-- **Team Collaboration**: Multi-buyer support with color-coded identification
-- **Real-time Sync**: Live updates across team members using Supabase Realtime
+- **Photo Management**: Upload photos with camera or gallery, grid/detail view
+- **Photo Annotation**: Add crosshair flags with zoom controls and purchase status tracking
+- **Team Collaboration**: Multi-buyer and remote member support with real-time sync
+- **Price Conversion**: Custom formula calculator for converted pricing
+- **China Network Optimization**: Cloudflare Workers proxy support for improved connectivity
 - **Multi-language**: Supports English and Chinese (中文)
-- **Responsive Design**: Works on mobile, tablet, and web browsers
+- **Responsive Design**: Mobile web browsers with touch/zoom support
 
 ## Tech Stack
 
@@ -26,12 +26,9 @@ A Flutter-based web platform for exhibition buyers and remote team members to ma
 
 ## Test Coverage
 
-- **121 tests passing (100%)**
-  - 36 unit tests
-  - 80 widget tests
-  - 5 integration tests
+Comprehensive test suite with unit, widget, and integration tests covering core features.
 
-See [TEST_COMPLETION_REPORT_FINAL.md](docs/TEST_COMPLETION_REPORT_FINAL.md) and [INTEGRATION_TEST_COMPLETION.md](docs/INTEGRATION_TEST_COMPLETION.md) for details.
+See [docs/TEST_COMPLETION_REPORT_FINAL.md](docs/TEST_COMPLETION_REPORT_FINAL.md) for details.
 
 ## Prerequisites
 
@@ -67,30 +64,33 @@ Edit `.env` and add your Supabase credentials:
 ```env
 SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_ANON_KEY=your-anon-key-here
+
+# Optional: Cloudflare Workers proxy for China network optimization
+# SUPABASE_PROXY_URL=https://your-worker.workers.dev
 ```
+
+See [docs/CLOUDFLARE_PROXY_SETUP.md](docs/CLOUDFLARE_PROXY_SETUP.md) for proxy configuration.
 
 ### 4. Set up Supabase database
 
-Run the SQL scripts in the `supabase/sql/` directory in your Supabase SQL Editor:
+Run the SQL setup script in your Supabase SQL Editor:
 
-1. `COMPLETE_SETUP.sql` - Creates all tables, RLS policies, and triggers
-2. (Optional) Manual steps documented in `supabase/sql/MANUAL_STEPS.md`
+1. Navigate to your Supabase project → SQL Editor
+2. Execute `docs/COMPLETE_SETUP.sql` - Creates all tables, RLS policies, and triggers
+3. Set up Storage bucket: `photos` (public, 2MB limit)
 
 ### 5. Run the app
 
-**Web:**
+**Web (Recommended):**
 ```bash
 flutter run -d chrome
 ```
 
-**Mobile (iOS/Android):**
-```bash
-flutter run
-```
+**Mobile browsers:** Access via network URL on mobile devices.
 
-**Build release APK:**
+**Build for production:**
 ```bash
-flutter build apk --release
+flutter build web --release
 ```
 
 ## Testing
@@ -144,10 +144,20 @@ See `supabase/sql/COMPLETE_SETUP.sql` for the complete schema.
 
 ## Documentation
 
-- [Test Completion Report](docs/TEST_COMPLETION_REPORT_FINAL.md)
-- [Integration Test Completion](docs/INTEGRATION_TEST_COMPLETION.md)
-- [Manual Test Checklist](docs/manual_test_checklist.md)
-- [Emulator Setup Guide](docs/emulator_setup.md)
+### Setup & Configuration
+- [Database Setup](docs/DATABASE_SETUP_README.md) - Supabase database configuration
+- [Cloudflare Proxy Setup](docs/CLOUDFLARE_PROXY_SETUP.md) - China network optimization
+- [Proxy Verification Guide](docs/PROXY_VERIFICATION_GUIDE.md) - Testing proxy configuration
+
+### Testing & QA
+- [Pre-release Workflow](docs/PRE_RELEASE_WORKFLOW.md) - Release checklist
+- [Manual Test Checklist](docs/manual_test_checklist.md) - Complete test scenarios
+- [Smoke Test Guide](docs/smoke_test_guide.md) - Quick verification tests
+- [Test Completion Report](docs/TEST_COMPLETION_REPORT_FINAL.md) - Test coverage details
+
+### Features
+- [Photo Feature Implementation](docs/PHOTO_FEATURE_IMPLEMENTATION.md) - Photo upload & annotation
+- [Event Management Summary](docs/event_management_summary.md) - Event/booth workflows
 
 ## Contributing
 
