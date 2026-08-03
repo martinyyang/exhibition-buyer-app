@@ -20,7 +20,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _teamNameController = TextEditingController();
+  final _teamIdController = TextEditingController();
   String _selectedRole = 'buyer';
   bool _isLoading = false;
 
@@ -29,7 +29,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _teamNameController.dispose();
+    _teamIdController.dispose();
     super.dispose();
   }
 
@@ -95,29 +95,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     try {
       final l10n = AppLocalizations.of(context)!;
 
-      // 1. 先注册用户
+      // 直接使用用户输入的团队 ID 注册
       final authService = ref.read(authServiceProvider);
       await authService.signUp(
         email: _emailController.text,
         password: _passwordController.text,
         role: _selectedRole,
-        teamId: null,
+        teamId: _teamIdController.text.trim(),
       );
 
-      // 2. 查找或创建团队（同名团队自动加入）
-      final teamService = ref.read(teamServiceProvider);
-      final team = await teamService.getOrCreateTeamByName(
-          name: _teamNameController.text.trim());
-
-      // 3. 更新用户的 team_id
-      final userId = authService.currentUserId;
-      if (userId == null) {
-        throw Exception('User ID not found after registration');
-      }
-
-      await teamService.updateUserTeam(userId, team.id);
-
-      // 4. 刷新全局当前用户状态 Provider，确保内存状态立即拥有 teamId
+      // 刷新全局当前用户状态 Provider
       ref.invalidate(currentUserDataProvider);
 
       if (mounted) {
@@ -206,6 +193,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     prefixIcon: const Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
                   validator: _validateEmail,
                   enabled: !_isLoading,
                 ),
@@ -218,6 +206,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock),
                   ),
                   obscureText: true,
+                  autofillHints: const [AutofillHints.newPassword],
                   validator: _validatePassword,
                   enabled: !_isLoading,
                 ),
@@ -235,14 +224,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: _teamNameController,
+                  controller: _teamIdController,
                   decoration: InputDecoration(
                     labelText: l10n.teamNameOrInviteCode,
-                    hintText: l10n.registerTeamNameHint,
+                    hintText: 'Enter Team ID (get from admin)',
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.group),
                   ),
-                  validator: _validateTeamName,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter Team ID';
+                    }
+                    return null;
+                  },
                   enabled: !_isLoading,
                 ),
                 const SizedBox(height: 24),

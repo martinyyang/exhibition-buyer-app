@@ -120,6 +120,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.email],
                     validator: _validateEmail,
                     enabled: !_isLoading,
                   ),
@@ -144,6 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     obscureText: _obscurePassword,
+                    autofillHints: const [AutofillHints.password],
                     validator: _validatePassword,
                     enabled: !_isLoading,
                   ),
@@ -165,6 +167,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextButton(
                     onPressed: _isLoading ? null : _navigateToRegister,
                     child: Text(l10n.register),
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _isLoading ? null : () {
+                      context.push('/team-create');
+                    },
+                    icon: const Icon(Icons.group_add, size: 24),
+                    label: const Text(
+                      'Create New Team',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: Colors.blue, width: 2),
+                      foregroundColor: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'First time? Create a team to get an ID\nthen share it with members to register',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
