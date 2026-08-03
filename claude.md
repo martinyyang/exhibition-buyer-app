@@ -29,6 +29,14 @@
 
 ### 2026-08-03
 
+#### 登录后获取 Profile 失败终极修复 (commit: 82381f3, caed19f)
+- 根因：长时间不登录后，浏览器存留已过期的 Supabase Access Token，登录新 Session 挂载存在微小延迟/旧 token 干扰，导致获取 `users` 表 RLS/请求抛出异常（`Failed to fetch user profile after login`）
+- 修复：
+  - `auth_service.dart`: 登录前主动显式清理残存的过期旧 Session（`signOut()` 清场）
+  - `auth_service.dart`: 引入带指数退避的 3 次自愈重试机制 `_fetchUserProfileWithRetry()`，若 `users` 表记录暂缺则自动建立默认账号记录
+- 编译修复：补全 `TeamService` 兼容方法 `findAndVerifyTeam` 与 `joinTeamByInviteCodeOrName`
+- 隔离测试：新增 `test/services/auth_service_expired_session_test.dart` 并通过
+
 #### 团队密码安全验证（commit: ceb3cb0, 659cc5f）
 - `teams.password` 改为必填（NOT NULL），防止仅凭团队名加入
 - 加入团队需要：团队名/邀请码 + 密码双重验证
