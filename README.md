@@ -151,19 +151,26 @@ supabase/sql/          # Database setup scripts
 
 The app uses PostgreSQL with Row Level Security (RLS) enabled for data isolation between teams:
 
-- `teams` - Organization teams
+- `teams` - Organization teams (includes optional `password` field for invite code retrieval)
 - `users` - User accounts with team association
 - `events` - Exhibition events
 - `booths` - Exhibition booths
 - `photos` - Booth photos
 - `flags` - Photo annotations
 
-See `supabase/sql/COMPLETE_SETUP.sql` for the complete schema.
+See `docs/COMPLETE_SETUP.sql` for the complete schema and setup instructions.
+
+**Note**: After adding the team password feature (2026-08-03), run the migration:
+```sql
+-- supabase/migrations/20260803000001_add_team_password.sql
+ALTER TABLE teams ADD COLUMN password TEXT;
+```
 
 ## Documentation
 
 ### Setup & Configuration
 - [Database Setup](docs/DATABASE_SETUP_README.md) - Supabase database configuration
+- [Cloudflare Pages Deployment](docs/CLOUDFLARE_PAGES_DEPLOYMENT.md) - Production deployment guide
 - [Cloudflare Proxy Setup](docs/CLOUDFLARE_PROXY_SETUP.md) - China network optimization
 - [Proxy Verification Guide](docs/PROXY_VERIFICATION_GUIDE.md) - Testing proxy configuration
 
