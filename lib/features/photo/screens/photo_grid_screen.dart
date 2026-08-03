@@ -437,12 +437,14 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
                       value: _uploadProgress,
                       strokeWidth: 3,
                       backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   ),
                   Text(
                     '${(_uploadProgress * 100).toInt()}%',
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

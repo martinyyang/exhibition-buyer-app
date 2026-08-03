@@ -19,15 +19,18 @@ async function fixRLSPolicies() {
 
     await supabase.rpc('exec_sql', {
       query: `
-        -- Drop existing policies for teams table
+        -- Drop ALL existing policies for teams table
         DROP POLICY IF EXISTS "Authenticated users can create teams" ON public.teams;
         DROP POLICY IF EXISTS "Users can view their team" ON public.teams;
         DROP POLICY IF EXISTS "Users can update their team" ON public.teams;
+        DROP POLICY IF EXISTS "Authenticated users can view all teams" ON public.teams;
+        DROP POLICY IF EXISTS "Team members can update own team" ON public.teams;
 
-        -- Drop existing policies for users table
+        -- Drop ALL existing policies for users table
         DROP POLICY IF EXISTS "Users can view their own data" ON public.users;
         DROP POLICY IF EXISTS "Users can update their own data" ON public.users;
         DROP POLICY IF EXISTS "Users can view team members" ON public.users;
+        DROP POLICY IF EXISTS "Service role full access" ON public.users;
       `
     });
 
@@ -89,12 +92,13 @@ async function fixRLSPolicies() {
         TO authenticated
         USING (id = auth.uid());
 
-        -- Users can update their own data
+        -- Users can update their own data (including team_id)
         CREATE POLICY "Users can update their own data"
         ON public.users
         FOR UPDATE
         TO authenticated
-        USING (id = auth.uid());
+        USING (id = auth.uid())
+        WITH CHECK (id = auth.uid());
 
         -- Users can view team members (direct team_id comparison)
         CREATE POLICY "Users can view team members"

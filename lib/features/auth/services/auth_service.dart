@@ -116,6 +116,54 @@ class AuthService {
     }
   }
 
+  /// 带有重试和自愈防护的 User Profile 获取函数
+  Future<models.User> _fetchUserProfileWithRetry(String userId,
+      {int maxRetries = 3}) async {
+    Object? lastError;
+    for (int attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        final userDoc = await _supabase
+            .from('users')
+            .select()
+            .eq('id', userId)
+            .maybeSingle();
+
+        if (userDoc != null) {
+          return models.User.fromJson(userDoc);
+        }
+
+        // 如果 users 表中缺少对应 uid 记录，自动进行容错修复创建
+        final authUser = _supabase.auth.currentUser;
+        if (authUser != null) {
+          final newUserData = {
+            'id': authUser.id,
+            'email': authUser.email ?? '',
+            'role': 'buyer',
+          };
+          await _supabase.from('users').upsert(newUserData);
+
+          final createdDoc = await _supabase
+              .from('users')
+              .select()
+              .eq('id', userId)
+              .maybeSingle();
+
+          if (createdDoc != null) {
+            return models.User.fromJson(createdDoc);
+          }
+        }
+      } catch (e) {
+        lastError = e;
+        print('Attempt $attempt to fetch user profile failed: $e');
+        if (attempt < maxRetries) {
+          await Future.delayed(Duration(milliseconds: 200 * attempt));
+        }
+      }
+    }
+    throw Exception(
+        'Failed to fetch user profile after login. Please try again. ($lastError)');
+  }
+
   /// 登出
   Future<void> signOut() async {
     await _supabase.auth.signOut();
@@ -126,29 +174,22 @@ class AuthService {
     final currentUser = _supabase.auth.currentUser;
     if (currentUser == null) return null;
 
-    final userDoc = await _supabase
-        .from('users')
-        .select()
-        .eq('id', currentUser.id)
-        .maybeSingle();
+    try {
+      final user =
+          await _fetchUserProfileWithRetry(currentUser.id, maxRetries: 2);
 
-    if (userDoc == null) return null;
+      // 如果是买手，检查并分配每日颜色
+      if (user.isBuyer) {
+        try {
+          await _assignDailyColorIfNeeded(user);
+        } catch (_) {}
+      }
 
-    final user = models.User.fromJson(userDoc);
-
-    // 如果是买手，检查并分配每日颜色
-    if (user.isBuyer) {
-      await _assignDailyColorIfNeeded(user);
-      // 重新获取更新后的用户信息
-      final updatedDoc = await _supabase
-          .from('users')
-          .select()
-          .eq('id', currentUser.id)
-          .single();
-      return models.User.fromJson(updatedDoc);
+      return user;
+    } catch (e) {
+      print('getCurrentUser failed: $e');
+      return null;
     }
-
-    return user;
   }
 
   /// 分配每日颜色（如果需要）

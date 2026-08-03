@@ -81,7 +81,8 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
       Clipboard.setData(ClipboardData(text: _createdInviteCode!));
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.inviteCodeCopied)),
+        SnackBar(
+            content: Text(l10n.inviteCodeCopied(_createdInviteCode ?? ''))),
       );
     }
   }
@@ -123,7 +124,6 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-
                 if (_createdTeamId == null) ...[
                   TextFormField(
                     controller: _teamNameController,
@@ -240,9 +240,12 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: _createdInviteCode!));
+                            Clipboard.setData(
+                                ClipboardData(text: _createdInviteCode!));
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.inviteCodeCopied)),
+                              SnackBar(
+                                  content: Text(l10n.inviteCodeCopied(
+                                      _createdInviteCode ?? ''))),
                             );
                           },
                           icon: const Icon(Icons.copy),
@@ -286,7 +289,8 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: _passwordController.text));
+                            Clipboard.setData(
+                                ClipboardData(text: _passwordController.text));
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(l10n.passwordCopied)),
                             );

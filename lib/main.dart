@@ -37,7 +37,8 @@ void main() async {
 
       print('Environment variables:');
       print('  SUPABASE_URL: ✓ found');
-      print('  SUPABASE_PROXY_URL: ${webSupabaseProxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
+      print(
+          '  SUPABASE_PROXY_URL: ${webSupabaseProxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
       print('  SUPABASE_ANON_KEY: ✓ found');
     } else {
       // 本地开发：使用 .env 文件
@@ -62,7 +63,8 @@ void main() async {
 
         print('Environment variables:');
         print('  SUPABASE_URL: ${directUrl != null ? "✓ found" : "✗ missing"}');
-        print('  SUPABASE_PROXY_URL: ${proxyUrl != null && proxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
+        print(
+            '  SUPABASE_PROXY_URL: ${proxyUrl != null && proxyUrl.isNotEmpty ? "✓ found (active)" : "○ not configured"}');
         print(
             '  SUPABASE_ANON_KEY: ${supabaseKey != null ? "✓ found" : "✗ missing"}');
         print('  Total keys: ${dotenv.env.keys.length}');
@@ -85,7 +87,8 @@ void main() async {
     }
 
     print('Initializing Supabase...');
-    print('  URL: ${supabaseUrl.length > 30 ? supabaseUrl.substring(0, 30) : supabaseUrl}...');
+    print(
+        '  URL: ${supabaseUrl.length > 30 ? supabaseUrl.substring(0, 30) : supabaseUrl}...');
 
     await Supabase.initialize(
       url: supabaseUrl,

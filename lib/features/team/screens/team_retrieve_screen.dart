@@ -82,7 +82,8 @@ class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
       Clipboard.setData(ClipboardData(text: _retrievedTeam!.inviteCode));
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.inviteCodeCopied(_retrievedTeam!.inviteCode))),
+        SnackBar(
+            content: Text(l10n.inviteCodeCopied(_retrievedTeam!.inviteCode))),
       );
     }
   }
@@ -124,7 +125,6 @@ class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-
                 if (_retrievedTeam == null) ...[
                   TextFormField(
                     controller: _teamIdController,

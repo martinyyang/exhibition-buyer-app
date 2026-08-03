@@ -177,7 +177,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email, AutofillHints.username],
+                    autofillHints: const [
+                      AutofillHints.email,
+                      AutofillHints.username
+                    ],
                     textInputAction: TextInputAction.next,
                     validator: _validateEmail,
                     enabled: !_isLoading,
@@ -229,18 +232,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 8),
                   const Divider(),
                   const SizedBox(height: 8),
-
                   if (!_showJoinTeamForm) ...[
                     OutlinedButton.icon(
-                      onPressed: _isLoading ? null : () {
-                        setState(() {
-                          _showJoinTeamForm = true;
-                        });
-                      },
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              setState(() {
+                                _showJoinTeamForm = true;
+                              });
+                            },
                       icon: const Icon(Icons.group, size: 24),
                       label: Text(
                         l10n.joinTeam,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -250,13 +255,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
-                      onPressed: _isLoading ? null : () {
-                        context.push('/team-create');
-                      },
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              context.push('/team-create');
+                            },
                       icon: const Icon(Icons.group_add, size: 24),
                       label: Text(
                         l10n.createNewTeam,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -320,7 +328,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ElevatedButton(
                               onPressed: _isLoading ? null : _handleJoinTeam,
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
                               ),

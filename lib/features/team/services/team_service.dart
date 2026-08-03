@@ -8,7 +8,8 @@ class TeamService {
   TeamService(this._supabase);
 
   /// 创建新小组
-  Future<Team> createTeam({required String name, required String password}) async {
+  Future<Team> createTeam(
+      {required String name, required String password}) async {
     if (password.isEmpty) {
       throw Exception('Password is required');
     }
@@ -154,6 +155,20 @@ class TeamService {
   /// 更新用户的团队ID
   Future<void> updateUserTeam(String userId, String teamId) async {
     await _supabase.from('users').update({'team_id': teamId}).eq('id', userId);
+  }
+
+  /// 兼容方法：查找并验证团队
+  Future<Team> findAndVerifyTeam(
+      {required String identifier, required String password}) async {
+    return joinTeamByIdentifierAndPassword(
+        identifier: identifier, password: password);
+  }
+
+  /// 兼容方法：通过邀请码或名称加入团队
+  Future<Team> joinTeamByInviteCodeOrName(String identifier,
+      {String password = ''}) async {
+    return joinTeamByIdentifierAndPassword(
+        identifier: identifier, password: password);
   }
 
   /// 获取所有团队列表
