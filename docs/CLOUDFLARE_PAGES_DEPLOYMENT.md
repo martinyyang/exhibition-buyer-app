@@ -37,7 +37,7 @@
 在构建配置页面，填写以下信息：
 
 - **Project name**: `exhibition-buyer-app`（或自定义名称）
-- **Production branch**: `master`
+- **Production branch**: `main`
 - **Framework preset**: 选择 `None`（手动配置）
 - **Build command**: 
   ```bash
@@ -105,9 +105,9 @@ https://exhibition-buyer-app.pages.dev
 
 ### 4.1 Git 集成
 
-Cloudflare Pages 默认会监听 GitHub 仓库的 `master` 分支：
+Cloudflare Pages 默认会监听 GitHub 仓库的 `main` 分支：
 
-- 每次推送到 `master` 分支时自动触发部署
+- 每次推送到 `main` 分支时自动触发部署
 - Pull Request 会创建预览部署
 - 可以在 **Settings** → **Builds & deployments** 中配置
 

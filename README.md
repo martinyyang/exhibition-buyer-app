@@ -80,7 +80,7 @@ See [docs/CLOUDFLARE_PROXY_SETUP.md](docs/CLOUDFLARE_PROXY_SETUP.md) for proxy c
 The application is deployed on Cloudflare Pages with automatic deployment from GitHub:
 
 - **Production URL**: `https://exhibition-buyer-app.pages.dev`
-- **Auto-deploy**: Every push to `master` branch triggers deployment
+- **Auto-deploy**: Every push to `main` branch triggers deployment
 - **Environment Variables**: Configured in Cloudflare Pages dashboard (not in `.env`)
 
 For deployment setup and configuration, see [docs/CLOUDFLARE_PAGES_DEPLOYMENT.md](docs/CLOUDFLARE_PAGES_DEPLOYMENT.md).

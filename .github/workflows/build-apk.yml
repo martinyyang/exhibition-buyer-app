@@ -2,11 +2,11 @@ name: Build and Release APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
     tags:
       - 'v*'
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -94,7 +94,7 @@ jobs:
         path: exhibition-buyer-app-v${{ steps.version.outputs.version }}.apk
 
     - name: Create or Update Latest Release
-      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main'
       uses: softprops/action-gh-release@v2
       with:
         tag_name: latest
