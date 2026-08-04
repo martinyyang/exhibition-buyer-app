@@ -102,3 +102,4 @@ linux/flutter/ephemeral/
 Thumbs.db
 .gstack/
 docs/archive/
+.env.cloudflare
