@@ -394,5 +394,9 @@
   "enterTeamNameOrInviteCode": "输入团队名称或6位邀请码",
   "pleaseEnterTeamNameOrInviteCode": "请输入团队名称或邀请码",
   "pleaseEnterTeamPassword": "请输入团队密码",
-  "teamNotFoundOrPasswordIncorrect": "未找到团队或密码错误"
+  "teamNotFoundOrPasswordIncorrect": "未找到团队或密码错误",
+  "selectTeam": "选择团队",
+  "welcomeToApp": "欢迎！",
+  "pleaseSelectTeamOption": "请选择团队选项以继续",
+  "joinExistingTeam": "加入现有团队"
 }

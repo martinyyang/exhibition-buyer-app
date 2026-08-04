@@ -6,6 +6,7 @@ import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/register_screen.dart';
 import 'package:exhibition_buyer_app/features/team/screens/team_create_screen.dart';
 import 'package:exhibition_buyer_app/features/team/screens/team_retrieve_screen.dart';
+import 'package:exhibition_buyer_app/features/team/screens/team_selection_screen.dart';
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
 import 'package:exhibition_buyer_app/features/booth/screens/booth_list_screen.dart';
 import 'package:exhibition_buyer_app/features/photo/screens/photo_grid_screen.dart';
@@ -17,15 +18,18 @@ import 'package:exhibition_buyer_app/features/auth/providers/auth_provider.dart'
 // 路由Provider
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(currentUserProvider);
+  final userDataAsync = ref.watch(currentUserDataProvider);
 
   return GoRouter(
     initialLocation: '/splash',
     redirect: (context, state) {
       final isInitializing = authState.isLoading;
       final isLoggedIn = authState.asData?.value.session != null;
+      final userTeamId = userDataAsync.asData?.value?.teamId;
       final isSplash = state.matchedLocation == '/splash';
       final isLoggingIn = state.matchedLocation == '/login';
       final isRegistering = state.matchedLocation == '/register';
+      final isTeamSelection = state.matchedLocation == '/team-selection';
 
       // 初始化中 -> 显示启动页
       if (isInitializing && !isSplash) {
@@ -34,7 +38,15 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 初始化完成但还在启动页 -> 根据登录状态跳转
       if (!isInitializing && isSplash) {
-        return isLoggedIn ? '/events' : '/login';
+        if (!isLoggedIn) {
+          return '/login';
+        }
+        // 已登录但没有团队 -> 跳转到团队选择
+        if (userTeamId == null) {
+          return '/team-selection';
+        }
+        // 已登录且有团队 -> 跳转到事件列表
+        return '/events';
       }
 
       // 未登录且不在登录页/注册页/团队创建页/找回邀请码页 -> 跳转到登录页
@@ -48,8 +60,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/login';
       }
 
-      // 已登录且在登录页 -> 跳转到场次选择页
+      // 已登录但没有团队，且不在团队相关页面 -> 跳转到团队选择
+      if (!isInitializing &&
+          isLoggedIn &&
+          userTeamId == null &&
+          !isTeamSelection &&
+          state.matchedLocation != '/team-create' &&
+          state.matchedLocation != '/team-retrieve') {
+        return '/team-selection';
+      }
+
+      // 已登录且在登录页/注册页 -> 根据是否有团队跳转
       if (isLoggedIn && (isLoggingIn || isRegistering)) {
+        if (userTeamId == null) {
+          return '/team-selection';
+        }
         return '/events';
       }
 
@@ -89,6 +114,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/team-retrieve',
         name: 'team-retrieve',
         builder: (context, state) => const TeamRetrieveScreen(),
+      ),
+
+      // 团队选择页
+      GoRoute(
+        path: '/team-selection',
+        name: 'team-selection',
+        builder: (context, state) => const TeamSelectionScreen(),
       ),
 
       // 场次选择页

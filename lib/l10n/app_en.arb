@@ -394,5 +394,9 @@
   "enterTeamNameOrInviteCode": "Enter team name or 6-digit invite code",
   "pleaseEnterTeamNameOrInviteCode": "Please enter team name or invite code",
   "pleaseEnterTeamPassword": "Please enter team password",
-  "teamNotFoundOrPasswordIncorrect": "Team not found or password incorrect"
+  "teamNotFoundOrPasswordIncorrect": "Team not found or password incorrect",
+  "selectTeam": "Select Team",
+  "welcomeToApp": "Welcome!",
+  "pleaseSelectTeamOption": "Please select a team option to continue",
+  "joinExistingTeam": "Join Existing Team"
 }
