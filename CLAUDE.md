@@ -9,7 +9,7 @@
 ## 项目架构关键点
 
 - **Web 优先平台**：主要针对 Web 浏览器和移动端 Web，不开发原生 APK
-- **部署平台**：Cloudflare Pages 自动部署（推送 master 分支触发），生产环境变量在 Cloudflare 控制台配置
+- **部署平台**：Cloudflare Pages 自动部署（推送 main 分支触发），生产环境变量在 Cloudflare 控制台配置
 - **环境变量加载**：
   - 生产环境（Cloudflare Pages）：编译时变量 `String.fromEnvironment`
   - 本地开发：`.env` 文件（`flutter_dotenv`）
