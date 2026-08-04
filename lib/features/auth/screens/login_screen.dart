@@ -16,18 +16,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _teamIdentifierController = TextEditingController();
-  final _teamPasswordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _showJoinTeamForm = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _teamIdentifierController.dispose();
-    _teamPasswordController.dispose();
     super.dispose();
   }
 
@@ -92,58 +87,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _navigateToRegister() {
     context.push('/register');
-  }
-
-  Future<void> _handleJoinTeam() async {
-    if (_teamIdentifierController.text.trim().isEmpty ||
-        _teamPasswordController.text.trim().isEmpty) {
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseEnterTeamInfo)),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final authService = ref.read(authServiceProvider);
-      final identifier = _teamIdentifierController.text.trim();
-      final password = _teamPasswordController.text.trim();
-
-      await authService.joinTeamWithIdentifier(
-        identifier: identifier,
-        password: password,
-      );
-
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.joinTeamSuccess),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.joinTeamFailed(e.toString())),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
   }
 
   @override
@@ -230,119 +173,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Text(l10n.register),
                   ),
                   const SizedBox(height: 8),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  if (!_showJoinTeamForm) ...[
-                    OutlinedButton.icon(
-                      onPressed: _isLoading
-                          ? null
-                          : () {
-                              setState(() {
-                                _showJoinTeamForm = true;
-                              });
-                            },
-                      icon: const Icon(Icons.group, size: 24),
-                      label: Text(
-                        l10n.joinTeam,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: Colors.green, width: 2),
-                        foregroundColor: Colors.green,
-                      ),
+                  OutlinedButton.icon(
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            context.push('/team-create');
+                          },
+                    icon: const Icon(Icons.group_add, size: 24),
+                    label: Text(
+                      l10n.createNewTeam,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: _isLoading
-                          ? null
-                          : () {
-                              context.push('/team-create');
-                            },
-                      icon: const Icon(Icons.group_add, size: 24),
-                      label: Text(
-                        l10n.createNewTeam,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: Colors.blue, width: 2),
-                        foregroundColor: Colors.blue,
-                      ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: Colors.blue, width: 2),
+                      foregroundColor: Colors.blue,
                     ),
-                  ] else ...[
-                    Card(
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  l10n.joinTeam,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
-                                    setState(() {
-                                      _showJoinTeamForm = false;
-                                      _teamIdentifierController.clear();
-                                      _teamPasswordController.clear();
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _teamIdentifierController,
-                              decoration: InputDecoration(
-                                labelText: l10n.teamNameOrInviteCode,
-                                hintText: l10n.teamNameOrInviteCodeHint,
-                                border: const OutlineInputBorder(),
-                                prefixIcon: const Icon(Icons.group),
-                              ),
-                              enabled: !_isLoading,
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _teamPasswordController,
-                              decoration: InputDecoration(
-                                labelText: l10n.teamPassword,
-                                border: const OutlineInputBorder(),
-                                prefixIcon: const Icon(Icons.lock),
-                              ),
-                              obscureText: true,
-                              enabled: !_isLoading,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _isLoading ? null : _handleJoinTeam,
-                              style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text(
-                                l10n.joinTeam,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ],
               ),
             ),
