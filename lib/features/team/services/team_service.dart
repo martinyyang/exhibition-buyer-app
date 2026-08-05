@@ -14,6 +14,11 @@ class TeamService {
       throw Exception('Password is required');
     }
 
+    final currentUser = _supabase.auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('User not authenticated');
+    }
+
     final teamData = {
       'name': name,
       'password': password,
@@ -22,7 +27,12 @@ class TeamService {
     final result =
         await _supabase.from('teams').insert(teamData).select().single();
 
-    return Team.fromJson(result);
+    final team = Team.fromJson(result);
+
+    // 自动将创建者加入团队
+    await updateUserTeam(currentUser.id, team.id);
+
+    return team;
   }
 
   /// 通过团队名或邀请码 + 密码加入团队

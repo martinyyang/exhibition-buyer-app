@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/team_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class TeamCreateScreen extends ConsumerStatefulWidget {
   const TeamCreateScreen({super.key});
@@ -42,6 +44,9 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
         name: _teamNameController.text.trim(),
         password: password,
       );
+
+      // 刷新用户状态
+      ref.invalidate(currentUserDataProvider);
 
       setState(() {
         _createdTeamId = team.id;
@@ -319,6 +324,21 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.go('/events');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(
+                      l10n.continueToApp,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   OutlinedButton(
                     onPressed: () {
                       setState(() {

@@ -372,6 +372,7 @@
   "passwordCopied": "密码已复制到剪贴板",
   "teamIdCopied": "团队ID已复制到剪贴板",
   "createAnotherTeam": "创建另一个团队",
+  "continueToApp": "继续使用应用",
   "teamCreatedSuccessMessage": "团队创建成功！",
   "shareTeamIdMessage": "将邀请码和密码分享给成员\n加入团队需要同时提供这两项",
   "firstTimeCreateTeam": "首次使用？创建团队获取ID\n然后分享给成员注册",

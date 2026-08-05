@@ -372,6 +372,7 @@
   "passwordCopied": "Password copied to clipboard",
   "teamIdCopied": "Team ID copied to clipboard",
   "createAnotherTeam": "Create Another Team",
+  "continueToApp": "Continue to App",
   "teamCreatedSuccessMessage": "Team Created Successfully!",
   "shareTeamIdMessage": "Share the Invite Code and Password with members\nThey need both to join the team",
   "firstTimeCreateTeam": "First time? Create a team to get an ID\nthen share it with members to register",

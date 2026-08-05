@@ -45,8 +45,11 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
         password: password,
       );
 
-      // 刷新用户状态
+      // 刷新用户状态并等待完成
       ref.invalidate(currentUserDataProvider);
+
+      // 等待 Provider 刷新完成
+      await Future.delayed(const Duration(milliseconds: 100));
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
@@ -54,6 +57,7 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
           SnackBar(
             content: Text(l10n.joinTeamSuccess),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
         );
         // 加入团队成功后跳转到事件选择页面
