@@ -1,15 +1,19 @@
-每个更改文件代码并上传到 GitHub 的实现任务都必须在最终响应之前以 git action 成功为结束。  
+每个更改文件代码并上传到 GitHub 的实现任务都必须在最终响应之前以 GitHub Action 成功为结束。  
 
 - 在编辑前检查 `git status`，并将预先存在的或并发更改视为用户拥有的。  
-- 在提交前审查最终差异并运行相应的验证。  
+- **验证策略**：本地仅运行 `flutter analyze` 检查语法错误，不执行完整构建（项目是 Web 优先，生产构建由 Cloudflare Pages 自动完成）
 - 只暂存属于当前任务的文件或块。除非用户明确要求，否则绝不捆绑不相关的更改。  
 - 在 `main` 上使用简洁的描述性提交消息，报告提交哈希，除非被要求，否则不要推送、修改或重写历史。  
+- **推送后必须跟进**：推送到 GitHub 后，使用 `gh run list --limit 3` 和 `gh run view <run-id>` 监控 GitHub Action 状态，直到构建成功或失败。如果失败，分析日志并修复问题。
 - 只读任务和没有文件更改的任务不创建空提交。
 
 ## 项目架构关键点
 
 - **Web 优先平台**：主要针对 Web 浏览器和移动端 Web，不开发原生 APK
 - **部署平台**：Cloudflare Pages 自动部署（推送 main 分支触发），生产环境变量在 Cloudflare 控制台配置
+  - **构建环境**：Flutter 3.24.5（与本地开发版本一致）
+  - **构建命令**：安装 Flutter → 注入环境变量 → `flutter build web --release`
+  - **重要**：pubspec.yaml 的 assets 不应包含 `.env`（生产环境不需要，会导致构建失败）
 - **环境变量加载**：
   - 生产环境（Cloudflare Pages）：编译时变量 `String.fromEnvironment`
   - 本地开发：`.env` 文件（`flutter_dotenv`）
@@ -26,6 +30,20 @@
   - 找回邀请码：`/team-retrieve` 路由，输入团队 ID + 密码验证
 
 ## 更新历史
+
+### 2026-08-04
+
+#### Cloudflare Pages 部署修复 (commit: 95dc40e)
+- 根因：pubspec.yaml 中声明 `.env` 为 asset，但 Cloudflare Pages 构建环境中该文件不存在，导致构建失败
+- 修复：从 pubspec.yaml assets 列表移除 `.env`（生产环境使用编译时环境变量，不需要 .env 文件）
+- 构建配置：安装 Flutter 3.24.5 到 `$HOME/flutter`，设置 PATH，执行 `flutter build web` 并通过 `--dart-define` 注入环境变量
+- 部署成功：生产环境 URL https://exhibition-buyer-app.pages.dev
+- `.env` 文件仅用于本地开发（已在 .gitignore）
+
+#### 依赖版本锁定 (commit: 60bb83c)
+- 锁定 Cloudflare Pages 构建环境使用 Flutter 3.24.5（与本地开发一致）
+- intl 依赖版本回退到 `^0.19.0`（匹配 Flutter 3.24.5 要求）
+- 避免 Flutter 版本不一致导致的依赖冲突
 
 ### 2026-08-03
 

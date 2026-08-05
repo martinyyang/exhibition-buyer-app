@@ -10,7 +10,8 @@ class TeamSelectionScreen extends ConsumerStatefulWidget {
   const TeamSelectionScreen({super.key});
 
   @override
-  ConsumerState<TeamSelectionScreen> createState() => _TeamSelectionScreenState();
+  ConsumerState<TeamSelectionScreen> createState() =>
+      _TeamSelectionScreenState();
 }
 
 class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
@@ -138,7 +139,8 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.group,
+                              Icon(
+                                Icons.group,
                                 color: Colors.green,
                                 size: 28,
                               ),
@@ -193,7 +195,8 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
                             ElevatedButton(
                               onPressed: _handleJoinTeam,
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
                               ),
