@@ -65,6 +65,7 @@
   "current": "当前",
   "noEvents": "暂无场次",
   "createFirstEvent": "点击右上角+号创建第一个场次",
+  "createFirstEventHint": "创建您的第一个展会场次，开始采购协作",
   "boothListTitle": "摊位列表",
   "createNewBooth": "新建摊位",
   "boothNumber": "摊位号",

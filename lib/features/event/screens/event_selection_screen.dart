@@ -351,7 +351,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.event_busy,
+                            Icons.event_note,
                             size: 64,
                             color: Colors.grey[400],
                           ),
@@ -365,31 +365,27 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            l10n.noEventsRemoteTip,
+                            l10n.createFirstEventHint,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[500],
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
                           ElevatedButton.icon(
-                            icon: const Icon(Icons.group_add),
-                            label: Text(l10n.oneClickMatchTeam),
+                            icon: const Icon(Icons.add_circle_outline),
+                            label: Text(l10n.createNewEvent),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.shade700,
+                              backgroundColor: Colors.green.shade600,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
+                                horizontal: 24,
+                                vertical: 14,
                               ),
                             ),
-                            onPressed: () {
-                              final user = userAsync.value;
-                              if (user != null) {
-                                _showQuickTeamDialog(context, ref, user);
-                              }
-                            },
+                            onPressed:
+                                _isCreating ? null : _showCreateEventDialog,
                           ),
                         ],
                       ),

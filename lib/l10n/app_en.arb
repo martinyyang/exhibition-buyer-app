@@ -65,6 +65,7 @@
   "current": "Current",
   "noEvents": "No events",
   "createFirstEvent": "Tap + in the top right to create your first event",
+  "createFirstEventHint": "Create your first exhibition event to start collaboration",
   "boothListTitle": "Booth List",
   "createNewBooth": "Create New Booth",
   "boothNumber": "Booth Number",
