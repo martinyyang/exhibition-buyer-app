@@ -173,6 +173,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Text(l10n.register),
                   ),
                   const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            context.push('/reset-password');
+                          },
+                    child: const Text('忘记密码？'),
+                  ),
+                  const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: _isLoading
                         ? null

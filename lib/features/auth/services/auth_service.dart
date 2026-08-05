@@ -164,6 +164,24 @@ class AuthService {
         'Failed to fetch user profile after login. Please try again. ($lastError)');
   }
 
+  /// 发送密码重置邮件
+  Future<void> resetPassword(String email) async {
+    await _supabase.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'https://exhibition-buyer-app.pages.dev/reset-password',
+    );
+  }
+
+  /// 更新密码（在重置流程中使用）
+  Future<void> updatePassword(String newPassword) async {
+    final response = await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+    if (response.user == null) {
+      throw Exception('Failed to update password');
+    }
+  }
+
   /// 登出
   Future<void> signOut() async {
     await _supabase.auth.signOut();

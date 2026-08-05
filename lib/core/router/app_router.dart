@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:exhibition_buyer_app/features/splash/screens/splash_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/login_screen.dart';
 import 'package:exhibition_buyer_app/features/auth/screens/register_screen.dart';
+import 'package:exhibition_buyer_app/features/auth/screens/reset_password_screen.dart';
 import 'package:exhibition_buyer_app/features/team/screens/team_create_screen.dart';
 import 'package:exhibition_buyer_app/features/team/screens/team_retrieve_screen.dart';
 import 'package:exhibition_buyer_app/features/team/screens/team_selection_screen.dart';
@@ -49,14 +50,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/events';
       }
 
-      // 未登录且不在登录页/注册页/团队创建页/找回邀请码页 -> 跳转到登录页
+      // 未登录且不在登录页/注册页/团队创建页/找回邀请码页/重置密码页 -> 跳转到登录页
       if (!isInitializing &&
           !isLoggedIn &&
           !isLoggingIn &&
           !isRegistering &&
           !isSplash &&
           state.matchedLocation != '/team-create' &&
-          state.matchedLocation != '/team-retrieve') {
+          state.matchedLocation != '/team-retrieve' &&
+          state.matchedLocation != '/reset-password') {
         return '/login';
       }
 
@@ -100,6 +102,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+
+      // 重置密码页
+      GoRoute(
+        path: '/reset-password',
+        name: 'reset-password',
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
 
       // 创建团队页
