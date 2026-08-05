@@ -2,6 +2,10 @@
 
 **目标**：在真机测试前捕获所有已知问题，避免重复"下载后才发现不能用"的情况。
 
+**注意**：本项目是 **Web 优先平台**，主要部署到 Cloudflare Pages，不开发原生 APK。以下流程适用于早期 Android 测试阶段（已废弃）。
+
+**当前部署流程**：参考 [Cloudflare Pages 部署指南](CLOUDFLARE_PAGES_DEPLOYMENT.md)
+
 ---
 
 ## 🎯 快速开始（推荐流程）

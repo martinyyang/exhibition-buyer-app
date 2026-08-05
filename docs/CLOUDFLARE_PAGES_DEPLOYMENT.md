@@ -41,10 +41,14 @@
 - **Framework preset**: 选择 `None`（手动配置）
 - **Build command**: 
   ```bash
-  flutter/bin/flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=SUPABASE_PROXY_URL=$SUPABASE_PROXY_URL
+  git clone --depth 1 -b 3.24.5 https://github.com/flutter/flutter.git $HOME/flutter && export PATH="$HOME/flutter/bin:$PATH" && cd $CF_PAGES_BUILD_DIR && flutter doctor -v && flutter pub get && flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=SUPABASE_PROXY_URL=$SUPABASE_PROXY_URL
   ```
 - **Build output directory**: `build/web`
 - **Root directory**: `/`（留空或填 `/`）
+
+⚠️ **重要说明**：
+- 构建命令会先安装 Flutter 3.24.5（与本地开发环境版本一致，避免依赖冲突）
+- 确保 `pubspec.yaml` 的 assets 列表**不包含 `.env` 文件**（生产环境不需要，会导致构建失败）
 
 ## 步骤 2：配置环境变量（关键步骤）
 
@@ -196,7 +200,17 @@ void main() async {
 2. 点击最新部署的 **"Retry deployment"**
 3. 或者推送一个新的提交触发部署
 
-### Q3: 构建超时或失败
+### Q3: 构建失败 "Error: Unable to find asset entry in pubspec.yaml for .env"
+
+**原因**：`pubspec.yaml` 的 assets 列表包含 `.env` 文件，但 Cloudflare Pages 构建环境中该文件不存在。
+
+**解决**：
+1. 从 `pubspec.yaml` 的 assets 列表中移除 `.env` 条目
+2. 生产环境使用编译时环境变量（`--dart-define`），不需要 `.env` 文件
+3. `.env` 文件仅用于本地开发
+4. 推送修改后的 `pubspec.yaml` 触发重新部署
+
+### Q4: 构建超时或失败
 
 **原因**：Flutter SDK 下载或构建过程超时。
 
@@ -206,7 +220,7 @@ void main() async {
 3. 检查依赖是否正常（`flutter pub get`）
 4. 如果是首次构建，可能需要更长时间
 
-### Q4: 如何更新 Supabase 密钥？
+### Q5: 如何更新 Supabase 密钥？
 
 **步骤**：
 1. 进入 **Settings** → **Environment variables**
@@ -313,11 +327,21 @@ Cloudflare Pages 免费计划包括：
 部署失败时，按顺序检查：
 
 - [ ] GitHub 仓库是否已连接
-- [ ] 构建命令是否正确
+- [ ] 构建命令是否正确（包含 Flutter SDK 安装和环境变量注入）
 - [ ] 环境变量是否已添加（`SUPABASE_URL`, `SUPABASE_ANON_KEY`）
 - [ ] 构建输出目录是否为 `build/web`
+- [ ] `pubspec.yaml` 的 assets 列表是否**不包含** `.env` 文件
 - [ ] 本地 `flutter build web --release` 是否能成功
 - [ ] 构建日志中是否有明确的错误信息
+
+## 成功部署验证
+
+部署成功后的验证步骤：
+
+1. 访问生产 URL（`https://exhibition-buyer-app.pages.dev`）
+2. 打开浏览器开发者工具 Console，检查是否输出 `✓ Using compile-time environment variables (Cloudflare Pages)`
+3. 测试登录/注册功能（验证 Supabase 连接）
+4. 检查 Cloudflare Pages Dashboard 的 **Deployments** 页面，确认状态为 "Success"
 
 ## 相关文档
 
