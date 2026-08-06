@@ -174,7 +174,8 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l10n.photosUploadSuccess(uploadedCount, pickedFiles.length)),
+              content: Text(
+                  l10n.photosUploadSuccess(uploadedCount, pickedFiles.length)),
               duration: const Duration(seconds: 3),
             ),
           );
