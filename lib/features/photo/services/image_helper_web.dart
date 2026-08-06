@@ -29,6 +29,32 @@ class ImageHelperWeb implements ImageHelperInterface {
   }
 
   @override
+  Future<List<XFile>> pickMultipleImages() async {
+    try {
+      // Web 端支持多选文件
+      final List<XFile> pickedFiles = await _picker.pickMultiImage(
+        maxWidth: 1920,
+        imageQuality: 85,
+      );
+
+      if (pickedFiles.isEmpty) return [];
+
+      // 批量压缩照片
+      final List<XFile> compressedFiles = [];
+      for (final file in pickedFiles) {
+        final compressed = await compressImage(file);
+        if (compressed != null) {
+          compressedFiles.add(compressed);
+        }
+      }
+
+      return compressedFiles;
+    } catch (e) {
+      throw Exception('Failed to pick multiple images: $e');
+    }
+  }
+
+  @override
   Future<XFile?> compressImage(XFile file, {int quality = 85}) async {
     try {
       // Web 端在内存中压缩，使用 Uint8List

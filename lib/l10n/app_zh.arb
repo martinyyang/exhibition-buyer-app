@@ -400,5 +400,22 @@
   "selectTeam": "选择团队",
   "welcomeToApp": "欢迎！",
   "pleaseSelectTeamOption": "请选择团队选项以继续",
-  "joinExistingTeam": "加入现有团队"
+  "joinExistingTeam": "加入现有团队",
+  "selectPhotos": "选择照片",
+  "selectPhotoMode": "选择单张照片还是批量上传？",
+  "singlePhoto": "单张照片",
+  "multiplePhotos": "批量上传",
+  "photosUploadSuccess": "已成功上传 {uploaded} / {total} 张照片",
+  "@photosUploadSuccess": {
+    "placeholders": {
+      "uploaded": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "pickImageFailed": "选择图片失败: {error}",
+  "@pickImageFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

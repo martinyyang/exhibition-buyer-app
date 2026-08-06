@@ -12,6 +12,12 @@ abstract class ImageHelperInterface {
   /// Web 端会忽略 source 参数，始终使用文件选择器
   Future<XFile?> pickImage({required ImageSource source});
 
+  /// 批量选择图片
+  ///
+  /// 仅支持相册选择（相机不支持批量）
+  /// Web 端支持多选文件
+  Future<List<XFile>> pickMultipleImages();
+
   /// 压缩图片
   ///
   /// [file] 要压缩的图片文件

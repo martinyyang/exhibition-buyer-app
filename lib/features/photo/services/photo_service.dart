@@ -11,6 +11,52 @@ class PhotoService {
 
   PhotoService(this._supabase);
 
+  /// 批量上传照片到摊位
+  ///
+  /// [photoFiles] 图片文件列表
+  /// [boothId] 摊位ID
+  /// [teamId] 团队ID
+  /// [uploadedBy] 上传者ID
+  /// [onProgress] 总体上传进度回调 (0.0-1.0)
+  /// [onSingleComplete] 单个文件完成回调 (当前索引, 总数, 成功的照片)
+  Future<List<Photo>> uploadPhotos({
+    required List<XFile> photoFiles,
+    required String boothId,
+    required String teamId,
+    required String uploadedBy,
+    Function(double)? onProgress,
+    Function(int current, int total, Photo photo)? onSingleComplete,
+  }) async {
+    if (photoFiles.isEmpty) return [];
+
+    final List<Photo> uploadedPhotos = [];
+    final totalFiles = photoFiles.length;
+
+    for (int i = 0; i < totalFiles; i++) {
+      try {
+        final photo = await uploadPhoto(
+          photoFile: photoFiles[i],
+          boothId: boothId,
+          teamId: teamId,
+          uploadedBy: uploadedBy,
+          onProgress: (fileProgress) {
+            // 计算总体进度：已完成 + 当前文件进度
+            final totalProgress = (i + fileProgress) / totalFiles;
+            onProgress?.call(totalProgress);
+          },
+        );
+        uploadedPhotos.add(photo);
+        onSingleComplete?.call(i + 1, totalFiles, photo);
+      } catch (e) {
+        // 单个文件失败不影响其他文件，继续上传
+        print('[uploadPhotos] Failed to upload file ${i + 1}: $e');
+        continue;
+      }
+    }
+
+    return uploadedPhotos;
+  }
+
   /// 上传照片并创建记录
   ///
   /// 使用 XFile 支持跨平台（Mobile 和 Web）

@@ -400,5 +400,22 @@
   "selectTeam": "Select Team",
   "welcomeToApp": "Welcome!",
   "pleaseSelectTeamOption": "Please select a team option to continue",
-  "joinExistingTeam": "Join Existing Team"
+  "joinExistingTeam": "Join Existing Team",
+  "selectPhotos": "Select Photos",
+  "selectPhotoMode": "Select single photo or batch upload?",
+  "singlePhoto": "Single Photo",
+  "multiplePhotos": "Batch Upload",
+  "photosUploadSuccess": "Successfully uploaded {uploaded} / {total} photos",
+  "@photosUploadSuccess": {
+    "placeholders": {
+      "uploaded": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "pickImageFailed": "Failed to pick image: {error}",
+  "@pickImageFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

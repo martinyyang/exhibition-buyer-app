@@ -47,6 +47,38 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   /// Web 端和移动端相册选择
   Future<void> _pickImageFromGallery() async {
     final l10n = AppLocalizations.of(context)!;
+
+    // 显示选择对话框：单张还是多张
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.selectPhotos),
+        content: Text(l10n.selectPhotoMode),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'single'),
+            child: Text(l10n.singlePhoto),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'multiple'),
+            child: Text(l10n.multiplePhotos),
+          ),
+        ],
+      ),
+    );
+
+    if (choice == null) return;
+
+    if (choice == 'single') {
+      await _uploadSinglePhoto();
+    } else {
+      await _uploadMultiplePhotos();
+    }
+  }
+
+  /// 单张照片上传
+  Future<void> _uploadSinglePhoto() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
     });
@@ -90,7 +122,70 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ErrorHandler.show(context, e, onRetry: _pickImageFromGallery);
+        ErrorHandler.show(context, e, onRetry: _uploadSinglePhoto);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+          _uploadProgress = 0.0;
+        });
+      }
+    }
+  }
+
+  /// 批量照片上传
+  Future<void> _uploadMultiplePhotos() async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      final pickedFiles = await imageHelper.pickMultipleImages();
+
+      if (pickedFiles.isNotEmpty) {
+        final photoService = ref.read(photoServiceProvider);
+        final userData = await ref.read(currentUserDataProvider.future);
+        final authState = ref.read(currentUserProvider);
+        final user = authState.asData?.value.session?.user;
+        final teamId = userData?.teamId;
+
+        if (user == null || teamId == null) {
+          throw Exception(l10n.userNotInTeam);
+        }
+
+        int uploadedCount = 0;
+        await photoService.uploadPhotos(
+          photoFiles: pickedFiles,
+          boothId: widget.boothId,
+          teamId: teamId,
+          uploadedBy: user.id,
+          onProgress: (progress) {
+            setState(() {
+              _uploadProgress = progress;
+            });
+          },
+          onSingleComplete: (current, total, photo) {
+            uploadedCount = current;
+          },
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.photosUploadSuccess(uploadedCount, pickedFiles.length)),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          // 手动刷新照片列表
+          ref.read(photosProvider(widget.boothId).notifier).refresh();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.show(context, e, onRetry: _uploadMultiplePhotos);
       }
     } finally {
       if (mounted) {

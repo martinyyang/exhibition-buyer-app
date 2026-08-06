@@ -31,6 +31,32 @@ class ImageHelperMobile implements ImageHelperInterface {
   }
 
   @override
+  Future<List<XFile>> pickMultipleImages() async {
+    try {
+      // 批量选择照片（仅支持相册）
+      final List<XFile> pickedFiles = await _picker.pickMultiImage(
+        maxWidth: 1920,
+        imageQuality: 85,
+      );
+
+      if (pickedFiles.isEmpty) return [];
+
+      // 批量压缩照片
+      final List<XFile> compressedFiles = [];
+      for (final file in pickedFiles) {
+        final compressed = await compressImage(file);
+        if (compressed != null) {
+          compressedFiles.add(compressed);
+        }
+      }
+
+      return compressedFiles;
+    } catch (e) {
+      throw Exception('Failed to pick multiple images: $e');
+    }
+  }
+
+  @override
   Future<XFile?> compressImage(XFile file, {int quality = 85}) async {
     try {
       final tempDir = await getTemporaryDirectory();
