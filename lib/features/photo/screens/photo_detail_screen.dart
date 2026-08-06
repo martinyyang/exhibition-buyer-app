@@ -119,7 +119,6 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
     });
 
     try {
-      final flagService = ref.read(flagServiceProvider);
       final supabaseService = ref.read(supabaseServiceProvider);
       final userId = supabaseService.client.auth.currentUser?.id;
 
@@ -127,12 +126,34 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         throw Exception(l10n.userNotInTeam);
       }
 
-      await flagService.createFlag(
+      // 1. 创建临时旗子（立即显示 - 乐观更新）
+      final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
+      final optimisticFlag = Flag(
+        id: tempId,
+        createdAt: DateTime.now(),
+        photoId: widget.photoId,
+        number: 0, // 临时编号（界面显示为"..."）
+        positionX: x,
+        positionY: y,
+        needsAttention: false,
+        createdBy: userId,
+        updatedAt: DateTime.now(),
+      );
+
+      // 2. 立即更新界面（无需等待网络）
+      ref.read(flagsProvider(widget.photoId).notifier).addOptimistic(optimisticFlag);
+
+      // 3. 异步提交到服务器
+      final flagService = ref.read(flagServiceProvider);
+      final realFlag = await flagService.createFlag(
         photoId: widget.photoId,
         positionX: x,
         positionY: y,
         createdBy: userId,
       );
+
+      // 4. 替换临时旗子为真实旗子（带真实编号）
+      ref.read(flagsProvider(widget.photoId).notifier).replaceOptimistic(tempId, realFlag);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -140,6 +161,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         );
       }
     } catch (e) {
+      // 5. 失败回滚：移除临时旗子
+      final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
+      ref.read(flagsProvider(widget.photoId).notifier).removeOptimistic(tempId);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.addFailed(e.toString()))),
@@ -627,7 +652,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                                         borderRadius: BorderRadius.circular(3),
                                       ),
                                       child: Text(
-                                        '${flag.number}',
+                                        flag.number == 0 ? '...' : '${flag.number}',
                                         style: TextStyle(
                                           color: flagColor,
                                           fontWeight: FontWeight.bold,

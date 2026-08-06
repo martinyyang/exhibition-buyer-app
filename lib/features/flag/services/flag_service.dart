@@ -19,19 +19,16 @@ class FlagService {
 
   FlagService(this._supabase);
 
-  /// 创建新旗子标注（自动分配编号）
+  /// 创建新旗子标注（编号由数据库触发器自动分配）
   Future<Flag> createFlag({
     required String photoId,
     required double positionX,
     required double positionY,
     required String createdBy,
   }) async {
-    // 获取下一个可用编号
-    final nextNumber = await getNextFlagNumber(photoId);
-
     final flagData = {
       'photo_id': photoId,
-      'number': nextNumber,
+      // number 字段不再由客户端提供，数据库触发器会自动分配
       'position_x': positionX,
       'position_y': positionY,
       'created_by': createdBy,
@@ -77,22 +74,6 @@ class FlagService {
     }
   }
 
-  /// 获取下一个可用的旗子编号
-  Future<int> getNextFlagNumber(String photoId) async {
-    final result = await _supabase
-        .from('flags')
-        .select('number')
-        .eq('photo_id', photoId)
-        .order('number', ascending: false)
-        .limit(1);
-
-    if (result.isEmpty) {
-      return 1;
-    }
-
-    final maxNumber = result.first['number'] as int;
-    return maxNumber + 1;
-  }
 
   /// 买手更新报价（自动清除警告标记并计算换算价格，带冲突检测）
   Future<Flag> updateBuyerPrice({

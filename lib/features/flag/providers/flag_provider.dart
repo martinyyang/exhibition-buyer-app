@@ -77,6 +77,41 @@ class FlagsNotifier extends StateNotifier<AsyncValue<List<Flag>>> {
     }
   }
 
+  /// 添加临时旗子（乐观更新）
+  /// 用于在等待服务器响应时立即显示旗子
+  void addOptimistic(Flag flag) {
+    final currentState = state;
+    if (currentState is AsyncData<List<Flag>>) {
+      final updatedList = [...currentState.value, flag];
+      state = AsyncValue.data(updatedList);
+    }
+  }
+
+  /// 替换临时旗子为真实旗子
+  /// 当服务器返回真实数据时，用真实旗子替换临时旗子
+  void replaceOptimistic(String tempId, Flag realFlag) {
+    final currentState = state;
+    if (currentState is AsyncData<List<Flag>>) {
+      final updatedList = currentState.value.map((flag) {
+        return flag.id == tempId ? realFlag : flag;
+      }).toList();
+      // 按编号重新排序
+      updatedList.sort((a, b) => a.number.compareTo(b.number));
+      state = AsyncValue.data(updatedList);
+    }
+  }
+
+  /// 移除临时旗子（失败回滚）
+  /// 当服务器请求失败时，移除临时显示的旗子
+  void removeOptimistic(String tempId) {
+    final currentState = state;
+    if (currentState is AsyncData<List<Flag>>) {
+      final updatedList =
+          currentState.value.where((f) => f.id != tempId).toList();
+      state = AsyncValue.data(updatedList);
+    }
+  }
+
   @override
   void dispose() {
     if (_channel != null) {
