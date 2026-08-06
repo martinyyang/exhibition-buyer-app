@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/realtime_service.dart';
 import '../services/formula_history_service.dart';
 import '../services/exchange_settings_service.dart';
+import '../services/price_recalculation_service.dart';
 import '../../auth/providers/auth_provider.dart';
 
 // FormulaHistoryService Provider
@@ -16,6 +17,12 @@ final exchangeSettingsServiceProvider = Provider((ref) {
   final supabase = ref.watch(supabaseServiceProvider);
   final historyService = ref.watch(formulaHistoryServiceProvider);
   return ExchangeSettingsService(supabase.client, historyService);
+});
+
+// PriceRecalculationService Provider
+final priceRecalculationServiceProvider = Provider((ref) {
+  final supabase = ref.watch(supabaseServiceProvider);
+  return PriceRecalculationService(supabase.client);
 });
 
 // 公式历史记录Provider

@@ -166,6 +166,20 @@ class FormulaManagementScreen extends ConsumerWidget {
       await settingsService.updateFormula(teamId, formula);
       print('[_saveFormula] Save completed successfully');
 
+      // 后台重算所有旗子的换算价格
+      print('[_saveFormula] Starting price recalculation');
+      final recalcService = ref.read(priceRecalculationServiceProvider);
+      recalcService
+          .recalculateTeamPrices(
+        teamId: teamId,
+        formula: formula,
+      )
+          .then((_) {
+        print('[_saveFormula] Price recalculation completed');
+      }).catchError((e) {
+        print('[_saveFormula] Price recalculation error: $e');
+      });
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.formulaSavedSuccess)),
