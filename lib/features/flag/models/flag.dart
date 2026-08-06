@@ -13,6 +13,7 @@ class Flag extends BaseModel {
   final bool needsAttention;
   final String? purchaseStatus; // "Purchased", "sold out", or null/empty
   final String createdBy;
+  final DateTime updatedAt;
 
   Flag({
     required super.id,
@@ -29,6 +30,7 @@ class Flag extends BaseModel {
     required this.needsAttention,
     this.purchaseStatus,
     required this.createdBy,
+    required this.updatedAt,
   });
 
   factory Flag.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class Flag extends BaseModel {
       needsAttention: json['needs_attention'] as bool? ?? false,
       purchaseStatus: json['purchase_status'] as String?,
       createdBy: json['created_by'] as String,
+      updatedAt: BaseModel.parseTimestamp(json['updated_at']),
     );
   }
 
@@ -77,6 +80,7 @@ class Flag extends BaseModel {
       'purchase_status': purchaseStatus,
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
@@ -95,6 +99,7 @@ class Flag extends BaseModel {
     String? purchaseStatus,
     String? createdBy,
     DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return Flag(
       id: id ?? this.id,
@@ -111,6 +116,7 @@ class Flag extends BaseModel {
       needsAttention: needsAttention ?? this.needsAttention,
       purchaseStatus: purchaseStatus ?? this.purchaseStatus,
       createdBy: createdBy ?? this.createdBy,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

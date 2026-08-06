@@ -3,6 +3,17 @@ import '../models/flag.dart';
 import '../../formula/services/formula_calculator.dart';
 import '../../../core/config/network_config.dart';
 
+/// 旗子编辑冲突异常
+class FlagConflictException implements Exception {
+  final String message;
+  final Flag currentFlag;
+
+  FlagConflictException(this.message, this.currentFlag);
+
+  @override
+  String toString() => message;
+}
+
 class FlagService {
   final SupabaseClient _supabase;
 
@@ -83,13 +94,30 @@ class FlagService {
     return maxNumber + 1;
   }
 
-  /// 买手更新报价（自动清除警告标记并计算换算价格）
+  /// 买手更新报价（自动清除警告标记并计算换算价格，带冲突检测）
   Future<Flag> updateBuyerPrice({
     required String flagId,
     required double priceRmb,
+    DateTime? expectedUpdatedAt,
     String? formula,
     String? teamId,
   }) async {
+    // 如果提供了 expectedUpdatedAt，先检查冲突
+    if (expectedUpdatedAt != null) {
+      final currentFlag = await getFlag(flagId);
+      if (currentFlag == null) {
+        throw Exception('旗子不存在');
+      }
+
+      if (currentFlag.updatedAt.difference(expectedUpdatedAt).abs() >
+          const Duration(seconds: 1)) {
+        throw FlagConflictException(
+          '此旗子已被他人修改，请刷新后重试',
+          currentFlag,
+        );
+      }
+    }
+
     final now = DateTime.now();
     final updateData = <String, dynamic>{
       'price_rmb': priceRmb,
@@ -116,11 +144,28 @@ class FlagService {
     return Flag.fromJson(result);
   }
 
-  /// 远程团队设置目标价（触发警告标记）
+  /// 远程团队设置目标价（触发警告标记，带冲突检测）
   Future<Flag> setTargetPrice({
     required String flagId,
     required double targetPrice,
+    DateTime? expectedUpdatedAt,
   }) async {
+    // 如果提供了 expectedUpdatedAt，先检查冲突
+    if (expectedUpdatedAt != null) {
+      final currentFlag = await getFlag(flagId);
+      if (currentFlag == null) {
+        throw Exception('旗子不存在');
+      }
+
+      if (currentFlag.updatedAt.difference(expectedUpdatedAt).abs() >
+          const Duration(seconds: 1)) {
+        throw FlagConflictException(
+          '此旗子已被他人修改，请刷新后重试',
+          currentFlag,
+        );
+      }
+    }
+
     final now = DateTime.now();
     final updateData = {
       'target_price': targetPrice,
@@ -137,9 +182,10 @@ class FlagService {
     return Flag.fromJson(result);
   }
 
-  /// 更新旗子信息（通用方法）
+  /// 更新旗子信息（通用方法，带冲突检测）
   Future<Flag> updateFlag({
     required String flagId,
+    DateTime? expectedUpdatedAt,
     double? priceRmb,
     double? priceConverted,
     double? targetPrice,
@@ -148,6 +194,23 @@ class FlagService {
     bool? needsAttention,
     String? purchaseStatus,
   }) async {
+    // 如果提供了 expectedUpdatedAt，先检查冲突
+    if (expectedUpdatedAt != null) {
+      final currentFlag = await getFlag(flagId);
+      if (currentFlag == null) {
+        throw Exception('旗子不存在');
+      }
+
+      // 比较时间戳，允许 1 秒误差（避免精度问题）
+      if (currentFlag.updatedAt.difference(expectedUpdatedAt).abs() >
+          const Duration(seconds: 1)) {
+        throw FlagConflictException(
+          '此旗子已被他人修改，请刷新后重试',
+          currentFlag,
+        );
+      }
+    }
+
     final updateData = <String, dynamic>{};
 
     if (priceRmb != null) updateData['price_rmb'] = priceRmb;

@@ -8,6 +8,7 @@ import '../../flag/widgets/flag_table.dart';
 import '../../flag/widgets/user_color_legend.dart';
 import '../../flag/models/flag.dart';
 import '../../flag/providers/flag_provider.dart';
+import '../../flag/services/flag_service.dart';
 import '../../flag/utils/flag_layout_helper.dart';
 import '../../flag/utils/user_color_mapper.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -340,12 +341,29 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         }
       }
 
-      // 更新价格和换算价格
+      // 更新价格和换算价格，带冲突检测
       await flagService.updateFlag(
         flagId: flag.id,
+        expectedUpdatedAt: flag.updatedAt,
         priceRmb: price,
         priceConverted: priceConverted,
       );
+    } on FlagConflictException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: '刷新',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.invalidate(flagsProvider(widget.photoId));
+              },
+            ),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -361,8 +379,25 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       final flagService = ref.read(flagServiceProvider);
       await flagService.updateFlag(
         flagId: flag.id,
+        expectedUpdatedAt: flag.updatedAt,
         targetPrice: targetPrice,
       );
+    } on FlagConflictException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: '刷新',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.invalidate(flagsProvider(widget.photoId));
+              },
+            ),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
