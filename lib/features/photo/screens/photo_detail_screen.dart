@@ -5,9 +5,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../flag/widgets/flag_table.dart';
+import '../../flag/widgets/user_color_legend.dart';
 import '../../flag/models/flag.dart';
 import '../../flag/providers/flag_provider.dart';
 import '../../flag/utils/flag_layout_helper.dart';
+import '../../flag/utils/user_color_mapper.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../formula/providers/formula_provider.dart';
 import '../../formula/services/formula_calculator.dart';
@@ -494,8 +496,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 return positions.map((position) {
                   final flag = position.flag;
-                  final flagColor =
-                      flag.needsAttention ? Colors.red : Colors.blue;
+                  // 根据用户ID分配颜色，紧急标记用红色覆盖
+                  final flagColor = flag.needsAttention
+                      ? Colors.red
+                      : UserColorMapper.getColorForUser(flag.createdBy);
 
                   // 是否显示连线（从展开位置到原始中心点）
                   final showConnector =
@@ -707,6 +711,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
         const Divider(height: 1),
 
+        // 用户颜色图例
+        if (flags.isNotEmpty) UserColorLegend(flags: flags),
+
         // 下半部分：Flag表格
         Expanded(
           flex: 2,
@@ -804,36 +811,46 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
         // 右侧：Flag表格
         Expanded(
           flex: 1,
-          child: flags.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.flag, size: 64, color: Colors.grey[400]),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.tapToMarkProduct,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
+          child: Column(
+            children: [
+              // 用户颜色图例
+              if (flags.isNotEmpty) UserColorLegend(flags: flags),
+              // Flag表格
+              Expanded(
+                child: flags.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.flag, size: 64, color: Colors.grey[400]),
+                            const SizedBox(height: 16),
+                            Text(
+                              l10n.tapToMarkProduct,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
                         ),
+                      )
+                    : FlagTable(
+                        flags: flags,
+                        isRemoteView: widget.isRemoteView,
+                        onRowTap: (flag) => _onFlagRowTap(flag),
+                        onPriceUpdate: (flag, price) =>
+                            _updateFlagPrice(flag, price),
+                        onTargetPriceUpdate: (flag, targetPrice) =>
+                            _updateFlagTargetPrice(flag, targetPrice),
+                        onPurchaseStatusChange: (flag, status) =>
+                            _updatePurchaseStatus(flag, status),
+                        onDelete: (flag) => _deleteFlag(flag),
+                        // TODO: 暂时移除转换价格功能
+                        // onConvertedPriceTap: () => context.push('/formula'),
                       ),
-                    ],
-                  ),
-                )
-              : FlagTable(
-                  flags: flags,
-                  isRemoteView: widget.isRemoteView,
-                  onRowTap: (flag) => _onFlagRowTap(flag),
-                  onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
-                  onTargetPriceUpdate: (flag, targetPrice) =>
-                      _updateFlagTargetPrice(flag, targetPrice),
-                  onPurchaseStatusChange: (flag, status) =>
-                      _updatePurchaseStatus(flag, status),
-                  onDelete: (flag) => _deleteFlag(flag),
-                  // TODO: 暂时移除转换价格功能
-                  // onConvertedPriceTap: () => context.push('/formula'),
-                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
