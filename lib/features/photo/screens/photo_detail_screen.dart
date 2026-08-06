@@ -13,6 +13,8 @@ import '../../flag/utils/user_color_mapper.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../formula/providers/formula_provider.dart';
 import '../../formula/services/formula_calculator.dart';
+import '../../presence/widgets/online_users_widget.dart';
+import '../../presence/mixins/presence_manager_mixin.dart';
 import '../models/photo.dart';
 import '../providers/photo_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
@@ -31,7 +33,8 @@ class PhotoDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<PhotoDetailScreen> createState() => _PhotoDetailScreenState();
 }
 
-class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
+class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
+    with PresenceManagerMixin {
   static const double _gridCellSizePercent = 0.015; // 1.5% of container size
   final TransformationController _transformationController =
       TransformationController();
@@ -41,6 +44,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
   ui.Image? _loadedImage;
   bool _areFlagsVisible = true; // 旗子显示状态
   bool _isCreatingFlag = false; // 防止连续点击创建重复旗子
+
+  @override
+  String get screenIdentifier => 'photo_detail';
+
+  @override
+  Map<String, dynamic>? get screenContext => {'photo_id': widget.photoId};
 
   @override
   void dispose() {
@@ -633,6 +642,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   Widget _buildMobileLayout(Photo? photo, List<Flag> flags) {
     final l10n = AppLocalizations.of(context)!;
+    final userData = ref.watch(currentUserDataProvider);
+    final teamId = userData.value?.teamId;
+
     return Column(
       children: [
         // 上半部分：照片（移动端启用InteractiveViewer支持放大）
@@ -648,6 +660,17 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 scaleEnabled: false, // 禁用双指缩放手势
                 child: _buildPhotoWithFlags(photo, flags),
               ),
+              // 左上角：谁在看这张照片
+              if (teamId != null)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: ScreenActivityIndicator(
+                    teamId: teamId,
+                    screen: 'photo_detail',
+                    context: {'photo_id': widget.photoId},
+                  ),
+                ),
               // 右上角按钮组
               Positioned(
                 top: 16,
@@ -751,6 +774,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
   Widget _buildDesktopLayout(Photo? photo, List<Flag> flags) {
     final l10n = AppLocalizations.of(context)!;
+    final userData = ref.watch(currentUserDataProvider);
+    final teamId = userData.value?.teamId;
+
     return Row(
       children: [
         // 左侧：照片
@@ -764,6 +790,17 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                 maxScale: 4.0,
                 child: _buildPhotoWithFlags(photo, flags),
               ),
+              // 左上角：谁在看这张照片
+              if (teamId != null)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: ScreenActivityIndicator(
+                    teamId: teamId,
+                    screen: 'photo_detail',
+                    context: {'photo_id': widget.photoId},
+                  ),
+                ),
               // 右上角按钮组
               Positioned(
                 top: 16,

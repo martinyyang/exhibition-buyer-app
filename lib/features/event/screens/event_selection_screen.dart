@@ -8,6 +8,7 @@ import '../models/event.dart';
 import '../providers/event_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../team/providers/team_provider.dart';
+import '../../presence/widgets/online_users_widget.dart';
 import '../../auth/models/user.dart' as app_user;
 
 class EventSelectionScreen extends ConsumerStatefulWidget {
@@ -336,7 +337,15 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       body: Column(
         children: [
           userAsync.when(
-            data: (user) => _buildTeamHeader(context, ref, user),
+            data: (user) {
+              return Column(
+                children: [
+                  _buildTeamHeader(context, ref, user),
+                  if (user?.teamId != null)
+                    OnlineUsersList(teamId: user!.teamId!),
+                ],
+              );
+            },
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
