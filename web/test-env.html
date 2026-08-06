@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>环境变量诊断</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .error { color: red; font-weight: bold; }
+        .success { color: green; font-weight: bold; }
+        pre { background: white; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>展会采购应用 - 环境诊断</h1>
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(msg, isError = false) {
+            const p = document.createElement('p');
+            p.className = isError ? 'error' : 'success';
+            p.textContent = msg;
+            output.appendChild(p);
+        }
+
+        async function diagnose() {
+            try {
+                // 检查 Flutter 是否加载
+                log('检查 1: 页面基础功能');
+                log('✓ HTML 加载成功');
+                log('✓ JavaScript 运行正常');
+
+                // 检查网络
+                log('\n检查 2: 网络连接');
+                try {
+                    const response = await fetch('https://ppwjblvnixqeympfcqgs.supabase.co/rest/v1/', {
+                        method: 'GET',
+                        headers: {
+                            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwd2pibHZuaXhxZXltcGZjcWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ2MjQsImV4cCI6MjEwMDIyMDYyNH0.LhLw3KUTKrLXry6Qst5nLWKsGCxEewW5XW1Pc6QrzEE'
+                        }
+                    });
+                    if (response.ok) {
+                        log('✓ Supabase 直连成功');
+                    } else {
+                        log(`✗ Supabase 返回错误: ${response.status}`, true);
+                    }
+                } catch (e) {
+                    log(`✗ Supabase 连接失败: ${e.message}`, true);
+                    log('可能原因: 网络问题、CORS 限制、或防火墙拦截', true);
+                }
+
+                log('\n检查 3: 用户代理和设备信息');
+                log(`设备: ${navigator.userAgent}`);
+                log(`在线状态: ${navigator.onLine ? '在线' : '离线'}`);
+                log(`语言: ${navigator.language}`);
+
+                log('\n诊断完成。如果看到红色错误，请截图发给开发者。');
+
+            } catch (error) {
+                log(`✗ 诊断过程出错: ${error.message}`, true);
+            }
+        }
+
+        diagnose();
+    </script>
+</body>
+</html>
