@@ -160,10 +160,14 @@ The app uses PostgreSQL with Row Level Security (RLS) enabled for data isolation
 
 See `docs/COMPLETE_SETUP.sql` for the complete schema and setup instructions.
 
-**Note**: After adding the team password feature (2026-08-03), run the migration:
+**Note**: After adding the team password feature (2026-08-03), run the migrations:
 ```sql
 -- supabase/migrations/20260803000001_add_team_password.sql
 ALTER TABLE teams ADD COLUMN password TEXT;
+
+-- supabase/migrations/20260803000002_require_team_password.sql
+UPDATE teams SET password = 'LEGACY_TEAM_' || substring(id::text, 1, 8) WHERE password IS NULL;
+ALTER TABLE teams ALTER COLUMN password SET NOT NULL;
 ```
 
 ## Documentation
