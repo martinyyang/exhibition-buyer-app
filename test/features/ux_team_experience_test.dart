@@ -54,7 +54,6 @@ class MockRealtimeService extends Mock implements RealtimeService {
   }
 }
 
-
 Widget createTestableWidget(Widget child, List<Override> overrides) {
   return ProviderScope(
     overrides: overrides,
