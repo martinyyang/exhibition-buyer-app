@@ -14,10 +14,46 @@ import 'package:exhibition_buyer_app/features/team/providers/team_provider.dart'
 import 'package:exhibition_buyer_app/features/team/services/team_service.dart';
 import 'package:exhibition_buyer_app/features/event/providers/event_provider.dart';
 import 'package:exhibition_buyer_app/features/event/screens/event_selection_screen.dart';
+import 'package:exhibition_buyer_app/features/presence/providers/presence_provider.dart';
+import 'package:exhibition_buyer_app/features/presence/models/user_presence.dart';
+import 'package:exhibition_buyer_app/features/presence/services/user_presence_service.dart';
+import 'package:exhibition_buyer_app/core/services/realtime_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MockAuthService extends Mock implements AuthService {}
 
 class MockTeamService extends Mock implements TeamService {}
+
+class MockTeamPresenceNotifier extends TeamPresenceNotifier {
+  MockTeamPresenceNotifier()
+      : super(
+          MockUserPresenceService(),
+          MockRealtimeService(),
+          'team-1',
+        ) {
+    state = const AsyncValue.data([]);
+  }
+}
+
+class MockUserPresenceService extends Mock implements UserPresenceService {
+  @override
+  RealtimeChannel subscribeToTeamPresence(
+    String teamId,
+    void Function(UserPresence presence, String event) onUpdate,
+  ) {
+    return MockRealtimeChannel();
+  }
+}
+
+class MockRealtimeChannel extends Mock implements RealtimeChannel {}
+
+class MockRealtimeService extends Mock implements RealtimeService {
+  @override
+  Future<void> unsubscribe(RealtimeChannel channel) async {
+    return Future.value();
+  }
+}
+
 
 Widget createTestableWidget(Widget child, List<Override> overrides) {
   return ProviderScope(
@@ -83,6 +119,8 @@ void main() {
             currentUserDataProvider
                 .overrideWith((ref) => Future.value(mockUser)),
             eventsProvider.overrideWith((ref) => Future.value([])),
+            teamPresenceProvider('team-1')
+                .overrideWith((ref) => MockTeamPresenceNotifier()),
           ],
         ),
       );
