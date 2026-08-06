@@ -32,7 +32,7 @@ void main() {
             Flag(
               id: 'flag-1',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId1,
               number: 1,
               positionX: 0.5,
@@ -46,7 +46,7 @@ void main() {
             Flag(
               id: 'flag-2',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId2,
               number: 1,
               positionX: 0.3,
@@ -167,7 +167,7 @@ void main() {
             Flag(
               id: 'flag-1',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 1,
               positionX: 0.5,
@@ -202,7 +202,7 @@ void main() {
             Flag(
               id: 'flag-1',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 1,
               positionX: 0.5,
@@ -213,7 +213,7 @@ void main() {
             Flag(
               id: 'flag-2',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 2,
               positionX: 0.3,
@@ -263,7 +263,7 @@ void main() {
             Flag(
               id: 'flag-1',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 1,
               positionX: 0.5,
@@ -323,7 +323,7 @@ void main() {
             Flag(
               id: 'flag-1',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 1,
               positionX: 0.5,
@@ -334,7 +334,7 @@ void main() {
             Flag(
               id: 'flag-2',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 2,
               positionX: 0.3,
@@ -345,7 +345,7 @@ void main() {
             Flag(
               id: 'flag-3',
               createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               photoId: photoId,
               number: 3,
               positionX: 0.8,

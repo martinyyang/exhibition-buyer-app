@@ -98,7 +98,7 @@ void main() {
         needsAttention: false,
         createdBy: 'test-user-123',
         createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       // Mock service行为
