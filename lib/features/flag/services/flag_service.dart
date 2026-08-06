@@ -74,7 +74,6 @@ class FlagService {
     }
   }
 
-
   /// 买手更新报价（自动清除警告标记并计算换算价格，带冲突检测）
   Future<Flag> updateBuyerPrice({
     required String flagId,

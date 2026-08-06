@@ -141,7 +141,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       );
 
       // 2. 立即更新界面（无需等待网络）
-      ref.read(flagsProvider(widget.photoId).notifier).addOptimistic(optimisticFlag);
+      ref
+          .read(flagsProvider(widget.photoId).notifier)
+          .addOptimistic(optimisticFlag);
 
       // 3. 异步提交到服务器
       final flagService = ref.read(flagServiceProvider);
@@ -153,7 +155,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       );
 
       // 4. 替换临时旗子为真实旗子（带真实编号）
-      ref.read(flagsProvider(widget.photoId).notifier).replaceOptimistic(tempId, realFlag);
+      ref
+          .read(flagsProvider(widget.photoId).notifier)
+          .replaceOptimistic(tempId, realFlag);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -652,7 +656,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                                         borderRadius: BorderRadius.circular(3),
                                       ),
                                       child: Text(
-                                        flag.number == 0 ? '...' : '${flag.number}',
+                                        flag.number == 0
+                                            ? '...'
+                                            : '${flag.number}',
                                         style: TextStyle(
                                           color: flagColor,
                                           fontWeight: FontWeight.bold,
