@@ -494,10 +494,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
 
                 return positions.map((position) {
                   final flag = position.flag;
-                  final flagColor = flag.needsAttention ? Colors.red : Colors.blue;
+                  final flagColor =
+                      flag.needsAttention ? Colors.red : Colors.blue;
 
                   // 是否显示连线（从展开位置到原始中心点）
-                  final showConnector = position.isGrouped && groupInfo.containsKey(flag.id);
+                  final showConnector =
+                      position.isGrouped && groupInfo.containsKey(flag.id);
 
                   return Positioned(
                     left: offsetX + position.x * displayWidth - 20,
@@ -513,8 +515,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                               painter: _FlagConnectorPainter(
                                 startX: 20,
                                 startY: 20,
-                                endX: (groupInfo[flag.id]!.centerX - position.x) * displayWidth,
-                                endY: (groupInfo[flag.id]!.centerY - position.y) * displayHeight,
+                                endX:
+                                    (groupInfo[flag.id]!.centerX - position.x) *
+                                        displayWidth,
+                                endY:
+                                    (groupInfo[flag.id]!.centerY - position.y) *
+                                        displayHeight,
                                 color: flagColor.withOpacity(0.3),
                               ),
                             ),
@@ -583,7 +589,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                                     ),
                                   ),
                                   // 分组标记（右上角显示组内数量）
-                                  if (position.isGrouped && position.groupSize > 1)
+                                  if (position.isGrouped &&
+                                      position.groupSize > 1)
                                     Positioned(
                                       right: -2,
                                       top: -2,

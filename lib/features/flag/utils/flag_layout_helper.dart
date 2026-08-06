@@ -63,7 +63,8 @@ class FlagLayoutHelper {
 
         // 计算与组中任意旗子的最小距离
         final minDistance = group.map((f) {
-          return _distance(f.positionX, f.positionY, other.positionX, other.positionY);
+          return _distance(
+              f.positionX, f.positionY, other.positionX, other.positionY);
         }).reduce(min);
 
         if (minDistance < overlapThreshold) {
@@ -73,8 +74,10 @@ class FlagLayoutHelper {
       }
 
       // 计算组的中心点（所有旗子的平均位置）
-      final centerX = group.map((f) => f.positionX).reduce((a, b) => a + b) / group.length;
-      final centerY = group.map((f) => f.positionY).reduce((a, b) => a + b) / group.length;
+      final centerX =
+          group.map((f) => f.positionX).reduce((a, b) => a + b) / group.length;
+      final centerY =
+          group.map((f) => f.positionY).reduce((a, b) => a + b) / group.length;
 
       groups.add(FlagGroup(
         centerX: centerX,
