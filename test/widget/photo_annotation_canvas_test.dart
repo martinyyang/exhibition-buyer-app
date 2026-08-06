@@ -26,6 +26,7 @@ void main() {
         Flag(
           id: '1',
           createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
           photoId: 'photo1',
           number: 1,
           positionX: 0.5,
@@ -85,6 +86,7 @@ void main() {
         Flag(
           id: '1',
           createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
           photoId: 'photo1',
           number: 1,
           positionX: 0.5,
@@ -121,6 +123,7 @@ void main() {
         Flag(
           id: '1',
           createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
           photoId: 'photo1',
           number: 1,
           positionX: 0.5,
@@ -167,6 +170,7 @@ void main() {
         Flag(
           id: '1',
           createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
           photoId: 'photo1',
           number: 1,
           positionX: 0.3,
@@ -177,6 +181,7 @@ void main() {
         Flag(
           id: '2',
           createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
           photoId: 'photo1',
           number: 2,
           positionX: 0.7,

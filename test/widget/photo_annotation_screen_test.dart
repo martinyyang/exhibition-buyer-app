@@ -67,6 +67,7 @@ void main() {
       Flag(
         id: 'flag1',
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         photoId: 'photo1',
         number: 1,
         positionX: 0.3,

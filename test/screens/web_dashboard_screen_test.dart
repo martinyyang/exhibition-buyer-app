@@ -26,6 +26,10 @@ void main() {
           positionX: 0.3,
           positionY: 0.4,
           priceRmb: 1000,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          needsAttention: false,
+          createdBy: 'user1',
         ),
         Flag(
           id: 'flag-2',
@@ -34,6 +38,10 @@ void main() {
           positionX: 0.6,
           positionY: 0.5,
           priceRmb: 2000,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          needsAttention: false,
+          createdBy: 'user1',
         ),
       ];
     });

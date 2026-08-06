@@ -86,6 +86,7 @@ void main() {
         purchaseStatus: null,
         createdBy: 'test-user-id',
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
     ];
 
