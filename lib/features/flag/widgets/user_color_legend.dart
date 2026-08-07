@@ -51,12 +51,28 @@ class _UserColorLegendState extends State<UserColorLegend> {
     try {
       final response = await Supabase.instance.client
           .from('users')
-          .select('id, name')
+          .select('id, email, role')
           .inFilter('id', userIds);
 
       final names = <String, String>{};
       for (final row in response) {
-        names[row['id'] as String] = row['name'] as String? ?? 'Unknown';
+        final email = row['email'] as String?;
+        final role = row['role'] as String?;
+
+        // 提取邮箱前缀（@之前的部分）
+        String displayName = 'Unknown';
+        if (email != null && email.contains('@')) {
+          displayName = email.split('@')[0];
+        }
+
+        // 添加角色标识
+        if (role == 'buyer') {
+          displayName = '$displayName 🏪'; // 现场买手
+        } else if (role == 'remote') {
+          displayName = '$displayName 🏠'; // 远程
+        }
+
+        names[row['id'] as String] = displayName;
       }
 
       setState(() {
