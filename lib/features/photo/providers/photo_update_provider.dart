@@ -11,16 +11,23 @@ import '../../../core/providers/last_viewed_provider.dart';
 /// 4. 如果最新更新时间 > 最后查看时间，返回 true（显示红点）
 final photoHasUpdatesProvider =
     FutureProvider.family<bool, String>((ref, photoId) async {
-  // 1. 获取该照片的所有旗子
-  final flagsAsync = await ref.watch(flagsProvider(photoId).future);
+  // 1. 获取该照片的所有旗子（从 AsyncValue 中提取数据）
+  final flagsAsyncValue = ref.watch(flagsProvider(photoId));
+
+  // 如果正在加载或出错，不显示更新提醒
+  if (!flagsAsyncValue.hasValue) {
+    return false;
+  }
+
+  final flags = flagsAsyncValue.value!;
 
   // 如果没有旗子，不显示更新提醒
-  if (flagsAsync.isEmpty) {
+  if (flags.isEmpty) {
     return false;
   }
 
   // 2. 找到最新的 updatedAt 时间
-  final latestUpdate = flagsAsync
+  final latestUpdate = flags
       .map((flag) => flag.updatedAt)
       .reduce((a, b) => a.isAfter(b) ? a : b);
 
@@ -28,9 +35,9 @@ final photoHasUpdatesProvider =
   final lastViewedService = ref.watch(lastViewedServiceProvider);
   final lastViewedTime = lastViewedService.getLastViewedTime(photoId);
 
-  // 4. 如果从未查看过，或者有新更新，返回 true
+  // 4. 如果从未查看过，不显示红点（第一次看到这张照片）
   if (lastViewedTime == null) {
-    return false; // 第一次看到这张照片，不显示红点
+    return false;
   }
 
   return latestUpdate.isAfter(lastViewedTime);
