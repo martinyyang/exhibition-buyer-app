@@ -377,14 +377,14 @@ class _FlagTableState extends State<FlagTable> {
                             DropdownMenuItem<String>(
                               value: 'Purchased',
                               child: Text(
-                                'Purchased',
+                                l10n.remoteDecisionPurchased,
                                 style: TextStyle(fontSize: isMobile ? 12 : 14),
                               ),
                             ),
                             DropdownMenuItem<String>(
                               value: 'sold out',
                               child: Text(
-                                'sold out',
+                                l10n.remoteDecisionSoldOut,
                                 style: TextStyle(fontSize: isMobile ? 12 : 14),
                               ),
                             ),
@@ -396,7 +396,7 @@ class _FlagTableState extends State<FlagTable> {
                               : null,
                         )
                       : Text(
-                          flag.purchaseStatus ?? '',
+                          _translatePurchaseStatus(flag.purchaseStatus, l10n),
                           style: TextStyle(
                             fontSize: isMobile ? 12 : 14,
                             color: Colors.grey[700],
@@ -428,21 +428,21 @@ class _FlagTableState extends State<FlagTable> {
                         DropdownMenuItem<String>(
                           value: '购买',
                           child: Text(
-                            '购买',
+                            l10n.finalStatusPurchased,
                             style: TextStyle(fontSize: isMobile ? 12 : 14),
                           ),
                         ),
                         DropdownMenuItem<String>(
                           value: '已售',
                           child: Text(
-                            '已售',
+                            l10n.finalStatusSoldOut,
                             style: TextStyle(fontSize: isMobile ? 12 : 14),
                           ),
                         ),
                         DropdownMenuItem<String>(
                           value: '放弃',
                           child: Text(
-                            '放弃',
+                            l10n.finalStatusGiveUp,
                             style: TextStyle(fontSize: isMobile ? 12 : 14),
                           ),
                         ),
@@ -475,5 +475,13 @@ class _FlagTableState extends State<FlagTable> {
         ),
       ),
     );
+  }
+
+  // 翻译 purchase_status 显示文本
+  String _translatePurchaseStatus(String? status, AppLocalizations l10n) {
+    if (status == null || status.isEmpty) return '';
+    if (status == 'Purchased') return l10n.remoteDecisionPurchased;
+    if (status == 'sold out') return l10n.remoteDecisionSoldOut;
+    return status;
   }
 }
