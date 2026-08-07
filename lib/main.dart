@@ -4,11 +4,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
+import 'core/providers/last_viewed_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化 SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
 
   try {
     // 加载环境变量
@@ -99,8 +104,11 @@ void main() async {
     print('✓ Supabase initialized successfully');
 
     runApp(
-      const ProviderScope(
-        child: ExhibitionBuyerApp(),
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
+        child: const ExhibitionBuyerApp(),
       ),
     );
   } catch (e, stackTrace) {

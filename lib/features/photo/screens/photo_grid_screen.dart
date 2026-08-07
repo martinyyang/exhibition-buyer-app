@@ -14,6 +14,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 import '../../flag/providers/flag_provider.dart';
 import '../../booth/providers/booth_provider.dart';
+import '../providers/photo_update_provider.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -575,73 +576,79 @@ class _PhotoCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final flagCountAsync = ref.watch(photoFlagCountProvider(photo.id));
+    final hasUpdatesAsync = ref.watch(photoHasUpdatesProvider(photo.id));
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: CachedNetworkImage(
-                imageUrl: photo.url,
-                fit: BoxFit.cover,
-                placeholder: (context, url) =>
-                    const Center(child: LoadingIndicator()),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+    return Badge(
+      isLabelVisible: hasUpdatesAsync.valueOrNull == true,
+      offset: const Offset(-8, 8),
+      backgroundColor: Colors.red,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: CachedNetworkImage(
+                  imageUrl: photo.url,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      const Center(child: LoadingIndicator()),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (photo.supplierName != null)
-                    Text(
-                      photo.supplierName!,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (photo.supplierName != null)
+                      Text(
+                        photo.supplierName!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.flag, size: 14),
+                        const SizedBox(width: 4),
+                        flagCountAsync.when(
+                          data: (count) => Text(
+                            l10n.flagCount(count),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          loading: () => Text(
+                            '...',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          error: (_, __) => Text(
+                            l10n.flagCount(0),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.flag, size: 14),
-                      const SizedBox(width: 4),
-                      flagCountAsync.when(
-                        data: (count) => Text(
-                          l10n.flagCount(count),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        loading: () => Text(
-                          '...',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        error: (_, __) => Text(
-                          l10n.flagCount(0),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

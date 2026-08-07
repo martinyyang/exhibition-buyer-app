@@ -19,6 +19,7 @@ import '../../presence/mixins/presence_manager_mixin.dart';
 import '../models/photo.dart';
 import '../providers/photo_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
+import '../../../core/providers/last_viewed_provider.dart';
 
 class PhotoDetailScreen extends ConsumerStatefulWidget {
   final String photoId;
@@ -51,6 +52,16 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
 
   @override
   Map<String, dynamic>? get screenContext => {'photo_id': widget.photoId};
+
+  @override
+  void initState() {
+    super.initState();
+    // 页面加载完成后记录查看时间
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final lastViewedService = ref.read(lastViewedServiceProvider);
+      lastViewedService.markPhotoAsViewed(widget.photoId);
+    });
+  }
 
   @override
   void dispose() {
