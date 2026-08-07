@@ -12,7 +12,8 @@ class Flag extends BaseModel {
   final DateTime? buyerPriceUpdatedAt;
   final bool needsAttention;
   final String? purchaseStatus; // "Purchased", "sold out", or null/empty (远程决策)
-  final String? finalStatus; // "购买", "已售", "放弃", or null/empty (最终状态，只有buyer可修改)
+  final String?
+      finalStatus; // "购买", "已售", "放弃", or null/empty (最终状态，只有buyer可修改)
   final String createdBy;
   final DateTime updatedAt;
 
