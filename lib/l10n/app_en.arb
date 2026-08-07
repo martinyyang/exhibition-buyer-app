@@ -98,6 +98,8 @@
   "convertedPrice": "Converted Price",
   "targetPrice": "Target Price",
   "purchased": "Purchased",
+  "remoteDecision": "Remote Decision",
+  "finalStatus": "Final Status",
   "status": "Status",
   "enterPrice": "Enter price",
   "error": "Error",

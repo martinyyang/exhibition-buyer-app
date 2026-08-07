@@ -173,6 +173,7 @@ class FlagService {
     double? positionY,
     bool? needsAttention,
     String? purchaseStatus,
+    String? finalStatus,
   }) async {
     // 如果提供了 expectedUpdatedAt，先检查冲突
     if (expectedUpdatedAt != null) {
@@ -200,6 +201,7 @@ class FlagService {
     if (positionY != null) updateData['position_y'] = positionY;
     if (needsAttention != null) updateData['needs_attention'] = needsAttention;
     if (purchaseStatus != null) updateData['purchase_status'] = purchaseStatus;
+    if (finalStatus != null) updateData['final_status'] = finalStatus;
 
     if (updateData.isEmpty) {
       throw ArgumentError('At least one update field is required');
@@ -217,6 +219,32 @@ class FlagService {
         );
 
     return Flag.fromJson(result);
+  }
+
+  /// 远程团队更新采购状态（仅 remote 角色可调用）
+  Future<Flag> updatePurchaseStatus({
+    required String flagId,
+    required String purchaseStatus,
+    DateTime? expectedUpdatedAt,
+  }) async {
+    return updateFlag(
+      flagId: flagId,
+      purchaseStatus: purchaseStatus,
+      expectedUpdatedAt: expectedUpdatedAt,
+    );
+  }
+
+  /// 现场买手更新最终状态（仅 buyer 角色可调用）
+  Future<Flag> updateFinalStatus({
+    required String flagId,
+    required String finalStatus,
+    DateTime? expectedUpdatedAt,
+  }) async {
+    return updateFlag(
+      flagId: flagId,
+      finalStatus: finalStatus,
+      expectedUpdatedAt: expectedUpdatedAt,
+    );
   }
 
   /// 更新旗子位置

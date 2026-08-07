@@ -98,6 +98,8 @@
   "convertedPrice": "换算价",
   "targetPrice": "目标价",
   "purchased": "已购买",
+  "remoteDecision": "远程决策",
+  "finalStatus": "最终状态",
   "status": "状态",
   "enterPrice": "输入报价",
   "error": "错误",

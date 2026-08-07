@@ -453,6 +453,23 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
     }
   }
 
+  Future<void> _updateFinalStatus(Flag flag, String? status) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final flagService = ref.read(flagServiceProvider);
+      await flagService.updateFlag(
+        flagId: flag.id,
+        finalStatus: status,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
+        );
+      }
+    }
+  }
+
   Future<void> _deleteFlag(Flag flag) async {
     final l10n = AppLocalizations.of(context)!;
 
@@ -829,6 +846,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                       _updateFlagTargetPrice(flag, targetPrice),
                   onPurchaseStatusChange: (flag, status) =>
                       _updatePurchaseStatus(flag, status),
+                  onFinalStatusChange: (flag, status) =>
+                      _updateFinalStatus(flag, status),
                   onDelete: (flag) => _deleteFlag(flag),
                   // TODO: 暂时移除转换价格功能
                   // onConvertedPriceTap: () => context.push('/formula'),

@@ -11,7 +11,8 @@ class Flag extends BaseModel {
   final DateTime? targetPriceUpdatedAt;
   final DateTime? buyerPriceUpdatedAt;
   final bool needsAttention;
-  final String? purchaseStatus; // "Purchased", "sold out", or null/empty
+  final String? purchaseStatus; // "Purchased", "sold out", or null/empty (远程决策)
+  final String? finalStatus; // "购买", "已售", "放弃", or null/empty (最终状态，只有buyer可修改)
   final String createdBy;
   final DateTime updatedAt;
 
@@ -29,6 +30,7 @@ class Flag extends BaseModel {
     this.buyerPriceUpdatedAt,
     required this.needsAttention,
     this.purchaseStatus,
+    this.finalStatus,
     required this.createdBy,
     required this.updatedAt,
   });
@@ -58,6 +60,7 @@ class Flag extends BaseModel {
           : null,
       needsAttention: json['needs_attention'] as bool? ?? false,
       purchaseStatus: json['purchase_status'] as String?,
+      finalStatus: json['final_status'] as String?,
       createdBy: json['created_by'] as String,
       updatedAt: BaseModel.parseTimestamp(json['updated_at']),
     );
@@ -78,6 +81,7 @@ class Flag extends BaseModel {
       'buyer_price_updated_at': buyerPriceUpdatedAt?.toIso8601String(),
       'needs_attention': needsAttention,
       'purchase_status': purchaseStatus,
+      'final_status': finalStatus,
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -97,6 +101,7 @@ class Flag extends BaseModel {
     DateTime? buyerPriceUpdatedAt,
     bool? needsAttention,
     String? purchaseStatus,
+    String? finalStatus,
     String? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -115,6 +120,7 @@ class Flag extends BaseModel {
       buyerPriceUpdatedAt: buyerPriceUpdatedAt ?? this.buyerPriceUpdatedAt,
       needsAttention: needsAttention ?? this.needsAttention,
       purchaseStatus: purchaseStatus ?? this.purchaseStatus,
+      finalStatus: finalStatus ?? this.finalStatus,
       createdBy: createdBy ?? this.createdBy,
       updatedAt: updatedAt ?? this.updatedAt,
     );

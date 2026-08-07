@@ -10,6 +10,7 @@ class FlagTable extends StatefulWidget {
   final Function(Flag, double)? onPriceUpdate;
   final Function(Flag, double)? onTargetPriceUpdate;
   final Function(Flag, String?)? onPurchaseStatusChange;
+  final Function(Flag, String?)? onFinalStatusChange;
   final Function(Flag)? onDelete;
   final VoidCallback? onConvertedPriceTap;
 
@@ -21,6 +22,7 @@ class FlagTable extends StatefulWidget {
     this.onPriceUpdate,
     this.onTargetPriceUpdate,
     this.onPurchaseStatusChange,
+    this.onFinalStatusChange,
     this.onDelete,
     this.onConvertedPriceTap,
   });
@@ -182,10 +184,17 @@ class _FlagTableState extends State<FlagTable> {
               ),
             DataColumn(
               label: Text(
-                l10n.purchased,
+                l10n.remoteDecision,
                 style: TextStyle(fontSize: isMobile ? 12 : 14),
               ),
             ),
+            if (!widget.isRemoteView)
+              DataColumn(
+                label: Text(
+                  l10n.finalStatus,
+                  style: TextStyle(fontSize: isMobile ? 12 : 14),
+                ),
+              ),
             DataColumn(
               label: Text(
                 l10n.delete,
@@ -344,48 +353,107 @@ class _FlagTableState extends State<FlagTable> {
                     ),
                   ),
 
-                // 购买状态下拉菜单列
+                // 远程决策列（远程可编辑，现场只读）
                 DataCell(
-                  DropdownButton<String>(
-                    value: flag.purchaseStatus?.isEmpty ?? true
-                        ? null
-                        : flag.purchaseStatus,
-                    hint: Text(
-                      '',
-                      style: TextStyle(fontSize: isMobile ? 12 : 14),
-                    ),
-                    isExpanded: false,
-                    underline: Container(),
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: null,
-                        child: Text(
-                          '',
-                          style: TextStyle(fontSize: isMobile ? 12 : 14),
+                  widget.isRemoteView
+                      ? DropdownButton<String>(
+                          value: flag.purchaseStatus?.isEmpty ?? true
+                              ? null
+                              : flag.purchaseStatus,
+                          hint: Text(
+                            '',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                          ),
+                          isExpanded: false,
+                          underline: Container(),
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text(
+                                '',
+                                style: TextStyle(fontSize: isMobile ? 12 : 14),
+                              ),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Purchased',
+                              child: Text(
+                                'Purchased',
+                                style: TextStyle(fontSize: isMobile ? 12 : 14),
+                              ),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'sold out',
+                              child: Text(
+                                'sold out',
+                                style: TextStyle(fontSize: isMobile ? 12 : 14),
+                              ),
+                            ),
+                          ],
+                          onChanged: widget.onPurchaseStatusChange != null
+                              ? (value) {
+                                  widget.onPurchaseStatusChange!(flag, value);
+                                }
+                              : null,
+                        )
+                      : Text(
+                          flag.purchaseStatus ?? '',
+                          style: TextStyle(
+                            fontSize: isMobile ? 12 : 14,
+                            color: Colors.grey[700],
+                          ),
                         ),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Purchased',
-                        child: Text(
-                          'Purchased',
-                          style: TextStyle(fontSize: isMobile ? 12 : 14),
-                        ),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'sold out',
-                        child: Text(
-                          'sold out',
-                          style: TextStyle(fontSize: isMobile ? 12 : 14),
-                        ),
-                      ),
-                    ],
-                    onChanged: widget.onPurchaseStatusChange != null
-                        ? (value) {
-                            widget.onPurchaseStatusChange!(flag, value);
-                          }
-                        : null,
-                  ),
                 ),
+
+                // 最终状态列（现场可编辑，远程只读）
+                if (!widget.isRemoteView)
+                  DataCell(
+                    DropdownButton<String>(
+                      value: flag.finalStatus?.isEmpty ?? true
+                          ? null
+                          : flag.finalStatus,
+                      hint: Text(
+                        '',
+                        style: TextStyle(fontSize: isMobile ? 12 : 14),
+                      ),
+                      isExpanded: false,
+                      underline: Container(),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: null,
+                          child: Text(
+                            '',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                          ),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '购买',
+                          child: Text(
+                            '购买',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                          ),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '已售',
+                          child: Text(
+                            '已售',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                          ),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '放弃',
+                          child: Text(
+                            '放弃',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                          ),
+                        ),
+                      ],
+                      onChanged: widget.onFinalStatusChange != null
+                          ? (value) {
+                              widget.onFinalStatusChange!(flag, value);
+                            }
+                          : null,
+                    ),
+                  ),
 
                 // 删除按钮列
                 DataCell(
