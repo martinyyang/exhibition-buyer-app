@@ -116,12 +116,12 @@ class BoothService {
     if (boothNumber != null) updateData['booth_number'] = boothNumber;
     if (coverImageUrl != null) updateData['cover_image_url'] = coverImageUrl;
 
-    final result = await _supabase
-        .from('booths')
-        .update(updateData)
-        .eq('id', boothId)
-        .select()
-        .single();
+    // 执行更新（不要在 URL 中使用 select）
+    await _supabase.from('booths').update(updateData).eq('id', boothId);
+
+    // 单独查询更新后的数据
+    final result =
+        await _supabase.from('booths').select().eq('id', boothId).single();
 
     return Booth.fromJson(result);
   }
