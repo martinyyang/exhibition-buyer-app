@@ -426,5 +426,13 @@
     "placeholders": {
       "error": {"type": "String"}
     }
+  },
+  "createNewTeamHint": "Create your first team",
+  "joinExistingTeamHint": "Join an existing team with invite code",
+  "teamCreatedWithCode": "Team created successfully! Invite code: {code}",
+  "@teamCreatedWithCode": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
   }
 }

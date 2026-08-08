@@ -426,5 +426,13 @@
     "placeholders": {
       "error": {"type": "String"}
     }
+  },
+  "createNewTeamHint": "创建您的第一个团队",
+  "joinExistingTeamHint": "使用邀请码加入现有团队",
+  "teamCreatedWithCode": "团队创建成功！邀请码: {code}",
+  "@teamCreatedWithCode": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
   }
 }

@@ -582,6 +582,172 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     WidgetRef ref,
     app_user.User user,
   ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(context)!;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.group_add, color: Colors.blue),
+              title: Text(l10n.createTeam),
+              subtitle: Text(l10n.createNewTeamHint),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _showCreateTeamDialog(context, ref, user);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.vpn_key, color: Colors.green),
+              title: Text(l10n.joinTeamTitle),
+              subtitle: Text(l10n.joinExistingTeamHint),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _showJoinTeamDialog(context, ref, user);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCreateTeamDialog(
+    BuildContext context,
+    WidgetRef ref,
+    app_user.User user,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final nameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(l10n.createTeam),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.teamName,
+                    hintText: l10n.teamNameHint,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.business),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.pleaseEnterTeamName;
+                    }
+                    return null;
+                  },
+                  enabled: !isLoading,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: l10n.teamPassword,
+                    hintText: l10n.teamPasswordHint,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.pleaseEnterPassword;
+                    }
+                    return null;
+                  },
+                  enabled: !isLoading,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      if (!formKey.currentState!.validate()) return;
+
+                      setState(() {
+                        isLoading = true;
+                      });
+
+                      try {
+                        final teamService = ref.read(teamServiceProvider);
+                        final team = await teamService.createTeam(
+                          name: nameController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
+
+                        // 刷新用户与团队相关 Provider
+                        ref.invalidate(currentUserDataProvider);
+                        ref.invalidate(currentTeamProvider);
+                        ref.invalidate(teamMembersProvider);
+                        ref.invalidate(eventsProvider);
+                        ref.invalidate(activeEventProvider);
+
+                        if (dialogContext.mounted) {
+                          Navigator.pop(dialogContext);
+                        }
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(l10n.teamCreatedWithCode(team.inviteCode)),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l10n.createFailed(e.toString())),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } finally {
+                        if (mounted) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      }
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n.create),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showJoinTeamDialog(
+    BuildContext context,
+    WidgetRef ref,
+    app_user.User user,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     final inputController = TextEditingController();
     final formKey = GlobalKey<FormState>();
