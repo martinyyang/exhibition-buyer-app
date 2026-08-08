@@ -750,6 +750,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final inputController = TextEditingController();
+    final passwordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -768,20 +769,42 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
               const SizedBox(height: 12),
               Form(
                 key: formKey,
-                child: TextFormField(
-                  controller: inputController,
-                  decoration: InputDecoration(
-                    labelText: l10n.inviteCodeOrNameLabel,
-                    hintText: l10n.inviteCodeOrNameHint,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.vpn_key),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.teamCodeOrNameRequired;
-                    }
-                    return null;
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: inputController,
+                      decoration: InputDecoration(
+                        labelText: l10n.inviteCodeOrNameLabel,
+                        hintText: l10n.inviteCodeOrNameHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.vpn_key),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.teamCodeOrNameRequired;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: l10n.teamPassword,
+                        hintText: l10n.teamPasswordHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.pleaseEnterPassword;
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -799,9 +822,12 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
 
               try {
                 final input = inputController.text.trim();
+                final password = passwordController.text.trim();
                 final teamService = ref.read(teamServiceProvider);
-                final team =
-                    await teamService.joinTeamByInviteCodeOrName(input);
+                final team = await teamService.joinTeamByInviteCodeOrName(
+                  input,
+                  password: password,
+                );
                 await teamService.updateUserTeam(user.id, team.id);
 
                 // 强制刷关联的用户与团队相关 Provider
