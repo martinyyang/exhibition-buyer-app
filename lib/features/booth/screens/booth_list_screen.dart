@@ -25,7 +25,6 @@ class BoothListScreen extends ConsumerStatefulWidget {
 
 class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   bool _isCreating = false;
-  XFile? _selectedCoverImage;
 
   void _showCreateBoothDialog() async {
     final l10n = AppLocalizations.of(context)!;
@@ -257,7 +256,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
       }
     } catch (e) {
       // 封面上传失败不影响摊位创建
-      print('[_uploadBoothCoverInBackground] Failed to upload cover: $e');
+      debugPrint('[_uploadBoothCoverInBackground] Failed to upload cover: $e');
     }
   }
 
@@ -511,21 +510,35 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                 );
               }
 
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.85,
-                ),
-                itemCount: booths.length,
-                itemBuilder: (context, index) {
-                  final booth = booths[index];
-                  return _BoothCard(
-                    booth: booth,
-                    onTap: () => _onBoothTap(booth),
-                    onLongPress: () => _onBoothLongPress(booth),
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  // 响应式列数：移动端3列，平板4列，桌面5列
+                  int crossAxisCount;
+                  if (constraints.maxWidth < 600) {
+                    crossAxisCount = 3; // 手机
+                  } else if (constraints.maxWidth < 900) {
+                    crossAxisCount = 4; // 平板
+                  } else {
+                    crossAxisCount = 5; // 桌面
+                  }
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: booths.length,
+                    itemBuilder: (context, index) {
+                      final booth = booths[index];
+                      return _BoothCard(
+                        booth: booth,
+                        onTap: () => _onBoothTap(booth),
+                        onLongPress: () => _onBoothLongPress(booth),
+                      );
+                    },
                   );
                 },
               );
@@ -595,10 +608,10 @@ class _BoothCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     final photosAsync = ref.watch(photosProvider(booth.id));
 
     return Card(
+      elevation: 1,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -606,9 +619,9 @@ class _BoothCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 封面图片区域
-            Expanded(
-              flex: 3,
+            // 封面图片区域（正方形）
+            AspectRatio(
+              aspectRatio: 1.0,
               child: booth.coverImageUrl != null
                   ? Image.network(
                       booth.coverImageUrl!,
@@ -628,57 +641,53 @@ class _BoothCard extends ConsumerWidget {
                     )
                   : _DefaultBoothImage(),
             ),
-            // 信息区域
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      l10n.boothLabel(booth.boothNumber),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+            // 信息区域（紧凑）
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    booth.boothNumber,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(height: 4),
-                    photosAsync.when(
-                      data: (photos) => Row(
-                        children: [
-                          Icon(Icons.photo_library,
-                              size: 14, color: Colors.grey[600]),
-                          const SizedBox(width: 4),
-                          Text(
-                            l10n.photoCountLabel(photos.length),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  photosAsync.when(
+                    data: (photos) => Row(
+                      children: [
+                        Icon(Icons.photo_library,
+                            size: 12, color: Colors.grey[600]),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${photos.length}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[600],
                           ),
-                        ],
-                      ),
-                      loading: () => Text(
-                        l10n.loading,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
                         ),
-                      ),
-                      error: (_, __) => Text(
-                        l10n.photoCountLabel(0),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                      ],
+                    ),
+                    loading: () => Text(
+                      '...',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
                       ),
                     ),
-                  ],
-                ),
+                    error: (_, __) => Text(
+                      '0',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -693,12 +702,12 @@ class _DefaultBoothImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue.shade50,
+      color: Colors.grey.shade100,
       child: Center(
         child: Icon(
           Icons.store,
-          size: 48,
-          color: Colors.blue.shade200,
+          size: 36,
+          color: Colors.grey.shade400,
         ),
       ),
     );

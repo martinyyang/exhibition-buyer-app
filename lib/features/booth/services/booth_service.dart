@@ -2,12 +2,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/booth.dart';
 import '../../../core/config/network_config.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:uuid/uuid.dart';
 
 class BoothService {
   final SupabaseClient _supabase;
-  final Uuid _uuid = const Uuid();
 
   BoothService(this._supabase);
 
@@ -181,17 +178,5 @@ class BoothService {
 
     // 返回公共URL
     return _supabase.storage.from('photos').getPublicUrl(filePath);
-  }
-
-  /// 压缩图片（内部方法）
-  Future<List<int>> _compressImage(XFile file) async {
-    final bytes = await file.readAsBytes();
-    return await FlutterImageCompress.compressWithList(
-      bytes,
-      minWidth: 800,
-      minHeight: 800,
-      quality: 85,
-      format: CompressFormat.webp,
-    );
   }
 }
