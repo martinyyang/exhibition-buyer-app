@@ -238,26 +238,35 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
     XFile coverImage,
   ) async {
     try {
+      debugPrint(
+          '[_uploadBoothCoverInBackground] Starting upload for booth: $boothId');
       final boothService = ref.read(boothServiceProvider);
+
       final coverUrl = await boothService.uploadBoothCover(
         imageFile: coverImage,
         boothId: boothId,
         teamId: teamId,
       );
+      debugPrint(
+          '[_uploadBoothCoverInBackground] Upload successful, URL: $coverUrl');
 
       // 更新摊位封面URL
-      await boothService.updateBooth(
+      final updatedBooth = await boothService.updateBooth(
         boothId: boothId,
         coverImageUrl: coverUrl,
       );
+      debugPrint(
+          '[_uploadBoothCoverInBackground] Database updated, new coverImageUrl: ${updatedBooth.coverImageUrl}');
 
       if (mounted) {
         // 刷新列表以显示封面
         ref.invalidate(boothsProvider);
+        debugPrint('[_uploadBoothCoverInBackground] Provider invalidated');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       // 封面上传失败不影响摊位创建
       debugPrint('[_uploadBoothCoverInBackground] Failed to upload cover: $e');
+      debugPrint('[_uploadBoothCoverInBackground] Stack trace: $stackTrace');
     }
   }
 
@@ -713,10 +722,20 @@ class _BoothCard extends ConsumerWidget {
                       booth.coverImageUrl!,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
+                        debugPrint(
+                            '[BoothCard] Failed to load image for booth ${booth.boothNumber}');
+                        debugPrint('[BoothCard] URL: ${booth.coverImageUrl}');
+                        debugPrint('[BoothCard] Error: $error');
                         return _DefaultBoothImage();
                       },
                       loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
+                        if (loadingProgress == null) {
+                          debugPrint(
+                              '[BoothCard] Image loaded successfully for booth ${booth.boothNumber}');
+                          return child;
+                        }
+                        debugPrint(
+                            '[BoothCard] Loading image for booth ${booth.boothNumber}: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes ?? "unknown"}');
                         return Container(
                           color: Colors.grey[200],
                           child: const Center(
