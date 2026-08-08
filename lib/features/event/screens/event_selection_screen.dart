@@ -707,8 +707,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                                  Text(l10n.teamCreatedWithCode(team.inviteCode)),
+                              content: Text(
+                                  l10n.teamCreatedWithCode(team.inviteCode)),
                             ),
                           );
                         }
