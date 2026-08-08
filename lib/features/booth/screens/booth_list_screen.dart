@@ -432,8 +432,8 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         final teamId = user?.teamId;
 
         if (teamId != null) {
-          // 后台上传新封面
-          _uploadBoothCoverInBackground(booth.id, teamId, newCoverImage);
+          // 等待封面上传完成（编辑场景需要立即看到结果）
+          await _uploadBoothCoverInBackground(booth.id, teamId, newCoverImage);
         }
       }
 
