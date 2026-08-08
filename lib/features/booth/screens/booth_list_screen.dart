@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -297,59 +298,143 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final numberController = TextEditingController(text: booth.boothNumber);
     final formKey = GlobalKey<FormState>();
+    XFile? newCoverImage;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.edit),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: numberController,
-            decoration: InputDecoration(
-              labelText: l10n.boothNumber,
-              hintText: l10n.boothNumberHint,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(l10n.edit),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: numberController,
+                  decoration: InputDecoration(
+                    labelText: l10n.boothNumber,
+                    hintText: l10n.boothNumberHint,
+                  ),
+                  textCapitalization: TextCapitalization.characters,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.boothNumberRequired;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                // 封面预览和更换按钮
+                if (booth.coverImageUrl != null || newCoverImage != null)
+                  Container(
+                    height: 120,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: newCoverImage != null
+                        ? FutureBuilder<Uint8List>(
+                            future: newCoverImage!.readAsBytes(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.memory(
+                                    snapshot.data!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              }
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            },
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              booth.coverImageUrl!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                  ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final image = await picker.pickImage(
+                      source: ImageSource.camera,
+                      preferredCameraDevice: CameraDevice.rear,
+                    );
+                    if (image != null) {
+                      setState(() {
+                        newCoverImage = image;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.camera_alt, size: 18),
+                  label: Text(booth.coverImageUrl != null
+                      ? l10n.changeCover
+                      : l10n.addCover),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
             ),
-            textCapitalization: TextCapitalization.characters,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return l10n.boothNumberRequired;
-              }
-              return null;
-            },
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Navigator.of(context).pop();
+                  _editBooth(booth, numberController.text, newCoverImage);
+                }
+              },
+              child: Text(l10n.save),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(context).pop();
-                _editBooth(booth, numberController.text);
-              }
-            },
-            child: Text(l10n.save),
-          ),
-        ],
       ),
     );
   }
 
-  Future<void> _editBooth(Booth booth, String newBoothNumber) async {
+  Future<void> _editBooth(Booth booth, String newBoothNumber, XFile? newCoverImage) async {
     final l10n = AppLocalizations.of(context)!;
-    if (newBoothNumber == booth.boothNumber) {
+    final hasNumberChanged = newBoothNumber != booth.boothNumber;
+
+    if (!hasNumberChanged && newCoverImage == null) {
       return; // 没有变化，不需要更新
     }
 
     try {
       final boothService = ref.read(boothServiceProvider);
-      await boothService.updateBooth(
-        boothId: booth.id,
-        boothNumber: newBoothNumber,
-      );
+
+      // 更新摊位编号
+      if (hasNumberChanged) {
+        await boothService.updateBooth(
+          boothId: booth.id,
+          boothNumber: newBoothNumber,
+        );
+      }
+
+      // 更新封面图片
+      if (newCoverImage != null) {
+        final authService = ref.read(authServiceProvider);
+        final user = await authService.getCurrentUser();
+        final teamId = user?.teamId;
+
+        if (teamId != null) {
+          // 后台上传新封面
+          _uploadBoothCoverInBackground(booth.id, teamId, newCoverImage);
+        }
+      }
 
       if (mounted) {
         // 手动刷新摊位列表

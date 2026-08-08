@@ -83,6 +83,8 @@
   "supplierNameHint": "e.g., LV Counter",
   "supplierLogoOptional": "Supplier Logo (Optional)",
   "uploadLogo": "Upload Logo",
+  "changeCover": "Change Cover",
+  "addCover": "Add Cover",
   "annotateProducts": "Annotate Products",
   "viewQuotes": "View Quotes",
   "tapToMarkProduct": "Tap photo to mark product",

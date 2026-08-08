@@ -83,6 +83,8 @@
   "supplierNameHint": "例如：LV专柜",
   "supplierLogoOptional": "供应商Logo（可选）",
   "uploadLogo": "上传Logo",
+  "changeCover": "更换封面",
+  "addCover": "添加封面",
   "annotateProducts": "标注商品",
   "viewQuotes": "查看报价",
   "tapToMarkProduct": "点击照片标记商品",
