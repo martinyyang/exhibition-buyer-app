@@ -792,6 +792,21 @@ class _BoothCard extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  // DEBUG: 显示封面URL
+                  if (booth.coverImageUrl != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'URL: ${booth.coverImageUrl!.substring(0, booth.coverImageUrl!.length > 40 ? 40 : booth.coverImageUrl!.length)}...',
+                        style: TextStyle(
+                          fontSize: 8,
+                          color: Colors.red[600],
+                          fontFamily: 'monospace',
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ],
               ),
             ),
