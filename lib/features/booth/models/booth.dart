@@ -5,6 +5,7 @@ class Booth extends BaseModel {
   final String eventId;
   final String teamId;
   final String createdBy;
+  final String? coverImageUrl;
 
   Booth({
     required super.id,
@@ -13,6 +14,7 @@ class Booth extends BaseModel {
     required this.eventId,
     required this.teamId,
     required this.createdBy,
+    this.coverImageUrl,
   });
 
   factory Booth.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Booth extends BaseModel {
       eventId: json['event_id'] as String,
       teamId: json['team_id'] as String,
       createdBy: json['created_by'] as String,
+      coverImageUrl: json['cover_image_url'] as String?,
     );
   }
 
@@ -35,6 +38,7 @@ class Booth extends BaseModel {
       'team_id': teamId,
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),
+      if (coverImageUrl != null) 'cover_image_url': coverImageUrl,
     };
   }
 
@@ -45,6 +49,7 @@ class Booth extends BaseModel {
     String? teamId,
     String? createdBy,
     DateTime? createdAt,
+    String? coverImageUrl,
   }) {
     return Booth(
       id: id ?? this.id,
@@ -53,6 +58,7 @@ class Booth extends BaseModel {
       eventId: eventId ?? this.eventId,
       teamId: teamId ?? this.teamId,
       createdBy: createdBy ?? this.createdBy,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
     );
   }
 }

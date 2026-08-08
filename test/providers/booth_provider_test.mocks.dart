@@ -6,15 +6,16 @@
 import 'dart:async' as _i6;
 
 import 'package:exhibition_buyer_app/core/services/realtime_service.dart'
-    as _i7;
+    as _i9;
 import 'package:exhibition_buyer_app/features/booth/models/booth.dart' as _i2;
 import 'package:exhibition_buyer_app/features/booth/services/booth_service.dart'
     as _i5;
+import 'package:flutter_image_compress/flutter_image_compress.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i8;
-import 'package:realtime_client/src/constants.dart' as _i10;
+import 'package:mockito/src/dummies.dart' as _i7;
+import 'package:realtime_client/src/constants.dart' as _i11;
 import 'package:realtime_client/src/push.dart' as _i4;
-import 'package:realtime_client/src/types.dart' as _i9;
+import 'package:realtime_client/src/types.dart' as _i10;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i3;
 
 // ignore_for_file: type=lint
@@ -92,11 +93,39 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
   }
 
   @override
+  _i6.Future<String> generateNextBoothNumber({
+    required String? eventId,
+    required String? teamId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #generateNextBoothNumber,
+          [],
+          {
+            #eventId: eventId,
+            #teamId: teamId,
+          },
+        ),
+        returnValue: _i6.Future<String>.value(_i7.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateNextBoothNumber,
+            [],
+            {
+              #eventId: eventId,
+              #teamId: teamId,
+            },
+          ),
+        )),
+      ) as _i6.Future<String>);
+
+  @override
   _i6.Future<_i2.Booth> createBooth({
     required String? boothNumber,
     required String? eventId,
     required String? teamId,
     required String? createdBy,
+    String? coverImageUrl,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -107,6 +136,7 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
             #eventId: eventId,
             #teamId: teamId,
             #createdBy: createdBy,
+            #coverImageUrl: coverImageUrl,
           },
         ),
         returnValue: _i6.Future<_i2.Booth>.value(_FakeBooth_0(
@@ -119,6 +149,7 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
               #eventId: eventId,
               #teamId: teamId,
               #createdBy: createdBy,
+              #coverImageUrl: coverImageUrl,
             },
           ),
         )),
@@ -180,6 +211,7 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
   _i6.Future<_i2.Booth> updateBooth({
     required String? boothId,
     String? boothNumber,
+    String? coverImageUrl,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -188,6 +220,7 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
           {
             #boothId: boothId,
             #boothNumber: boothNumber,
+            #coverImageUrl: coverImageUrl,
           },
         ),
         returnValue: _i6.Future<_i2.Booth>.value(_FakeBooth_0(
@@ -198,6 +231,7 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
             {
               #boothId: boothId,
               #boothNumber: boothNumber,
+              #coverImageUrl: coverImageUrl,
             },
           ),
         )),
@@ -229,12 +263,42 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
         ),
         returnValue: _i6.Future<bool>.value(false),
       ) as _i6.Future<bool>);
+
+  @override
+  _i6.Future<String> uploadBoothCover({
+    required _i8.XFile? imageFile,
+    required String? boothId,
+    required String? teamId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadBoothCover,
+          [],
+          {
+            #imageFile: imageFile,
+            #boothId: boothId,
+            #teamId: teamId,
+          },
+        ),
+        returnValue: _i6.Future<String>.value(_i7.dummyValue<String>(
+          this,
+          Invocation.method(
+            #uploadBoothCover,
+            [],
+            {
+              #imageFile: imageFile,
+              #boothId: boothId,
+              #teamId: teamId,
+            },
+          ),
+        )),
+      ) as _i6.Future<String>);
 }
 
 /// A class which mocks [RealtimeService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockRealtimeService extends _i1.Mock implements _i7.RealtimeService {
+class MockRealtimeService extends _i1.Mock implements _i9.RealtimeService {
   MockRealtimeService() {
     _i1.throwOnMissingStub(this);
   }
@@ -482,7 +546,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
   @override
   String get broadcastEndpointURL => (super.noSuchMethod(
         Invocation.getter(#broadcastEndpointURL),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.getter(#broadcastEndpointURL),
         ),
@@ -500,7 +564,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
   @override
   String get subTopic => (super.noSuchMethod(
         Invocation.getter(#subTopic),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.getter(#subTopic),
         ),
@@ -509,7 +573,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
   @override
   String get topic => (super.noSuchMethod(
         Invocation.getter(#topic),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.getter(#topic),
         ),
@@ -548,7 +612,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
   @override
   String get joinRef => (super.noSuchMethod(
         Invocation.getter(#joinRef),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.getter(#joinRef),
         ),
@@ -792,7 +856,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
   @override
   _i3.RealtimeChannel onEvents(
     String? type,
-    _i9.ChannelFilter? filter,
+    _i10.ChannelFilter? filter,
     _i3.BindingCallback? callback,
   ) =>
       (super.noSuchMethod(
@@ -844,7 +908,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
 
   @override
   _i4.Push push(
-    _i10.ChannelEvents? event,
+    _i11.ChannelEvents? event,
     Map<String, dynamic>? payload, [
     Duration? timeout,
   ]) =>
@@ -910,7 +974,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
 
   @override
   _i6.Future<_i3.ChannelResponse> send({
-    required _i9.RealtimeListenTypes? type,
+    required _i10.RealtimeListenTypes? type,
     String? event,
     required Map<String, dynamic>? payload,
     Map<String, dynamic>? opts = const {},
@@ -945,7 +1009,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
           #unsubscribe,
           [timeout],
         ),
-        returnValue: _i6.Future<String>.value(_i8.dummyValue<String>(
+        returnValue: _i6.Future<String>.value(_i7.dummyValue<String>(
           this,
           Invocation.method(
             #unsubscribe,
@@ -1020,7 +1084,7 @@ class MockRealtimeChannel extends _i1.Mock implements _i3.RealtimeChannel {
           #replyEventName,
           [ref],
         ),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.method(
             #replyEventName,

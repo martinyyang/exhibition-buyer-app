@@ -143,18 +143,10 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
       ) as _i6.Future<_i2.Flag?>);
 
   @override
-  _i6.Future<int> getNextFlagNumber(String? photoId) => (super.noSuchMethod(
-        Invocation.method(
-          #getNextFlagNumber,
-          [photoId],
-        ),
-        returnValue: _i6.Future<int>.value(0),
-      ) as _i6.Future<int>);
-
-  @override
   _i6.Future<_i2.Flag> updateBuyerPrice({
     required String? flagId,
     required double? priceRmb,
+    DateTime? expectedUpdatedAt,
     String? formula,
     String? teamId,
   }) =>
@@ -165,6 +157,7 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
           {
             #flagId: flagId,
             #priceRmb: priceRmb,
+            #expectedUpdatedAt: expectedUpdatedAt,
             #formula: formula,
             #teamId: teamId,
           },
@@ -177,6 +170,7 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
             {
               #flagId: flagId,
               #priceRmb: priceRmb,
+              #expectedUpdatedAt: expectedUpdatedAt,
               #formula: formula,
               #teamId: teamId,
             },
@@ -188,6 +182,7 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
   _i6.Future<_i2.Flag> setTargetPrice({
     required String? flagId,
     required double? targetPrice,
+    DateTime? expectedUpdatedAt,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -196,6 +191,7 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
           {
             #flagId: flagId,
             #targetPrice: targetPrice,
+            #expectedUpdatedAt: expectedUpdatedAt,
           },
         ),
         returnValue: _i6.Future<_i2.Flag>.value(_FakeFlag_0(
@@ -206,6 +202,7 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
             {
               #flagId: flagId,
               #targetPrice: targetPrice,
+              #expectedUpdatedAt: expectedUpdatedAt,
             },
           ),
         )),
@@ -214,13 +211,15 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
   @override
   _i6.Future<_i2.Flag> updateFlag({
     required String? flagId,
+    DateTime? expectedUpdatedAt,
     double? priceRmb,
     double? priceConverted,
     double? targetPrice,
     double? positionX,
     double? positionY,
     bool? needsAttention,
-    bool? isPurchased,
+    String? purchaseStatus,
+    String? finalStatus,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -228,13 +227,15 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
           [],
           {
             #flagId: flagId,
+            #expectedUpdatedAt: expectedUpdatedAt,
             #priceRmb: priceRmb,
             #priceConverted: priceConverted,
             #targetPrice: targetPrice,
             #positionX: positionX,
             #positionY: positionY,
             #needsAttention: needsAttention,
-            #isPurchased: isPurchased,
+            #purchaseStatus: purchaseStatus,
+            #finalStatus: finalStatus,
           },
         ),
         returnValue: _i6.Future<_i2.Flag>.value(_FakeFlag_0(
@@ -244,13 +245,75 @@ class MockFlagService extends _i1.Mock implements _i5.FlagService {
             [],
             {
               #flagId: flagId,
+              #expectedUpdatedAt: expectedUpdatedAt,
               #priceRmb: priceRmb,
               #priceConverted: priceConverted,
               #targetPrice: targetPrice,
               #positionX: positionX,
               #positionY: positionY,
               #needsAttention: needsAttention,
-              #isPurchased: isPurchased,
+              #purchaseStatus: purchaseStatus,
+              #finalStatus: finalStatus,
+            },
+          ),
+        )),
+      ) as _i6.Future<_i2.Flag>);
+
+  @override
+  _i6.Future<_i2.Flag> updatePurchaseStatus({
+    required String? flagId,
+    required String? purchaseStatus,
+    DateTime? expectedUpdatedAt,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updatePurchaseStatus,
+          [],
+          {
+            #flagId: flagId,
+            #purchaseStatus: purchaseStatus,
+            #expectedUpdatedAt: expectedUpdatedAt,
+          },
+        ),
+        returnValue: _i6.Future<_i2.Flag>.value(_FakeFlag_0(
+          this,
+          Invocation.method(
+            #updatePurchaseStatus,
+            [],
+            {
+              #flagId: flagId,
+              #purchaseStatus: purchaseStatus,
+              #expectedUpdatedAt: expectedUpdatedAt,
+            },
+          ),
+        )),
+      ) as _i6.Future<_i2.Flag>);
+
+  @override
+  _i6.Future<_i2.Flag> updateFinalStatus({
+    required String? flagId,
+    required String? finalStatus,
+    DateTime? expectedUpdatedAt,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateFinalStatus,
+          [],
+          {
+            #flagId: flagId,
+            #finalStatus: finalStatus,
+            #expectedUpdatedAt: expectedUpdatedAt,
+          },
+        ),
+        returnValue: _i6.Future<_i2.Flag>.value(_FakeFlag_0(
+          this,
+          Invocation.method(
+            #updateFinalStatus,
+            [],
+            {
+              #flagId: flagId,
+              #finalStatus: finalStatus,
+              #expectedUpdatedAt: expectedUpdatedAt,
             },
           ),
         )),
