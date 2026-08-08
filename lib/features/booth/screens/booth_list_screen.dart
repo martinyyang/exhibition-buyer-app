@@ -405,7 +405,8 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
     );
   }
 
-  Future<void> _editBooth(Booth booth, String newBoothNumber, XFile? newCoverImage) async {
+  Future<void> _editBooth(
+      Booth booth, String newBoothNumber, XFile? newCoverImage) async {
     final l10n = AppLocalizations.of(context)!;
     final hasNumberChanged = newBoothNumber != booth.boothNumber;
 
