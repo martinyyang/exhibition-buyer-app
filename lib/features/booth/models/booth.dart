@@ -6,6 +6,8 @@ class Booth extends BaseModel {
   final String teamId;
   final String createdBy;
   final String? coverImageUrl;
+  final String? supplierName;
+  final String? supplierLogoUrl;
 
   Booth({
     required super.id,
@@ -15,6 +17,8 @@ class Booth extends BaseModel {
     required this.teamId,
     required this.createdBy,
     this.coverImageUrl,
+    this.supplierName,
+    this.supplierLogoUrl,
   });
 
   factory Booth.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class Booth extends BaseModel {
       teamId: json['team_id'] as String,
       createdBy: json['created_by'] as String,
       coverImageUrl: json['cover_image_url'] as String?,
+      supplierName: json['supplier_name'] as String?,
+      supplierLogoUrl: json['supplier_logo_url'] as String?,
     );
   }
 
@@ -39,6 +45,8 @@ class Booth extends BaseModel {
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),
       if (coverImageUrl != null) 'cover_image_url': coverImageUrl,
+      if (supplierName != null) 'supplier_name': supplierName,
+      if (supplierLogoUrl != null) 'supplier_logo_url': supplierLogoUrl,
     };
   }
 
@@ -50,6 +58,8 @@ class Booth extends BaseModel {
     String? createdBy,
     DateTime? createdAt,
     String? coverImageUrl,
+    String? supplierName,
+    String? supplierLogoUrl,
   }) {
     return Booth(
       id: id ?? this.id,
@@ -59,6 +69,8 @@ class Booth extends BaseModel {
       teamId: teamId ?? this.teamId,
       createdBy: createdBy ?? this.createdBy,
       coverImageUrl: coverImageUrl ?? this.coverImageUrl,
+      supplierName: supplierName ?? this.supplierName,
+      supplierLogoUrl: supplierLogoUrl ?? this.supplierLogoUrl,
     );
   }
 }

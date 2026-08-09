@@ -283,6 +283,14 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
+            leading: const Icon(Icons.business),
+            title: Text(l10n.addSupplierInfo),
+            onTap: () {
+              Navigator.pop(context);
+              _showSupplierDialog(booth);
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.edit),
             title: Text(l10n.edit),
             onTap: () {
@@ -489,6 +497,82 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         ],
       ),
     );
+  }
+
+  void _showSupplierDialog(Booth booth) {
+    final l10n = AppLocalizations.of(context)!;
+    final nameController = TextEditingController(text: booth.supplierName);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.supplierInfo),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: l10n.supplierName,
+                hintText: l10n.supplierNameHint,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.supplierLogoOptional,
+              style: const TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () {
+                // TODO: 上传供应商Logo
+              },
+              icon: const Icon(Icons.upload),
+              label: Text(l10n.uploadLogo),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _updateSupplierInfo(booth, nameController.text);
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateSupplierInfo(Booth booth, String supplierName) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final boothService = ref.read(boothServiceProvider);
+      await boothService.updateBooth(
+        boothId: booth.id,
+        supplierName: supplierName,
+      );
+
+      if (mounted) {
+        // 手动刷新摊位列表
+        ref.invalidate(boothsProvider);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.supplierInfoUpdated)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.uploadFailed(e.toString()))),
+        );
+      }
+    }
   }
 
   Future<void> _deleteBooth(Booth booth) async {
@@ -789,6 +873,19 @@ class _BoothCard extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
+                  if (booth.supplierName != null) ...[
+                    Text(
+                      booth.supplierName!,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                  ],
                   photosAsync.when(
                     data: (photos) => Row(
                       children: [

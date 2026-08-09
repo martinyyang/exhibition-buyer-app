@@ -212,6 +212,8 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
     required String? boothId,
     String? boothNumber,
     String? coverImageUrl,
+    String? supplierName,
+    String? supplierLogoUrl,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -221,6 +223,8 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
             #boothId: boothId,
             #boothNumber: boothNumber,
             #coverImageUrl: coverImageUrl,
+            #supplierName: supplierName,
+            #supplierLogoUrl: supplierLogoUrl,
           },
         ),
         returnValue: _i6.Future<_i2.Booth>.value(_FakeBooth_0(
@@ -232,6 +236,8 @@ class MockBoothService extends _i1.Mock implements _i5.BoothService {
               #boothId: boothId,
               #boothNumber: boothNumber,
               #coverImageUrl: coverImageUrl,
+              #supplierName: supplierName,
+              #supplierLogoUrl: supplierLogoUrl,
             },
           ),
         )),
