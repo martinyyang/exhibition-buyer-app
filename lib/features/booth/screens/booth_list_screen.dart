@@ -726,7 +726,8 @@ class _BoothCard extends ConsumerWidget {
                           errorBuilder: (context, error, stackTrace) {
                             debugPrint(
                                 '[BoothCard] Failed to load image for booth ${booth.boothNumber}');
-                            debugPrint('[BoothCard] URL: ${booth.coverImageUrl}');
+                            debugPrint(
+                                '[BoothCard] URL: ${booth.coverImageUrl}');
                             debugPrint('[BoothCard] Error: $error');
                             return _DefaultBoothImage();
                           },
@@ -741,7 +742,8 @@ class _BoothCard extends ConsumerWidget {
                             return Container(
                               color: Colors.grey[200],
                               child: const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               ),
                             );
                           },
