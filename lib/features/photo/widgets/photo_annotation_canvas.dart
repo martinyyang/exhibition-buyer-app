@@ -64,32 +64,6 @@ class PhotoAnnotationCanvas extends StatelessWidget {
               ),
             ],
           ),
-          // 删除按钮（右上角小X）
-          if (onFlagLongPress != null)
-            Positioned(
-              right: -4,
-              top: -4,
-              child: GestureDetector(
-                onTap: () => onFlagLongPress!(flag),
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 1,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.close,
-                    size: 12,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

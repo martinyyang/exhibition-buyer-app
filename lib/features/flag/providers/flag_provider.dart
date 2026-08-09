@@ -48,9 +48,25 @@ class FlagsNotifier extends StateNotifier<AsyncValue<List<Flag>>> {
           }).toList();
           state = AsyncValue.data(updatedList);
         } else if (eventType == PostgresChangeEvent.insert) {
-          // 添加新flag
+          // 添加新flag - 检查是否有临时flag需要替换
           final newFlag = Flag.fromJson(payload.newRecord);
-          final updatedList = [...currentFlags, newFlag];
+
+          // 查找是否有临时flag（id以'temp_'开头且位置相近）
+          final tempFlagIndex = currentFlags.indexWhere((f) =>
+            f.id.startsWith('temp_') &&
+            (f.positionX - newFlag.positionX).abs() < 0.01 &&
+            (f.positionY - newFlag.positionY).abs() < 0.01
+          );
+
+          List<Flag> updatedList;
+          if (tempFlagIndex != -1) {
+            // 替换临时flag
+            updatedList = [...currentFlags];
+            updatedList[tempFlagIndex] = newFlag;
+          } else {
+            // 添加新flag（没有对应的临时flag）
+            updatedList = [...currentFlags, newFlag];
+          }
           updatedList.sort((a, b) => a.number.compareTo(b.number));
           state = AsyncValue.data(updatedList);
         } else if (eventType == PostgresChangeEvent.delete) {

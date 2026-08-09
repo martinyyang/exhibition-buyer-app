@@ -129,6 +129,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       _isCreatingFlag = true;
     });
 
+    // 1. 创建临时旗子ID（在try外部，确保catch能访问）
+    final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
+
     try {
       final supabaseService = ref.read(supabaseServiceProvider);
       final userId = supabaseService.client.auth.currentUser?.id;
@@ -137,8 +140,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         throw Exception(l10n.userNotInTeam);
       }
 
-      // 1. 创建临时旗子（立即显示 - 乐观更新）
-      final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
+      // 2. 创建临时旗子（立即显示 - 乐观更新）
       final optimisticFlag = Flag(
         id: tempId,
         createdAt: DateTime.now(),
@@ -151,12 +153,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         updatedAt: DateTime.now(),
       );
 
-      // 2. 立即更新界面（无需等待网络）
+      // 3. 立即更新界面（无需等待网络）
       ref
           .read(flagsProvider(widget.photoId).notifier)
           .addOptimistic(optimisticFlag);
 
-      // 3. 异步提交到服务器
+      // 4. 异步提交到服务器
       final flagService = ref.read(flagServiceProvider);
       final realFlag = await flagService.createFlag(
         photoId: widget.photoId,
@@ -165,7 +167,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         createdBy: userId,
       );
 
-      // 4. 替换临时旗子为真实旗子（带真实编号）
+      // 5. 替换临时旗子为真实旗子（带真实编号）
+      // 注意：Realtime INSERT事件也会触发，provider会自动处理替换
       ref
           .read(flagsProvider(widget.photoId).notifier)
           .replaceOptimistic(tempId, realFlag);
@@ -176,8 +179,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         );
       }
     } catch (e) {
-      // 5. 失败回滚：移除临时旗子
-      final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
+      // 6. 失败回滚：移除临时旗子
       ref.read(flagsProvider(widget.photoId).notifier).removeOptimistic(tempId);
 
       if (mounted) {
@@ -690,31 +692,6 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                                           color: flagColor,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // 删除按钮（右上角小X）
-                                  Positioned(
-                                    right: -4,
-                                    top: -4,
-                                    child: GestureDetector(
-                                      onTap: () => _onFlagLongPress(flag),
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.close,
-                                          size: 12,
-                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
