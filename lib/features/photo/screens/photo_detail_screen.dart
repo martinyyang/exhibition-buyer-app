@@ -385,7 +385,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       // 避免新创建旗子的时间戳微小差异导致误判
       await flagService.updateFlag(
         flagId: flag.id,
-        expectedUpdatedAt: flag.buyerPriceUpdatedAt != null ? flag.updatedAt : null,
+        expectedUpdatedAt:
+            flag.buyerPriceUpdatedAt != null ? flag.updatedAt : null,
         priceRmb: price,
         priceConverted: priceConverted,
       );
