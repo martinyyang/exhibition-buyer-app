@@ -577,20 +577,34 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
 
   Future<void> _deleteBooth(Booth booth) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // 1. 乐观更新：立即从界面移除（无需等待服务器响应）
+    final eventId = ref.read(selectedEventIdProvider);
+    if (eventId != null) {
+      final userData = await ref.read(currentUserDataProvider.future);
+      final teamId = userData?.teamId;
+      if (teamId != null) {
+        ref
+            .read(boothsProvider(BoothsParams(eventId: eventId, teamId: teamId))
+                .notifier)
+            .removeOptimistic(booth.id);
+      }
+    }
+
     try {
       final boothService = ref.read(boothServiceProvider);
       await boothService.deleteBooth(booth.id);
 
       if (mounted) {
-        // 手动刷新摊位列表
-        ref.invalidate(boothsProvider);
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.boothDeletedSuccess(booth.boothNumber))),
         );
       }
     } catch (e) {
+      // 2. 删除失败时，刷新列表恢复状态
       if (mounted) {
+        ref.invalidate(boothsProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.deleteFailed(e.toString())),

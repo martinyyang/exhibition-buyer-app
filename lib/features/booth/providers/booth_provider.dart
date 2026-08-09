@@ -53,6 +53,15 @@ class BoothsNotifier extends StateNotifier<AsyncValue<List<Booth>>> {
     }
   }
 
+  /// 乐观删除：立即从本地状态移除，无需等待服务器响应
+  void removeOptimistic(String boothId) {
+    state.whenData((booths) {
+      state = AsyncValue.data(
+        booths.where((b) => b.id != boothId).toList(),
+      );
+    });
+  }
+
   @override
   void dispose() {
     if (_channel != null) {
