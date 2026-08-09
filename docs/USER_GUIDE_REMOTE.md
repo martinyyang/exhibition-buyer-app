@@ -107,6 +107,8 @@ Each flag represents one product marked by the on-site buyer:
 - **Crosshair Position**: Shows exact product location on photo
 - **Pricing Fields**: Where you enter price information
 
+**Note**: Flags are managed by the on-site buyer. Remote team members can view and edit flag data (prices, recommendations) but cannot create or delete flags.
+
 ### 4.2 Flag Information Panel
 
 Below each photo, you'll see a list of flags with columns:
@@ -415,4 +417,4 @@ For technical issues or questions:
 
 ---
 
-*Last updated: 2026-08-08*
+*Last updated: 2026-08-09*

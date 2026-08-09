@@ -72,9 +72,12 @@ As an on-site buyer, you will:
 2. Tap the **+** button (top right)
 3. The booth number is **auto-generated** (001, 002, 003...)
    - You can edit it if needed (e.g., "A15" for actual booth number)
-4. **Optional**: Tap **"Take Cover Photo"** to capture a photo of the booth
-   - This helps identify the booth visually
+4. **Optional**: Add supplier information:
+   - Tap **"Supplier Name"** field to enter the supplier's name
+   - Tap **"Take Cover Photo"** to capture a photo of the booth
 5. Tap **"Create"**
+
+**Note**: Supplier information is set at the booth level. Once created, you can edit booth details (including supplier info) by using the menu button on each booth card.
 
 ### 3.2 Batch Create Multiple Booths
 
@@ -126,15 +129,23 @@ For multiple booths, repeat the process:
 - Zoom and pan the photo for accurate placement
 - Each flag represents one product
 
-### 5.2 View Flag Details
+### 5.2 Delete Flags
+
+1. To remove a flag, use the **flag table** below the photo
+2. Locate the flag row in the table
+3. Use the delete option in the table row
+4. Confirm deletion
+
+**Notes**:
+- Flags cannot be deleted by tapping them on the photo
+- All flag management (deletion, status updates) happens in the table view
+- This separation keeps the photo view clean for marking products
+
+### 5.3 View Flag Details
 
 1. Flags are automatically synced to your remote team
 2. Remote team members can see all flags and add pricing information
-3. You can view flag details by tapping the flag number below the photo
-
----
-
-## Step 6: Monitor Remote Team Input
+3. You can view and manage flag details in the flag table below the photo
 
 ### 6.1 Check Price Conversions
 
@@ -261,4 +272,4 @@ For technical issues or questions:
 
 ---
 
-*Last updated: 2026-08-08*
+*Last updated: 2026-08-09*

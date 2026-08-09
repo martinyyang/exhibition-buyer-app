@@ -33,17 +33,33 @@
 
 ### 2026-08-09
 
+#### 旗子功能修复和优化 (commit: 33f3662, 185edb5, df3f39a, 140972d)
+- **修复旗子编号显示为 0 的问题**：
+  - 根因：Realtime INSERT 事件会添加新旗子而非替换临时旗子，导致临时旗子（number=0）和真实旗子同时存在
+  - 修复：`flag_provider.dart` 的 INSERT 事件处理器现在会检测临时旗子（ID 以 `temp_` 开头且位置接近），并替换而非追加
+  - 结果：新创建的旗子立即显示正确的序号（1, 2, 3...）
+- **修复数据库触发器错误**：
+  - 创建迁移 `supabase/migrations/20260809000002_fix_flag_number_trigger.sql`
+  - 问题：`SELECT MAX(number) ... FOR UPDATE` 导致 PostgreSQL 错误（聚合函数不允许 FOR UPDATE）
+  - 解决方案：使用 `ORDER BY number DESC LIMIT 1 FOR UPDATE` 替代 MAX，保持原子性和行锁
+  - 应用指南：`supabase/APPLY_FLAG_TRIGGER_FIX.md`
+- **移除旗子标记上的删除按钮**：
+  - 从 `photo_detail_screen.dart` 和 `photo_annotation_canvas.dart` 移除红色 X 删除按钮
+  - 删除操作仅保留在旗子列表表格中（设计决策：照片视图用于标注，列表视图用于管理）
+- **移除照片网格中的供应商信息功能**：
+  - 从 `photo_grid_screen.dart` 移除"添加供应商信息"菜单项和相关对话框
+  - 供应商信息是摊位级别属性，仅在摊位列表管理，不应在照片级别出现
+
 #### UX 改进：移除隐藏手势，全面使用可见按钮 (commit: c77a9dd, 93da8c5, 72c3927)
 - **改动**：将所有长按手势替换为可见的UI控件，降低用户认知难度
 - **受影响组件**：
   - `booth_list_screen.dart`：移除调试用的红色 URL 显示（原为临时诊断代码）
   - `event_selection_screen.dart`：事件卡片右上角添加三点菜单按钮（Icons.more_vert）
   - `photo_grid_screen.dart`：照片卡片右上角添加半透明三点菜单按钮（黑色背景 50% 透明度）
-  - `photo_detail_screen.dart`：旗子标记右上角添加红色 X 删除按钮（20x20 圆形，白色边框）
-  - `photo_annotation_canvas.dart`：旗子标记同样添加红色 X 删除按钮
+  - ~~`photo_detail_screen.dart`：旗子标记右上角添加红色 X 删除按钮（20x20 圆形，白色边框）~~（已在后续迭代中移除）
+  - ~~`photo_annotation_canvas.dart`：旗子标记同样添加红色 X 删除按钮~~（已在后续迭代中移除）
 - **设计原则**：
   - 菜单操作（编辑/删除多选）使用三点图标 (⋮)
-  - 单一删除操作使用红色 X 按钮 (❌)
   - 所有交互必须有可见UI提示，不依赖用户"发现"隐藏手势
 - **测试修复**：更新 `ux_team_experience_test.dart` 和 `team_security_invite_test.dart`，适配新的 UI 流程（BottomSheet → AlertDialog）
 
