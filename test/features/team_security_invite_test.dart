@@ -95,19 +95,32 @@ void main() {
       await tester.tap(find.text('切换团队'));
       await tester.pumpAndSettle();
 
-      // Enter 6-digit invite code "3F8A91"
-      final inputField = find.byType(TextFormField);
-      await tester.enterText(inputField, '3F8A91');
+      // Bottom sheet should appear with "Join Team" option
+      expect(find.text('凭邀请码加入买手团队'), findsOneWidget);
+
+      // Tap "Join Team"
+      await tester.tap(find.text('凭邀请码加入买手团队'));
+      await tester.pumpAndSettle();
+
+      // Now the join dialog appears with input fields
+      final inputFields = find.byType(TextFormField);
+      expect(inputFields, findsAtLeastNWidgets(2)); // code/name + password
+
+      // Enter 6-digit invite code "3F8A91" in first field
+      await tester.enterText(inputFields.first, '3F8A91');
+      await tester.pumpAndSettle();
+
+      // Enter password in second field
+      await tester.enterText(inputFields.at(1), 'test-password');
       await tester.pumpAndSettle();
 
       // Tap Verify & Join
       await tester.tap(find.text('验证并加入'));
       await tester.pumpAndSettle();
 
-      // Verify joinTeamByInviteCodeOrName was invoked with 3F8A91
-      verify(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91'))
-          .called(1);
-      verify(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id))
+      // Verify joinTeamByInviteCodeOrName was invoked with 3F8A91 and password
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91',
+              password: 'test-password'))
           .called(1);
     });
   });

@@ -133,17 +133,33 @@ void main() {
       await tester.tap(find.byIcon(Icons.swap_horiz));
       await tester.pumpAndSettle();
 
-      // Quick team dialog should pop up immediately without going to Settings
+      // Quick team bottom sheet should pop up with two options
+      expect(find.text('创建团队'), findsOneWidget);
+      expect(find.text('凭邀请码加入买手团队'), findsOneWidget);
+
+      // Tap "Join Team" option
+      await tester.tap(find.text('凭邀请码加入买手团队'));
+      await tester.pumpAndSettle();
+
+      // Now the join team dialog should appear
       expect(find.byType(AlertDialog), findsOneWidget);
 
-      final inputField = find.byType(TextFormField);
-      await tester.enterText(inputField, 'Buyer Team');
+      final inputFields = find.byType(TextFormField);
+      expect(inputFields, findsAtLeastNWidgets(2)); // code/name + password
+
+      // Enter team name in first field
+      await tester.enterText(inputFields.first, 'Buyer Team');
+      await tester.pumpAndSettle();
+
+      // Enter password in second field
+      await tester.enterText(inputFields.at(1), 'test-password');
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('验证并加入'));
       await tester.pumpAndSettle();
 
-      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team'))
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team',
+              password: 'test-password'))
           .called(1);
     });
   });
