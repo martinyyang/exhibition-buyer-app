@@ -580,7 +580,8 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
 
     // 1. 乐观更新：立即从界面移除（无需等待服务器响应）
     ref
-        .read(boothsProvider(BoothsParams(eventId: widget.eventId, teamId: booth.teamId))
+        .read(boothsProvider(
+                BoothsParams(eventId: widget.eventId, teamId: booth.teamId))
             .notifier)
         .removeOptimistic(booth.id);
 
