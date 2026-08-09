@@ -579,17 +579,10 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     // 1. 乐观更新：立即从界面移除（无需等待服务器响应）
-    final eventId = ref.read(selectedEventIdProvider);
-    if (eventId != null) {
-      final userData = await ref.read(currentUserDataProvider.future);
-      final teamId = userData?.teamId;
-      if (teamId != null) {
-        ref
-            .read(boothsProvider(BoothsParams(eventId: eventId, teamId: teamId))
-                .notifier)
-            .removeOptimistic(booth.id);
-      }
-    }
+    ref
+        .read(boothsProvider(BoothsParams(eventId: widget.eventId, teamId: booth.teamId))
+            .notifier)
+        .removeOptimistic(booth.id);
 
     try {
       final boothService = ref.read(boothServiceProvider);
