@@ -120,8 +120,7 @@ void main() {
 
       // Verify joinTeamByInviteCodeOrName was invoked with 3F8A91 and password
       verify(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91',
-              password: 'test-password'))
-          .called(1);
+          password: 'test-password')).called(1);
     });
   });
 }

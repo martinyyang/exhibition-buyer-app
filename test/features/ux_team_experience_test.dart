@@ -159,8 +159,7 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team',
-              password: 'test-password'))
-          .called(1);
+          password: 'test-password')).called(1);
     });
   });
 }
