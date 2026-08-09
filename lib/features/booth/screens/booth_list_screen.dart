@@ -714,37 +714,62 @@ class _BoothCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 封面图片区域（正方形）
-            AspectRatio(
-              aspectRatio: 1.0,
-              child: booth.coverImageUrl != null
-                  ? Image.network(
-                      booth.coverImageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        debugPrint(
-                            '[BoothCard] Failed to load image for booth ${booth.boothNumber}');
-                        debugPrint('[BoothCard] URL: ${booth.coverImageUrl}');
-                        debugPrint('[BoothCard] Error: $error');
-                        return _DefaultBoothImage();
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) {
-                          debugPrint(
-                              '[BoothCard] Image loaded successfully for booth ${booth.boothNumber}');
-                          return child;
-                        }
-                        debugPrint(
-                            '[BoothCard] Loading image for booth ${booth.boothNumber}: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes ?? "unknown"}');
-                        return Container(
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        );
-                      },
-                    )
-                  : _DefaultBoothImage(),
+            // 封面图片区域（正方形）+ 菜单按钮
+            Stack(
+              children: [
+                AspectRatio(
+                  aspectRatio: 1.0,
+                  child: booth.coverImageUrl != null
+                      ? Image.network(
+                          booth.coverImageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            debugPrint(
+                                '[BoothCard] Failed to load image for booth ${booth.boothNumber}');
+                            debugPrint('[BoothCard] URL: ${booth.coverImageUrl}');
+                            debugPrint('[BoothCard] Error: $error');
+                            return _DefaultBoothImage();
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              debugPrint(
+                                  '[BoothCard] Image loaded successfully for booth ${booth.boothNumber}');
+                              return child;
+                            }
+                            debugPrint(
+                                '[BoothCard] Loading image for booth ${booth.boothNumber}: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes ?? "unknown"}');
+                            return Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            );
+                          },
+                        )
+                      : _DefaultBoothImage(),
+                ),
+                // 菜单按钮（右上角）
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: Material(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
+                      onTap: () => onLongPress(),
+                      borderRadius: BorderRadius.circular(16),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.more_vert,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             // 信息区域（紧凑）
             Padding(
@@ -792,21 +817,6 @@ class _BoothCard extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  // DEBUG: 显示封面URL
-                  if (booth.coverImageUrl != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'URL: ${booth.coverImageUrl!.substring(0, booth.coverImageUrl!.length > 40 ? 40 : booth.coverImageUrl!.length)}...',
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: Colors.red[600],
-                          fontFamily: 'monospace',
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
                 ],
               ),
             ),
