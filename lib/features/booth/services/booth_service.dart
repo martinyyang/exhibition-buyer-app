@@ -118,7 +118,8 @@ class BoothService {
     if (boothNumber != null) updateData['booth_number'] = boothNumber;
     if (coverImageUrl != null) updateData['cover_image_url'] = coverImageUrl;
     if (supplierName != null) updateData['supplier_name'] = supplierName;
-    if (supplierLogoUrl != null) updateData['supplier_logo_url'] = supplierLogoUrl;
+    if (supplierLogoUrl != null)
+      updateData['supplier_logo_url'] = supplierLogoUrl;
 
     // 执行更新（不要在 URL 中使用 select）
     await _supabase.from('booths').update(updateData).eq('id', boothId);
