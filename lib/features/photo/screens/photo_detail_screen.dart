@@ -381,9 +381,11 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       }
 
       // 更新价格和换算价格，带冲突检测
+      // 注意：第一次更新价格（buyerPriceUpdatedAt == null）时不检测冲突
+      // 避免新创建旗子的时间戳微小差异导致误判
       await flagService.updateFlag(
         flagId: flag.id,
-        expectedUpdatedAt: flag.updatedAt,
+        expectedUpdatedAt: flag.buyerPriceUpdatedAt != null ? flag.updatedAt : null,
         priceRmb: price,
         priceConverted: priceConverted,
       );
