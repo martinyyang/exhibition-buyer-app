@@ -24,46 +24,73 @@ class PhotoAnnotationCanvas extends StatelessWidget {
     return Positioned(
       left: flag.positionX * imageSize.width - 20,
       top: flag.positionY * imageSize.height - 40,
-      child: GestureDetector(
-        onLongPress:
-            onFlagLongPress != null ? () => onFlagLongPress!(flag) : null,
-        child: Column(
-          children: [
-            // 旗子圆圈
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: flag.needsAttention ? Colors.red : Colors.blue,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Column(
+            children: [
+              // 旗子圆圈
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: flag.needsAttention ? Colors.red : Colors.blue,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    '${flag.number}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ],
+                ),
               ),
-              child: Center(
-                child: Text(
-                  '${flag.number}',
-                  style: const TextStyle(
+              // 旗杆
+              Container(
+                width: 2,
+                height: 20,
+                color: flag.needsAttention ? Colors.red : Colors.blue,
+              ),
+            ],
+          ),
+          // 删除按钮（右上角小X）
+          if (onFlagLongPress != null)
+            Positioned(
+              right: -4,
+              top: -4,
+              child: GestureDetector(
+                onTap: () => onFlagLongPress!(flag),
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 1,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 12,
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
               ),
             ),
-            // 旗杆
-            Container(
-              width: 2,
-              height: 20,
-              color: flag.needsAttention ? Colors.red : Colors.blue,
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

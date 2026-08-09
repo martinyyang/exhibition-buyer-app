@@ -586,65 +586,90 @@ class _PhotoCard extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          onLongPress: onLongPress,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
             children: [
-              Expanded(
-                child: CachedNetworkImage(
-                  imageUrl: photo.url,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      const Center(child: LoadingIndicator()),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (photo.supplierName != null)
-                      Text(
-                        photo.supplierName!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    const SizedBox(height: 4),
-                    Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: CachedNetworkImage(
+                      imageUrl: photo.url,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          const Center(child: LoadingIndicator()),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.flag, size: 14),
-                        const SizedBox(width: 4),
-                        flagCountAsync.when(
-                          data: (count) => Text(
-                            l10n.flagCount(count),
-                            style: TextStyle(
+                        if (photo.supplierName != null)
+                          Text(
+                            photo.supplierName!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
                               fontSize: 12,
-                              color: Colors.grey[600],
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          loading: () => Text(
-                            '...',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.flag, size: 14),
+                            const SizedBox(width: 4),
+                            flagCountAsync.when(
+                              data: (count) => Text(
+                                l10n.flagCount(count),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              loading: () => Text(
+                                '...',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              error: (_, __) => Text(
+                                l10n.flagCount(0),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
                             ),
-                          ),
-                          error: (_, __) => Text(
-                            l10n.flagCount(0),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+              // 菜单按钮（右上角）
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Material(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  child: InkWell(
+                    onTap: onLongPress,
+                    borderRadius: BorderRadius.circular(16),
+                    child: const Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

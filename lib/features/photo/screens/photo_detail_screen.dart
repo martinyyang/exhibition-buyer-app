@@ -632,7 +632,6 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                           // 旗子标记
                           GestureDetector(
                             key: Key('flag_marker_${flag.id}'),
-                            onLongPress: () => _onFlagLongPress(flag),
                             child: SizedBox(
                               width: 40,
                               height: 40,
@@ -691,6 +690,31 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                                           color: flagColor,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // 删除按钮（右上角小X）
+                                  Positioned(
+                                    right: -4,
+                                    top: -4,
+                                    child: GestureDetector(
+                                      onTap: () => _onFlagLongPress(flag),
+                                      child: Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.close,
+                                          size: 12,
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),

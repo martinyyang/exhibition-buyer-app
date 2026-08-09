@@ -413,7 +413,6 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                       color: event.isActive ? Colors.green.shade50 : null,
                       child: InkWell(
                         onTap: () => _onEventTap(event),
-                        onLongPress: () => _onEventLongPress(event),
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -462,7 +461,11 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                                   ],
                                 ),
                               ),
-                              const Icon(Icons.chevron_right),
+                              IconButton(
+                                icon: const Icon(Icons.more_vert, size: 20),
+                                onPressed: () => _onEventLongPress(event),
+                                tooltip: l10n.edit,
+                              ),
                             ],
                           ),
                         ),
