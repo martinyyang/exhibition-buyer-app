@@ -298,14 +298,6 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.business),
-            title: Text(l10n.addSupplierInfo),
-            onTap: () {
-              Navigator.pop(context);
-              _showSupplierDialog(photo);
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
             title: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
             onTap: () {
@@ -316,77 +308,6 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         ],
       ),
     );
-  }
-
-  void _showSupplierDialog(Photo photo) {
-    final l10n = AppLocalizations.of(context)!;
-    final nameController = TextEditingController(text: photo.supplierName);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.supplierInfo),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: l10n.supplierName,
-                hintText: l10n.supplierNameHint,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.supplierLogoOptional,
-              style: const TextStyle(fontSize: 12),
-            ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () {
-                // TODO: 上传供应商Logo
-              },
-              icon: const Icon(Icons.upload),
-              label: Text(l10n.uploadLogo),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _updateSupplierInfo(photo, nameController.text);
-            },
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _updateSupplierInfo(Photo photo, String supplierName) async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      final photoService = ref.read(photoServiceProvider);
-      await photoService.updatePhoto(
-        photoId: photo.id,
-        supplierName: supplierName,
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.supplierInfoUpdated)),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ErrorHandler.show(context, e);
-      }
-    }
   }
 
   void _confirmDeletePhoto(Photo photo) {
