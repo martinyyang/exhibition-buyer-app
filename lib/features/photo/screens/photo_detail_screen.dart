@@ -160,18 +160,15 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
 
       // 4. 异步提交到服务器
       final flagService = ref.read(flagServiceProvider);
-      final realFlag = await flagService.createFlag(
+      await flagService.createFlag(
         photoId: widget.photoId,
         positionX: x,
         positionY: y,
         createdBy: userId,
       );
 
-      // 5. 替换临时旗子为真实旗子（带真实编号）
-      // 注意：Realtime INSERT事件也会触发，provider会自动处理替换
-      ref
-          .read(flagsProvider(widget.photoId).notifier)
-          .replaceOptimistic(tempId, realFlag);
+      // 5. Realtime INSERT 事件会自动替换临时旗子为真实旗子
+      // 不需要手动调用 replaceOptimistic，避免双重添加
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
