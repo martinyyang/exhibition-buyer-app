@@ -53,10 +53,9 @@ class FlagsNotifier extends StateNotifier<AsyncValue<List<Flag>>> {
 
           // 查找是否有临时flag（id以'temp_'开头且位置相近）
           final tempFlagIndex = currentFlags.indexWhere((f) =>
-            f.id.startsWith('temp_') &&
-            (f.positionX - newFlag.positionX).abs() < 0.01 &&
-            (f.positionY - newFlag.positionY).abs() < 0.01
-          );
+              f.id.startsWith('temp_') &&
+              (f.positionX - newFlag.positionX).abs() < 0.01 &&
+              (f.positionY - newFlag.positionY).abs() < 0.01);
 
           List<Flag> updatedList;
           if (tempFlagIndex != -1) {
