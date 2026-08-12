@@ -45,10 +45,12 @@ class Team extends BaseModel {
   }
 
   /// 获取团队专属 6 位大写邀请码
+  /// 注意：邀请码需要移除 UUID 中的连字符后取前 6 位
   String get inviteCode {
-    if (id.length >= 6) {
-      return id.substring(0, 6).toUpperCase();
+    final cleanId = id.replaceAll('-', '');
+    if (cleanId.length >= 6) {
+      return cleanId.substring(0, 6).toUpperCase();
     }
-    return id.toUpperCase();
+    return cleanId.toUpperCase();
   }
 }

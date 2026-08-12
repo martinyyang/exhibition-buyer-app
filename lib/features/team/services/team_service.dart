@@ -47,47 +47,19 @@ class TeamService {
       throw Exception('Team identifier and password cannot be empty');
     }
 
-    final allTeamsResult = await _supabase.from('teams').select();
-    final allTeams =
-        (allTeamsResult as List).map((json) => Team.fromJson(json)).toList();
+    // 调用数据库函数在服务端验证密码
+    final result = await _supabase.rpc('verify_team_password', params: {
+      'p_identifier': cleanIdentifier,
+      'p_password': cleanPassword,
+    });
 
-    // 检查是否是 6 位邀请码（全大写字母/数字）
-    final isInviteCode = cleanIdentifier.length == 6 &&
-        RegExp(r'^[A-Z0-9]+$').hasMatch(cleanIdentifier.toUpperCase());
-
-    if (isInviteCode) {
-      // 按邀请码查找
-      for (final team in allTeams) {
-        if (team.inviteCode.toUpperCase() == cleanIdentifier.toUpperCase()) {
-          // 验证密码
-          if (team.password == cleanPassword) {
-            return team;
-          } else {
-            throw Exception('Incorrect password for this team');
-          }
-        }
-      }
-      throw Exception('Team not found with this invite code');
-    } else {
-      // 按团队名查找
-      final matchingTeams = allTeams
-          .where((team) =>
-              team.name.trim().toLowerCase() == cleanIdentifier.toLowerCase())
-          .toList();
-
-      if (matchingTeams.isEmpty) {
-        throw Exception('Team not found with this name');
-      }
-
-      // 找到匹配密码的团队
-      for (final team in matchingTeams) {
-        if (team.password == cleanPassword) {
-          return team;
-        }
-      }
-
-      throw Exception('Incorrect password for this team');
+    if (result == null || (result is List && result.isEmpty)) {
+      throw Exception('Team not found or incorrect password');
     }
+
+    // 数据库函数返回数组，取第一个元素
+    final teamData = result is List ? result.first : result;
+    return Team.fromJson(teamData);
   }
 
   /// 验证团队密码并返回团队信息（用于查看邀请码）
@@ -95,15 +67,23 @@ class TeamService {
     required String teamId,
     required String password,
   }) async {
-    final result = await _supabase
-        .from('teams')
-        .select()
-        .eq('id', teamId)
-        .eq('password', password)
-        .maybeSingle();
+    try {
+      // 调用数据库函数在服务端验证密码
+      final result = await _supabase.rpc('get_team_with_password', params: {
+        'p_team_id': teamId,
+        'p_password': password.trim(),
+      });
 
-    if (result == null) return null;
-    return Team.fromJson(result);
+      if (result == null || (result is List && result.isEmpty)) {
+        return null;
+      }
+
+      // 数据库函数返回数组，取第一个元素
+      final teamData = result is List ? result.first : result;
+      return Team.fromJson(teamData);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// 获取小组信息
