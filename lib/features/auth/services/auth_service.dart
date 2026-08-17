@@ -254,17 +254,12 @@ class AuthService {
       throw Exception('User not authenticated');
     }
 
-    // 创建 TeamService 实例
+    // 服务端 RPC（join_team）验证密码并原子地设置当前用户的 team_id
     final teamService = TeamService(_supabase);
-
-    // 查找并验证团队
-    final team = await teamService.joinTeamByIdentifierAndPassword(
+    await teamService.joinTeamByIdentifierAndPassword(
       identifier: identifier,
       password: password,
     );
-
-    // 更新用户的 team_id
-    await teamService.updateUserTeam(currentUser.id, team.id);
 
     // 返回更新后的用户信息
     final userDoc = await _supabase

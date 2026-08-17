@@ -77,9 +77,6 @@ void main() {
           .thenAnswer((_) async => oldTeam);
       when(() => mockTeamService.joinTeamByInviteCodeOrName('Apple Team'))
           .thenAnswer((_) async => sharedTeam);
-      when(() =>
-              mockTeamService.updateUserTeam('user-remote', 'team-shared-123'))
-          .thenAnswer((_) async {});
 
       await tester.pumpWidget(
         createTestableWidget(
@@ -99,21 +96,20 @@ void main() {
       await tester.tap(find.byIcon(Icons.edit));
       await tester.pumpAndSettle();
 
-      // Enter "Apple Team"
-      final inputField = find.byType(TextFormField);
-      await tester.enterText(inputField, 'Apple Team');
+      // Enter "Apple Team" and password
+      final inputFields = find.byType(TextFormField);
+      await tester.enterText(inputFields.first, 'Apple Team');
+      await tester.pumpAndSettle();
+      await tester.enterText(inputFields.at(1), 'test-password');
       await tester.pumpAndSettle();
 
       // Click Save
       await tester.tap(find.text('验证并加入'));
       await tester.pumpAndSettle();
 
-      // Verify joinTeamByInviteCodeOrName was called
-      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Apple Team'))
-          .called(1);
-      verify(() =>
-              mockTeamService.updateUserTeam('user-remote', 'team-shared-123'))
-          .called(1);
+      // Verify joinTeamByInviteCodeOrName was called with password
+      verify(() => mockTeamService.joinTeamByInviteCodeOrName('Apple Team',
+          password: 'test-password')).called(1);
     });
   });
 }

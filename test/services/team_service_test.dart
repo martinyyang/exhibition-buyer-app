@@ -27,51 +27,67 @@ void main() {
   });
 
   group('TeamService - 创建和获取小组', () {
-    test('createTeam 成功创建小组', () async {
+    test('createTeam 通过 RPC 成功创建小组并自动加入', () async {
       final now = DateTime.now();
 
-      when(() => mockSupabase.from('teams'))
-          .thenReturn(mockFilterBuilder as dynamic);
-      when(() => mockFilterBuilder.insert(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
-      when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
-            'id': 'team-123',
-            'name': '小组A',
-            'created_at': now.toIso8601String(),
-          });
+      when(() => mockSupabase.rpc('create_team', params: any(named: 'params')))
+          .thenAnswer((_) async => {
+                'id': 'team-123',
+                'name': '小组A',
+                'created_at': now.toIso8601String(),
+                'creator_id': 'user-1',
+              });
 
-      final result = await teamService.createTeam(name: '小组A');
+      final result = await teamService.createTeam(
+        name: '小组A',
+        password: 'secret',
+      );
 
       expect(result.id, 'team-123');
       expect(result.name, '小组A');
-      verify(() => mockFilterBuilder.insert({'name': '小组A'})).called(1);
+      verify(() => mockSupabase.rpc('create_team', params: {
+            'p_name': '小组A',
+            'p_password': 'secret',
+          })).called(1);
     });
 
-    test('getTeam 成功获取小组信息', () async {
+    test('createTeam 密码为空时抛出异常', () async {
+      expect(
+        () => teamService.createTeam(name: '小组A', password: ''),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('getTeam 成功获取小组信息（仅非敏感列）', () async {
       final now = DateTime.now();
 
       when(() => mockSupabase.from('teams'))
           .thenReturn(mockFilterBuilder as dynamic);
-      when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.select('id,name,created_at,creator_id'))
+          .thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockTransformBuilder);
-      when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
+      when(() => mockTransformBuilder.maybeSingle()).thenAnswer((_) async => {
             'id': 'team-123',
             'name': '小组A',
             'created_at': now.toIso8601String(),
+            'creator_id': 'user-1',
           });
 
       final result = await teamService.getTeam('team-123');
 
-      expect(result.id, 'team-123');
-      expect(result.name, '小组A');
-      verify(() => mockFilterBuilder.eq('id', 'team-123')).called(1);
+      expect(result?.id, 'team-123');
+      expect(result?.name, '小组A');
+      // 验证只查询非敏感列，绝不包含 password
+      verify(() => mockFilterBuilder.select('id,name,created_at,creator_id'))
+          .called(1);
     });
 
     test('getTeam 小组不存在时返回null', () async {
       when(() => mockSupabase.from('teams'))
           .thenReturn(mockFilterBuilder as dynamic);
-      when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.select('id,name,created_at,creator_id'))
+          .thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.maybeSingle())
@@ -82,7 +98,7 @@ void main() {
       expect(result, isNull);
     });
 
-    test('updateTeam 成功更新小组信息', () async {
+    test('updateTeam 成功更新小组名称', () async {
       final now = DateTime.now();
 
       when(() => mockSupabase.from('teams'))
@@ -90,11 +106,13 @@ void main() {
       when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq(any(), any()))
           .thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
+      when(() => mockFilterBuilder.select('id,name,created_at,creator_id'))
+          .thenReturn(mockTransformBuilder);
       when(() => mockTransformBuilder.single()).thenAnswer((_) async => {
             'id': 'team-123',
             'name': '小组A更新',
             'created_at': now.toIso8601String(),
+            'creator_id': 'user-1',
           });
 
       final result = await teamService.updateTeam(
@@ -108,33 +126,86 @@ void main() {
     });
   });
 
+  group('TeamService - 加入团队（服务端密码验证）', () {
+    test('joinTeamByIdentifierAndPassword 通过 RPC 验证密码并加入', () async {
+      final now = DateTime.now();
+
+      when(() => mockSupabase.rpc('join_team', params: any(named: 'params')))
+          .thenAnswer((_) async => {
+                'id': 'team-456',
+                'name': '小组B',
+                'created_at': now.toIso8601String(),
+                'creator_id': 'user-9',
+              });
+
+      final result = await teamService.joinTeamByIdentifierAndPassword(
+        identifier: '小组B',
+        password: 'pwd123',
+      );
+
+      expect(result.id, 'team-456');
+      expect(result.name, '小组B');
+      verify(() => mockSupabase.rpc('join_team', params: {
+            'p_identifier': '小组B',
+            'p_password': 'pwd123',
+          })).called(1);
+    });
+
+    test('joinTeamByInviteCodeOrName 转发到 RPC 并传递密码', () async {
+      final now = DateTime.now();
+
+      when(() => mockSupabase.rpc('join_team', params: any(named: 'params')))
+          .thenAnswer((_) async => {
+                'id': 'team-456',
+                'name': '小组B',
+                'created_at': now.toIso8601String(),
+                'creator_id': 'user-9',
+              });
+
+      final result = await teamService.joinTeamByInviteCodeOrName(
+        '3F8A91',
+        password: 'test-password',
+      );
+
+      expect(result.name, '小组B');
+      verify(() => mockSupabase.rpc('join_team', params: {
+            'p_identifier': '3F8A91',
+            'p_password': 'test-password',
+          })).called(1);
+    });
+
+    test('空标识符或密码时抛出异常', () async {
+      expect(
+        () => teamService.joinTeamByIdentifierAndPassword(
+          identifier: '  ',
+          password: 'pwd',
+        ),
+        throwsA(isA<Exception>()),
+      );
+      expect(
+        () => teamService.joinTeamByIdentifierAndPassword(
+          identifier: 'team',
+          password: '',
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('RPC 返回空时抛出团队不存在异常', () async {
+      when(() => mockSupabase.rpc('join_team', params: any(named: 'params')))
+          .thenAnswer((_) async => []);
+
+      expect(
+        () => teamService.joinTeamByIdentifierAndPassword(
+          identifier: 'ghost',
+          password: 'wrong',
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+  });
+
   group('TeamService - 成员管理', () {
-    test('addMember 成功添加成员到小组', () async {
-      when(() => mockSupabase.from('users'))
-          .thenReturn(mockFilterBuilder as dynamic);
-      when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any()))
-          .thenReturn(mockFilterBuilder);
-
-      await teamService.addMember(userId: 'user-123', teamId: 'team-456');
-
-      verify(() => mockFilterBuilder.update({'team_id': 'team-456'})).called(1);
-      verify(() => mockFilterBuilder.eq('id', 'user-123')).called(1);
-    });
-
-    test('removeMember 成功从小组移除成员', () async {
-      when(() => mockSupabase.from('users'))
-          .thenReturn(mockFilterBuilder as dynamic);
-      when(() => mockFilterBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any()))
-          .thenReturn(mockFilterBuilder);
-
-      await teamService.removeMember(userId: 'user-123');
-
-      verify(() => mockFilterBuilder.update({'team_id': null})).called(1);
-      verify(() => mockFilterBuilder.eq('id', 'user-123')).called(1);
-    });
-
     test('getTeamMembers 成功获取小组所有成员', () async {
       final now = DateTime.now();
 
@@ -192,37 +263,6 @@ void main() {
       final result = await teamService.getTeamMembers('empty-team');
 
       expect(result, isEmpty);
-    });
-  });
-
-  group('TeamService - 数据隔离验证', () {
-    test('getTeamMembers 只返回指定小组的成员', () async {
-      final now = DateTime.now();
-
-      when(() => mockSupabase.from('users'))
-          .thenReturn(mockFilterBuilder as dynamic);
-      when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any()))
-          .thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(),
-          ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => [
-            {
-              'id': 'user-1',
-              'email': 'buyer1@example.com',
-              'role': 'buyer',
-              'team_id': 'team-A',
-              'daily_color': 'green',
-              'created_at': now.toIso8601String(),
-            },
-          ]);
-
-      final result = await teamService.getTeamMembers('team-A');
-
-      expect(result.length, 1);
-      expect(result[0].teamId, 'team-A');
-      // 验证查询条件包含team_id过滤
-      verify(() => mockFilterBuilder.eq('team_id', 'team-A')).called(1);
     });
   });
 }

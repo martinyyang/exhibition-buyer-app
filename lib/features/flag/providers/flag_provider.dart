@@ -152,17 +152,6 @@ final flagProvider = FutureProvider.family<Flag?, String>((ref, flagId) async {
   return await flagService.getFlag(flagId);
 });
 
-// 需要注意的旗子数量Provider（整个团队）
-final attentionFlagsCountProvider = FutureProvider<int>((ref) async {
-  final authService = ref.watch(authServiceProvider);
-
-  final userId = authService.currentUserId;
-  if (userId == null) return 0;
-
-  // TODO: 实现获取需要注意的旗子数量
-  return 0;
-});
-
 // 单张照片的旗子数量Provider
 final photoFlagCountProvider =
     FutureProvider.family<int, String>((ref, photoId) async {

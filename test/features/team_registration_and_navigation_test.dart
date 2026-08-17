@@ -112,8 +112,6 @@ void main() {
           .thenAnswer((_) async => mockUser);
       when(() => mockTeamService.getTeam('team-123'))
           .thenAnswer((_) async => mockTeam);
-      when(() => mockTeamService.getAllTeams())
-          .thenAnswer((_) async => [mockTeam]);
 
       await tester.pumpWidget(
         createTestableWidget(
@@ -200,8 +198,6 @@ void main() {
     testWidgets(
         '4. RegisterScreen should have SafeBackButton to return to login',
         (WidgetTester tester) async {
-      when(() => mockTeamService.getAllTeams()).thenAnswer((_) async => []);
-
       await tester.pumpWidget(
         createTestableWidget(
           const RegisterScreen(),

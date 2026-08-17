@@ -5,37 +5,35 @@ import '../../auth/models/user.dart' as models;
 class TeamService {
   final SupabaseClient _supabase;
 
+  /// teams 表可安全 SELECT 的列（不含 password，配合 RLS 列级权限）
+  static const String _teamSelectColumns = 'id,name,created_at,creator_id';
+
   TeamService(this._supabase);
 
-  /// 创建新小组
-  Future<Team> createTeam(
-      {required String name, required String password}) async {
+  /// 创建新小组（服务端 RPC：创建 + 设置创建者 + 自动加入，原子操作）
+  Future<Team> createTeam({
+    required String name,
+    required String password,
+  }) async {
     if (password.isEmpty) {
       throw Exception('Password is required');
     }
 
-    final currentUser = _supabase.auth.currentUser;
-    if (currentUser == null) {
-      throw Exception('User not authenticated');
+    final result = await _supabase.rpc('create_team', params: {
+      'p_name': name.trim(),
+      'p_password': password.trim(),
+    });
+
+    if (result == null || (result is List && result.isEmpty)) {
+      throw Exception('Failed to create team');
     }
 
-    final teamData = {
-      'name': name,
-      'password': password,
-    };
-
-    final result =
-        await _supabase.from('teams').insert(teamData).select().single();
-
-    final team = Team.fromJson(result);
-
-    // 自动将创建者加入团队
-    await updateUserTeam(currentUser.id, team.id);
-
-    return team;
+    final teamData = result is List ? result.first : result;
+    return Team.fromJson(teamData);
   }
 
   /// 通过团队名或邀请码 + 密码加入团队
+  /// 服务端 RPC（join_team）会验证密码并原子地设置当前用户的 team_id
   Future<Team> joinTeamByIdentifierAndPassword({
     required String identifier,
     required String password,
@@ -47,8 +45,7 @@ class TeamService {
       throw Exception('Team identifier and password cannot be empty');
     }
 
-    // 调用数据库函数在服务端验证密码
-    final result = await _supabase.rpc('verify_team_password', params: {
+    final result = await _supabase.rpc('join_team', params: {
       'p_identifier': cleanIdentifier,
       'p_password': cleanPassword,
     });
@@ -57,7 +54,7 @@ class TeamService {
       throw Exception('Team not found or incorrect password');
     }
 
-    // 数据库函数返回数组，取第一个元素
+    // RPC 返回数组，取第一个元素
     final teamData = result is List ? result.first : result;
     return Team.fromJson(teamData);
   }
@@ -86,16 +83,19 @@ class TeamService {
     }
   }
 
-  /// 获取小组信息
+  /// 获取小组信息（仅非敏感列）
   Future<Team?> getTeam(String teamId) async {
-    final result =
-        await _supabase.from('teams').select().eq('id', teamId).maybeSingle();
+    final result = await _supabase
+        .from('teams')
+        .select(_teamSelectColumns)
+        .eq('id', teamId)
+        .maybeSingle();
 
     if (result == null) return null;
     return Team.fromJson(result);
   }
 
-  /// 更新小组信息
+  /// 更新小组名称
   Future<Team> updateTeam({
     required String teamId,
     required String name,
@@ -106,23 +106,10 @@ class TeamService {
         .from('teams')
         .update(updateData)
         .eq('id', teamId)
-        .select()
+        .select(_teamSelectColumns)
         .single();
 
     return Team.fromJson(result);
-  }
-
-  /// 添加成员到小组
-  Future<void> addMember({
-    required String userId,
-    required String teamId,
-  }) async {
-    await _supabase.from('users').update({'team_id': teamId}).eq('id', userId);
-  }
-
-  /// 从小组移除成员
-  Future<void> removeMember({required String userId}) async {
-    await _supabase.from('users').update({'team_id': null}).eq('id', userId);
   }
 
   /// 获取小组所有成员
@@ -142,32 +129,17 @@ class TeamService {
         {'last_seen': DateTime.now().toIso8601String()}).eq('id', userId);
   }
 
-  /// 更新用户的团队ID
-  Future<void> updateUserTeam(String userId, String teamId) async {
-    await _supabase.from('users').update({'team_id': teamId}).eq('id', userId);
-  }
-
-  /// 兼容方法：查找并验证团队
+  /// 兼容方法：查找并验证团队（加入团队，会设置当前用户的 team_id）
   Future<Team> findAndVerifyTeam(
       {required String identifier, required String password}) async {
     return joinTeamByIdentifierAndPassword(
         identifier: identifier, password: password);
   }
 
-  /// 兼容方法：通过邀请码或名称加入团队
+  /// 兼容方法：通过邀请码或名称加入团队（会设置当前用户的 team_id）
   Future<Team> joinTeamByInviteCodeOrName(String identifier,
       {String password = ''}) async {
     return joinTeamByIdentifierAndPassword(
         identifier: identifier, password: password);
-  }
-
-  /// 获取所有团队列表
-  Future<List<Team>> getAllTeams() async {
-    final result = await _supabase
-        .from('teams')
-        .select()
-        .order('created_at', ascending: false);
-
-    return (result as List).map((json) => Team.fromJson(json)).toList();
   }
 }

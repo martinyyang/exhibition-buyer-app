@@ -106,8 +106,6 @@ void main() {
           .thenAnswer((_) async => team1);
       when(() => mockTeamService.joinTeamByInviteCodeOrName('Buyer Team'))
           .thenAnswer((_) async => team2);
-      when(() => mockTeamService.updateUserTeam('user-remote', team2.id))
-          .thenAnswer((_) async {});
 
       await tester.pumpWidget(
         createTestableWidget(

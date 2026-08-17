@@ -70,8 +70,6 @@ void main() {
           .thenAnswer((_) async => mockUser);
       when(() => mockTeamService.joinTeamByInviteCodeOrName('3F8A91'))
           .thenAnswer((_) async => targetTeam);
-      when(() => mockTeamService.updateUserTeam('user-remote', targetTeam.id))
-          .thenAnswer((_) async {});
 
       await tester.pumpWidget(
         createTestableWidget(

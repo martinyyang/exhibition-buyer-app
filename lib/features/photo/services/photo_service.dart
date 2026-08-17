@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -279,7 +280,7 @@ class PhotoService {
       }
 
       // 对于移动端，使用 flutter_image_compress 压缩为 WebP 格式
-      if (!_isWeb()) {
+      if (!kIsWeb) {
         final result = await FlutterImageCompress.compressWithFile(
           file.path,
           quality: NetworkConfig.imageQuality,
@@ -299,15 +300,6 @@ class PhotoService {
       // 压缩失败时返回原始字节
       final bytes = await file.readAsBytes();
       return Uint8List.fromList(bytes);
-    }
-  }
-
-  /// 检测是否为Web平台
-  bool _isWeb() {
-    try {
-      return identical(0, 0.0); // Web平台特征
-    } catch (e) {
-      return false;
     }
   }
 }

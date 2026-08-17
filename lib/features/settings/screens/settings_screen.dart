@@ -189,6 +189,7 @@ class SettingsScreen extends ConsumerWidget {
     String currentTeamName,
   ) {
     final inputController = TextEditingController();
+    final passwordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -207,20 +208,43 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               Form(
                 key: formKey,
-                child: TextFormField(
-                  controller: inputController,
-                  decoration: InputDecoration(
-                    labelText: l10n.inviteCodeOrNameLabel,
-                    hintText: l10n.inviteCodeOrNameHint,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.vpn_key),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.teamCodeOrNameRequired;
-                    }
-                    return null;
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: inputController,
+                      decoration: InputDecoration(
+                        labelText: l10n.inviteCodeOrNameLabel,
+                        hintText: l10n.inviteCodeOrNameHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.vpn_key),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.teamCodeOrNameRequired;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: l10n.teamPassword,
+                        hintText: l10n.teamPasswordHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.pleaseEnterPassword;
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -238,11 +262,13 @@ class SettingsScreen extends ConsumerWidget {
 
               try {
                 final input = inputController.text.trim();
+                final password = passwordController.text.trim();
                 final teamService = ref.read(teamServiceProvider);
 
-                final team =
-                    await teamService.joinTeamByInviteCodeOrName(input);
-                await teamService.updateUserTeam(user.id, team.id);
+                final team = await teamService.joinTeamByInviteCodeOrName(
+                  input,
+                  password: password,
+                );
 
                 // 强制多重刷所有用户与团队相关的 Provider
                 ref.invalidate(currentUserDataProvider);

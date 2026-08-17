@@ -831,7 +831,6 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                   input,
                   password: password,
                 );
-                await teamService.updateUserTeam(user.id, team.id);
 
                 // 强制刷关联的用户与团队相关 Provider
                 ref.invalidate(currentUserDataProvider);

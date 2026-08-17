@@ -2,13 +2,11 @@ import '../../../core/models/base_model.dart';
 
 class Team extends BaseModel {
   final String name;
-  final String? password;
 
   Team({
     required super.id,
     required super.createdAt,
     required this.name,
-    this.password,
   });
 
   factory Team.fromJson(Map<String, dynamic> json) {
@@ -16,7 +14,6 @@ class Team extends BaseModel {
       id: json['id'] as String,
       createdAt: BaseModel.parseTimestamp(json['created_at']),
       name: json['name'] as String,
-      password: json['password'] as String?,
     );
   }
 
@@ -25,7 +22,6 @@ class Team extends BaseModel {
     return {
       'id': id,
       'name': name,
-      'password': password,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -33,14 +29,12 @@ class Team extends BaseModel {
   Team copyWith({
     String? id,
     String? name,
-    String? password,
     DateTime? createdAt,
   }) {
     return Team(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       name: name ?? this.name,
-      password: password ?? this.password,
     );
   }
 
