@@ -15,8 +15,9 @@
 --         新增 SECURITY DEFINER RPC（join_team / create_team），
 --         在服务端校验密码后原子地设置 team_id。
 --
--- 版本控制缺口: teams.creator_id、users.last_seen、public.current_user_team_id()
---   此前在生产库手动创建但从未纳入迁移文件，新环境部署会失败。此处幂等补齐。
+-- 版本控制缺口: teams.creator_id、users.last_seen、users.is_team_creator、
+--   public.current_user_team_id()
+--   此前在生产库手动创建或依赖的迁移未执行，新环境部署会失败。此处幂等补齐。
 -- ============================================
 
 -- ============================================
@@ -27,6 +28,23 @@ ALTER TABLE teams
 
 ALTER TABLE users
   ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP WITH TIME ZONE;
+
+-- is_team_creator 列（20260802020000_add_team_creator_field.sql 定义，生产库缺失）
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS is_team_creator BOOLEAN DEFAULT FALSE;
+
+-- 幂等回填：每个团队第一个加入的 remote 成员标记为团队创建者
+-- （与 20260802020000 的回填逻辑一致；仅对未标记的用户生效）
+UPDATE users u
+SET is_team_creator = TRUE
+FROM (
+  SELECT DISTINCT ON (team_id) id
+  FROM users
+  WHERE team_id IS NOT NULL AND role = 'remote'
+  ORDER BY team_id, created_at ASC
+) first_remote
+WHERE u.id = first_remote.id
+  AND u.is_team_creator = FALSE;
 
 -- ============================================
 -- 1. current_user_team_id() —— RLS 策略引用的安全函数（SECURITY DEFINER 绕过 RLS）
@@ -226,3 +244,4 @@ COMMENT ON FUNCTION public.create_team IS '创建团队并将当前用户设为�
 COMMENT ON FUNCTION public.current_user_team_id IS '获取当前认证用户的团队 ID（SECURITY DEFINER，供 RLS 策略使用）';
 COMMENT ON COLUMN teams.creator_id IS '团队创建者（第一个加入的成员）';
 COMMENT ON COLUMN users.last_seen IS '用户最后活跃时间';
+COMMENT ON COLUMN users.is_team_creator IS '是否为团队创建者（每个团队第一个加入的 remote 成员）';

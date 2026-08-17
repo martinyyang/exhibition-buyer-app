@@ -47,6 +47,11 @@ UPDATE users SET team_id = '<任意团队ID>' WHERE id = auth.uid();
 2. 复制 `supabase/migrations/20260817000001_harden_team_security.sql` 全部内容执行
 3. 确认输出无错误
 
+> **幂等重试**：全部语句均为幂等（`IF NOT EXISTS` / `CREATE OR REPLACE` / `DROP POLICY IF EXISTS`）。
+> 若之前执行失败（如 `42703: column "is_team_creator" does not exist`），无需回滚，
+> 直接重新执行本文件即可。`is_team_creator` 列会自动补齐，并按"每团队第一个 remote 成员"
+> 规则回填创建者标记。
+
 ## 验证修复生效
 
 ```sql
