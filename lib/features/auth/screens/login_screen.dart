@@ -61,7 +61,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      await authService.signIn(_emailController.text, _passwordController.text);
+      await authService.signIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
