@@ -72,34 +72,42 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         await onboardingService.hasSeenOnboarding('photo_detail');
 
     if (!hasSeenOnboarding && mounted) {
-      await showDialog(
-        context: context,
-        builder: (context) => OnboardingDialog(
-          title: '照片标注操作指南',
-          tips: const [
-            OnboardingTip(
-              icon: Icons.touch_app,
-              title: '点击照片添加旗子',
-              description: '在照片上点击任意位置即可添加旗子标记，用于标注感兴趣的商品',
-            ),
-            OnboardingTip(
-              icon: Icons.zoom_in,
-              title: '双指缩放查看细节',
-              description: '使用双指捏合手势可以放大照片，查看商品细节',
-            ),
-            OnboardingTip(
-              icon: Icons.flag,
-              title: '管理旗子标记',
-              description: '在下方的旗子列表中可以编辑备注和价格，或删除不需要的旗子',
-            ),
-          ],
-          onDismiss: () {
-            onboardingService.markOnboardingSeen('photo_detail');
-            Navigator.of(context).pop();
-          },
-        ),
-      );
+      await _showOnboarding(markAsSeen: true);
     }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '照片标注操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.touch_app,
+            title: '点击照片添加旗子',
+            description: '在照片上点击任意位置即可添加旗子标记，用于标注感兴趣的商品',
+          ),
+          OnboardingTip(
+            icon: Icons.zoom_in,
+            title: '双指缩放查看细节',
+            description: '使用双指捏合手势可以放大照片，查看商品细节',
+          ),
+          OnboardingTip(
+            icon: Icons.flag,
+            title: '管理旗子标记',
+            description: '在下方的旗子列表中可以编辑备注和价格，或删除不需要的旗子',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('photo_detail');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   @override
@@ -991,6 +999,11 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         title:
             Text(widget.isRemoteView ? l10n.annotateProducts : l10n.viewQuotes),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
           photoAsync.whenOrNull(
                 data: (photo) {
                   if (photo?.supplierName != null) {
