@@ -89,43 +89,18 @@ class FlagLayoutHelper {
     return groups;
   }
 
-  /// 计算旗子的展开布局位置
+  /// 计算旗子的展开布局位置（允许重叠）
   static List<FlagPosition> calculateLayout(List<Flag> flags) {
-    final groups = _groupFlags(flags);
-    final positions = <FlagPosition>[];
-
-    for (final group in groups) {
-      if (group.flags.length == 1) {
-        // 单个旗子，直接使用原始位置
-        final flag = group.flags.first;
-        positions.add(FlagPosition(
-          flag: flag,
-          x: flag.positionX,
-          y: flag.positionY,
-          isGrouped: false,
-          groupSize: 1,
-        ));
-      } else {
-        // 多个旗子，环形展开
-        final angleStep = 2 * pi / group.flags.length;
-
-        for (int i = 0; i < group.flags.length; i++) {
-          final angle = i * angleStep - pi / 2; // 从顶部开始（-90度）
-          final offsetX = cos(angle) * spreadRadius;
-          final offsetY = sin(angle) * spreadRadius;
-
-          positions.add(FlagPosition(
-            flag: group.flags[i],
-            x: (group.centerX + offsetX).clamp(0.0, 1.0),
-            y: (group.centerY + offsetY).clamp(0.0, 1.0),
-            isGrouped: true,
-            groupSize: group.flags.length,
-          ));
-        }
-      }
-    }
-
-    return positions;
+    // 直接返回原始位置，允许旗子重叠
+    return flags.map((flag) {
+      return FlagPosition(
+        flag: flag,
+        x: flag.positionX,
+        y: flag.positionY,
+        isGrouped: false,
+        groupSize: 1,
+      );
+    }).toList();
   }
 
   /// 获取旗子组的信息（用于显示聚合指示器）

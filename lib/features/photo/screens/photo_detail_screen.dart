@@ -568,7 +568,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                 ),
               ),
 
-              // 旗子标记（根据可见性状态显示/隐藏，自动处理重叠）
+              // 旗子标记（允许重叠）
               ...() {
                 if (_loadedImage == null) return <Widget>[];
 
@@ -593,9 +593,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                   offsetY = 0;
                 }
 
-                // 使用布局助手计算旗子位置（自动处理重叠）
+                // 直接使用原始位置，允许旗子重叠
                 final positions = FlagLayoutHelper.calculateLayout(flags);
-                final groupInfo = FlagLayoutHelper.getGroupInfo(flags);
 
                 return positions.map((position) {
                   final flag = position.flag;
@@ -604,125 +603,76 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                       ? Colors.red
                       : UserColorMapper.getColorForUser(flag.createdBy);
 
-                  // 是否显示连线（从展开位置到原始中心点）
-                  final showConnector =
-                      position.isGrouped && groupInfo.containsKey(flag.id);
-
                   return Positioned(
                     left: offsetX + position.x * displayWidth - 20,
                     top: offsetY + position.y * displayHeight - 20,
                     child: Visibility(
                       visible: _areFlagsVisible,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          // 连线到中心点（仅在分组时显示）
-                          if (showConnector)
-                            CustomPaint(
-                              painter: _FlagConnectorPainter(
-                                startX: 20,
-                                startY: 20,
-                                endX:
-                                    (groupInfo[flag.id]!.centerX - position.x) *
-                                        displayWidth,
-                                endY:
-                                    (groupInfo[flag.id]!.centerY - position.y) *
-                                        displayHeight,
-                                color: flagColor.withOpacity(0.3),
-                              ),
-                            ),
-                          // 旗子标记
-                          GestureDetector(
-                            key: Key('flag_marker_${flag.id}'),
-                            child: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: Stack(
-                                children: [
-                                  // 空心圆圈
-                                  Center(
-                                    child: Container(
-                                      width: 36,
-                                      height: 36,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: flagColor,
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // 横向十字线
-                                  Positioned(
-                                    left: 0,
-                                    right: 0,
-                                    top: 19,
-                                    child: Container(
-                                      height: 2,
+                      child: GestureDetector(
+                        key: Key('flag_marker_${flag.id}'),
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Stack(
+                            children: [
+                              // 空心圆圈
+                              Center(
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
                                       color: flagColor,
-                                    ),
-                                  ),
-                                  // 纵向十字线
-                                  Positioned(
-                                    top: 0,
-                                    bottom: 0,
-                                    left: 19,
-                                    child: Container(
                                       width: 2,
-                                      color: flagColor,
                                     ),
                                   ),
-                                  // 中心数字（带白色背景）
-                                  Center(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                      child: Text(
-                                        flag.number == 0
-                                            ? '...'
-                                            : '${flag.number}',
-                                        style: TextStyle(
-                                          color: flagColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // 分组标记（右上角显示组内数量）
-                                  if (position.isGrouped &&
-                                      position.groupSize > 1)
-                                    Positioned(
-                                      right: -2,
-                                      top: -2,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: const BoxDecoration(
-                                          color: Colors.orange,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Text(
-                                          '${position.groupSize}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 10,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
+                                ),
                               ),
-                            ),
+                              // 横向十字线
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                top: 19,
+                                child: Container(
+                                  height: 2,
+                                  color: flagColor,
+                                ),
+                              ),
+                              // 纵向十字线
+                              Positioned(
+                                top: 0,
+                                bottom: 0,
+                                left: 19,
+                                child: Container(
+                                  width: 2,
+                                  color: flagColor,
+                                ),
+                              ),
+                              // 中心数字（半透明白色背景）
+                              Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.85),
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                  child: Text(
+                                    flag.number == 0 ? '...' : '${flag.number}',
+                                    style: TextStyle(
+                                      color: flagColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   );
