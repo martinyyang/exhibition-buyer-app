@@ -60,3 +60,7 @@ flutter:
   generate: true
   assets:
     - assets/
+  fonts:
+    - family: NotoSansSC
+      fonts:
+        - asset: assets/fonts/NotoSansSC-Regular.ttf
