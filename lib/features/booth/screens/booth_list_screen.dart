@@ -11,6 +11,8 @@ import '../../event/providers/event_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 import '../../photo/providers/photo_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class BoothListScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -26,6 +28,50 @@ class BoothListScreen extends ConsumerStatefulWidget {
 
 class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   bool _isCreating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('booth_list');
+
+    if (!hasSeenOnboarding && mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) => OnboardingDialog(
+          title: '摊位管理操作指南',
+          tips: const [
+            OnboardingTip(
+              icon: Icons.add_business,
+              title: '添加摊位',
+              description: '点击右下角的 + 按钮可以创建新摊位，填写摊位编号和供应商信息',
+            ),
+            OnboardingTip(
+              icon: Icons.photo_camera,
+              title: '拍摄商品照片',
+              description: '点击摊位卡片进入照片管理页面，可以拍摄或上传商品照片',
+            ),
+            OnboardingTip(
+              icon: Icons.edit,
+              title: '编辑摊位信息',
+              description: '点击摊位卡片可以编辑摊位的基本信息和供应商详情',
+            ),
+          ],
+          onDismiss: () {
+            onboardingService.markOnboardingSeen('booth_list');
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+  }
 
   void _showCreateBoothDialog() async {
     final l10n = AppLocalizations.of(context)!;

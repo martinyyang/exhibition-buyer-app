@@ -20,6 +20,8 @@ import '../models/photo.dart';
 import '../providers/photo_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 import '../../../core/providers/last_viewed_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class PhotoDetailScreen extends ConsumerStatefulWidget {
   final String photoId;
@@ -56,11 +58,48 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
   @override
   void initState() {
     super.initState();
-    // 页面加载完成后记录查看时间
+    // 页面加载完成后记录查看时间和显示导引
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final lastViewedService = ref.read(lastViewedServiceProvider);
       lastViewedService.markPhotoAsViewed(widget.photoId);
+      _showOnboardingIfNeeded();
     });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('photo_detail');
+
+    if (!hasSeenOnboarding && mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) => OnboardingDialog(
+          title: '照片标注操作指南',
+          tips: const [
+            OnboardingTip(
+              icon: Icons.touch_app,
+              title: '点击照片添加旗子',
+              description: '在照片上点击任意位置即可添加旗子标记，用于标注感兴趣的商品',
+            ),
+            OnboardingTip(
+              icon: Icons.zoom_in,
+              title: '双指缩放查看细节',
+              description: '使用双指捏合手势可以放大照片，查看商品细节',
+            ),
+            OnboardingTip(
+              icon: Icons.flag,
+              title: '管理旗子标记',
+              description: '在下方的旗子列表中可以编辑备注和价格，或删除不需要的旗子',
+            ),
+          ],
+          onDismiss: () {
+            onboardingService.markOnboardingSeen('photo_detail');
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
   }
 
   @override

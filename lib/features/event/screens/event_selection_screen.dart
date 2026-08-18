@@ -10,6 +10,8 @@ import '../../auth/providers/auth_provider.dart';
 import '../../team/providers/team_provider.dart';
 import '../../presence/widgets/online_users_widget.dart';
 import '../../auth/models/user.dart' as app_user;
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class EventSelectionScreen extends ConsumerStatefulWidget {
   const EventSelectionScreen({super.key});
@@ -21,6 +23,50 @@ class EventSelectionScreen extends ConsumerStatefulWidget {
 
 class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   bool _isCreating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('event_selection');
+
+    if (!hasSeenOnboarding && mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) => OnboardingDialog(
+          title: '展会场次管理指南',
+          tips: const [
+            OnboardingTip(
+              icon: Icons.event_note,
+              title: '创建展会场次',
+              description: '点击右下角的 + 按钮创建新的展会场次，填写展会名称和开始日期',
+            ),
+            OnboardingTip(
+              icon: Icons.touch_app,
+              title: '进入场次管理',
+              description: '点击展会卡片进入该场次，可以管理摊位和拍摄照片',
+            ),
+            OnboardingTip(
+              icon: Icons.more_vert,
+              title: '编辑或删除场次',
+              description: '点击卡片右上角的三点菜单可以编辑或删除展会场次',
+            ),
+          ],
+          onDismiss: () {
+            onboardingService.markOnboardingSeen('event_selection');
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+  }
 
   void _showCreateEventDialog() {
     final l10n = AppLocalizations.of(context)!;

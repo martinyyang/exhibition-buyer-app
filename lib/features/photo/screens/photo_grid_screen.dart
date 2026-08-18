@@ -15,6 +15,8 @@ import '../../../shared/widgets/safe_back_button.dart';
 import '../../flag/providers/flag_provider.dart';
 import '../../booth/providers/booth_provider.dart';
 import '../providers/photo_update_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class PhotoGridScreen extends ConsumerStatefulWidget {
   final String boothId;
@@ -31,6 +33,50 @@ class PhotoGridScreen extends ConsumerStatefulWidget {
 class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   bool _isUploading = false;
   double _uploadProgress = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('photo_grid');
+
+    if (!hasSeenOnboarding && mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) => OnboardingDialog(
+          title: '照片管理操作指南',
+          tips: const [
+            OnboardingTip(
+              icon: Icons.add_a_photo,
+              title: '添加照片',
+              description: '点击右下角的相机按钮可以拍照或从相册选择照片上传',
+            ),
+            OnboardingTip(
+              icon: Icons.photo_library,
+              title: '批量上传',
+              description: '选择照片时可以一次性上传多张照片，提高工作效率',
+            ),
+            OnboardingTip(
+              icon: Icons.more_vert,
+              title: '管理照片',
+              description: '点击照片右上角的三点菜单可以删除照片',
+            ),
+          ],
+          onDismiss: () {
+            onboardingService.markOnboardingSeen('photo_grid');
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+  }
 
   Future<void> _takePhoto() async {
     // 检测是否是移动设备（包括移动浏览器）
