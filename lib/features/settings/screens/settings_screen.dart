@@ -10,6 +10,8 @@ import '../../team/providers/team_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 import '../../auth/models/user.dart' as app_user;
 import '../../event/providers/event_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -20,10 +22,22 @@ class SettingsScreen extends ConsumerWidget {
     final currentLocale = ref.watch(localeProvider);
     final userAsync = ref.watch(currentUserDataProvider);
 
+    // 显示入门引导（如果需要）
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded(context, ref);
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.settings),
         leading: const SafeBackButton(fallbackPath: '/events'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(context, ref, markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
+        ],
       ),
       body: ListView(
         children: [
@@ -114,6 +128,51 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  static Future<void> _showOnboardingIfNeeded(
+      BuildContext context, WidgetRef ref) async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('settings');
+
+    if (!context.mounted) return;
+    if (!hasSeenOnboarding) {
+      await _showOnboarding(context, ref, markAsSeen: true);
+    }
+  }
+
+  static Future<void> _showOnboarding(BuildContext context, WidgetRef ref,
+      {bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '设置页面操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.group,
+            title: '团队管理',
+            description: '查看当前团队信息、复制邀请码或切换到其他团队',
+          ),
+          OnboardingTip(
+            icon: Icons.language,
+            title: '语言设置',
+            description: '切换应用界面语言（中文/English）',
+          ),
+          OnboardingTip(
+            icon: Icons.calculate,
+            title: '价格公式',
+            description: '配置团队级别的价格转换公式和汇率设置',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref.read(onboardingServiceProvider).markOnboardingSeen('settings');
+          }
+          Navigator.of(context).pop();
+        },
       ),
     );
   }

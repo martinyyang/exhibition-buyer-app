@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -19,6 +21,58 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
   bool _isLoading = false;
   bool _emailSent = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('reset_password');
+
+    if (!hasSeenOnboarding && mounted) {
+      await _showOnboarding(markAsSeen: true);
+    }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '重置密码操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.email,
+            title: '输入注册邮箱',
+            description: '输入您注册账号时使用的邮箱地址',
+          ),
+          OnboardingTip(
+            icon: Icons.mark_email_read,
+            title: '查收重置邮件',
+            description: '系统将发送密码重置链接到您的邮箱，请检查收件箱和垃圾邮件',
+          ),
+          OnboardingTip(
+            icon: Icons.lock_reset,
+            title: '设置新密码',
+            description: '点击邮件中的链接，按照提示设置新密码',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('reset_password');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -82,6 +136,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       appBar: AppBar(
         title: const Text('重置密码'),
         leading: const SafeBackButton(fallbackPath: '/login'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(

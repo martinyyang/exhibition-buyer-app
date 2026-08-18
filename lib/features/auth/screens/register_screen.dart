@@ -7,6 +7,8 @@ import '../providers/auth_provider.dart';
 import '../../team/providers/team_provider.dart';
 
 import '../../../shared/widgets/safe_back_button.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -22,6 +24,56 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   String _selectedRole = 'buyer';
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('register');
+
+    if (!hasSeenOnboarding && mounted) {
+      await _showOnboarding(markAsSeen: true);
+    }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '注册操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.email,
+            title: '邮箱注册',
+            description: '使用有效的邮箱地址注册账号，邮箱将作为登录凭证',
+          ),
+          OnboardingTip(
+            icon: Icons.lock,
+            title: '设置安全密码',
+            description: '密码需至少8位，包含大小写字母和数字，确保账号安全',
+          ),
+          OnboardingTip(
+            icon: Icons.people,
+            title: '选择角色',
+            description: '采购员可创建团队和标注照片，远程协助者仅可查看和协助',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref.read(onboardingServiceProvider).markOnboardingSeen('register');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -174,6 +226,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       appBar: AppBar(
         title: Text(l10n.registerAccount),
         leading: const SafeBackButton(fallbackPath: '/login'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
