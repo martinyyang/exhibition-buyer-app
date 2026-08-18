@@ -44,10 +44,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '注册操作指南',
+        title: l10n.onboardingTitleRegister,
         tips: const [
           OnboardingTip(
             icon: Icons.email,
@@ -230,7 +231,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(markAsSeen: false),
-            tooltip: '查看操作指南',
+            tooltip: l10n.helpGuide,
           ),
         ],
       ),

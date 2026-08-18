@@ -434,5 +434,12 @@
     "placeholders": {
       "code": {"type": "String"}
     }
-  }
+  },
+  "helpGuide": "View Guide",
+  "onboardingTitleTeamRetrieve": "Retrieve Invite Code Guide",
+  "onboardingTitleTeamCreate": "Create Team Guide",
+  "onboardingTitleTeamSelection": "Team Selection Guide",
+  "onboardingTitleSettings": "Settings Guide",
+  "onboardingTitleRegister": "Registration Guide",
+  "onboardingTitleResetPassword": "Reset Password Guide"
 }

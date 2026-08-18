@@ -434,5 +434,12 @@
     "placeholders": {
       "code": {"type": "String"}
     }
-  }
+  },
+  "helpGuide": "查看操作指南",
+  "onboardingTitleTeamRetrieve": "找回邀请码操作指南",
+  "onboardingTitleTeamCreate": "创建团队操作指南",
+  "onboardingTitleTeamSelection": "团队选择操作指南",
+  "onboardingTitleSettings": "设置页面操作指南",
+  "onboardingTitleRegister": "注册操作指南",
+  "onboardingTitleResetPassword": "重置密码操作指南"
 }

@@ -42,10 +42,11 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
   }
 
   Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '创建团队操作指南',
+        title: l10n.onboardingTitleTeamCreate,
         tips: const [
           OnboardingTip(
             icon: Icons.business,
@@ -157,7 +158,7 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(markAsSeen: false),
-            tooltip: '查看操作指南',
+            tooltip: l10n.helpGuide,
           ),
         ],
       ),

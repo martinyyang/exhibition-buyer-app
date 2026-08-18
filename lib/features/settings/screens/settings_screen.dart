@@ -35,7 +35,7 @@ class SettingsScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(context, ref, markAsSeen: false),
-            tooltip: '查看操作指南',
+            tooltip: l10n.helpGuide,
           ),
         ],
       ),
@@ -146,10 +146,11 @@ class SettingsScreen extends ConsumerWidget {
 
   static Future<void> _showOnboarding(BuildContext context, WidgetRef ref,
       {bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '设置页面操作指南',
+        title: l10n.onboardingTitleSettings,
         tips: const [
           OnboardingTip(
             icon: Icons.group,
