@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/team_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class TeamSelectionScreen extends ConsumerStatefulWidget {
   const TeamSelectionScreen({super.key});
@@ -19,6 +21,58 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
   final _teamIdentifierController = TextEditingController();
   final _teamPasswordController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('team_selection');
+
+    if (!hasSeenOnboarding && mounted) {
+      await _showOnboarding(markAsSeen: true);
+    }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '团队选择操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.group,
+            title: '加入现有团队',
+            description: '输入团队名称或邀请码和密码，即可加入现有团队开始协作',
+          ),
+          OnboardingTip(
+            icon: Icons.group_add,
+            title: '创建新团队',
+            description: '点击底部"创建新团队"按钮，设置团队名称和密码创建自己的团队',
+          ),
+          OnboardingTip(
+            icon: Icons.vpn_key,
+            title: '团队密码保护',
+            description: '每个团队都有密码保护，确保只有授权成员可以加入',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('team_selection');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -95,6 +149,13 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
       appBar: AppBar(
         title: Text(l10n.selectTeam),
         automaticallyImplyLeading: false, // 不显示返回按钮，强制用户选择团队
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(

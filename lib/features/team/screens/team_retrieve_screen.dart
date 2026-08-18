@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/team_provider.dart';
 import '../../auth/models/team.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 /// 通过密码找回团队邀请码的界面
 class TeamRetrieveScreen extends ConsumerStatefulWidget {
@@ -19,6 +21,58 @@ class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   Team? _retrievedTeam;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('team_retrieve');
+
+    if (!hasSeenOnboarding && mounted) {
+      await _showOnboarding(markAsSeen: true);
+    }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '找回邀请码操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.security,
+            title: '安全验证',
+            description: '输入团队ID和密码进行验证，确保只有团队成员可以查看邀请码',
+          ),
+          OnboardingTip(
+            icon: Icons.vpn_key,
+            title: '获取邀请码',
+            description: '验证成功后，系统将显示6位邀请码，可复制分享给新成员',
+          ),
+          OnboardingTip(
+            icon: Icons.info_outline,
+            title: '团队ID获取',
+            description: '团队ID通常由团队创建者提供，或在团队设置中查看',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('team_retrieve');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -95,6 +149,13 @@ class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.retrieveInviteCode),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

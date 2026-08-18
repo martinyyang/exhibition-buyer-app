@@ -5,6 +5,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/team_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
+import '../../../shared/widgets/onboarding_dialog.dart';
 
 class TeamCreateScreen extends ConsumerStatefulWidget {
   const TeamCreateScreen({super.key});
@@ -20,6 +22,58 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
   bool _isLoading = false;
   String? _createdTeamId;
   String? _createdInviteCode;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  Future<void> _showOnboardingIfNeeded() async {
+    final onboardingService = ref.read(onboardingServiceProvider);
+    final hasSeenOnboarding =
+        await onboardingService.hasSeenOnboarding('team_create');
+
+    if (!hasSeenOnboarding && mounted) {
+      await _showOnboarding(markAsSeen: true);
+    }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '创建团队操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.business,
+            title: '设置团队名称',
+            description: '输入一个有意义的团队名称，方便团队成员识别',
+          ),
+          OnboardingTip(
+            icon: Icons.lock,
+            title: '设置团队密码',
+            description: '设置一个安全的密码保护您的团队，密码将用于团队成员加入验证',
+          ),
+          OnboardingTip(
+            icon: Icons.vpn_key,
+            title: '分享邀请码',
+            description: '创建成功后，将自动生成6位邀请码，分享给团队成员即可快速加入',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('team_create');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -99,6 +153,13 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.createTeam),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
