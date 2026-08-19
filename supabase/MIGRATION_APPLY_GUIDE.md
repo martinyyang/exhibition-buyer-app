@@ -2,6 +2,37 @@
 
 ## 当前待应用迁移
 
+### 20260819000003_fix_create_team_timestamp_type.sql
+
+**问题**：创建团队时报错 `PostgreSQL exception: structure of query does not match function result type, code: 42804, details: Returned type timestamp without time zone does not match expected type timestamp with time zone in column 3`
+
+**根因**：`create_team` 函数的 `RETURNS TABLE` 声明 `created_at TIMESTAMPTZ`（带时区），但 `teams` 表的 `created_at` 列实际是 `TIMESTAMP`（不带时区），导致返回类型不匹配。
+
+**修复**：将 `create_team` 函数的返回类型改为 `TIMESTAMP`（不带时区），匹配实际表结构。
+
+**应用方式**：
+
+```bash
+# 在 Supabase Dashboard > SQL Editor 中执行
+# 或使用 Supabase CLI
+supabase db push
+```
+
+**验证**：
+1. 登录生产环境
+2. 尝试创建新团队
+3. 确认能够成功创建并返回团队信息
+
+**影响范围**：`create_team` RPC 函数的返回类型
+
+**回滚**：如需回滚，执行：
+```sql
+-- 回滚到 TIMESTAMPTZ（会导致错误重现）
+CREATE OR REPLACE FUNCTION public.create_team(p_team_name TEXT, p_password TEXT)
+RETURNS TABLE (id UUID, name TEXT, created_at TIMESTAMPTZ, creator_id UUID)
+...
+```
+
 ### 20260819000001_fix_users_select_permissions.sql
 
 **问题**：登录后无法读取用户的 `team_id`，导致路由逻辑无法正确判断是否有团队。
