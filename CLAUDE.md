@@ -31,6 +31,29 @@
 
 ## 更新历史
 
+### 2026-08-19
+
+#### 修复生产环境团队读取问题 (commit: 95175d0)
+- **问题**：登录后 `currentUserDataProvider` 无法读取用户的 `team_id`，导致路由逻辑判断失败，用户无法正确进入 `/events` 页面
+- **根因**：`20260817000001_harden_team_security.sql` 安全加固时限制了 `users.team_id` 的 UPDATE 权限（防止绕过密码验证），但未明确授予 SELECT 权限
+- **修复**：创建迁移 `20260819000001_fix_users_select_permissions.sql`，明确授予 `authenticated` 角色对 `users` 表所有列的 SELECT 权限
+- **影响**：用户现在可以正常读取自己的 `team_id`，登录后能够正确路由到事件列表页面
+- **迁移文件**：`supabase/migrations/20260819000001_fix_users_select_permissions.sql`
+- **应用指南**：`supabase/MIGRATION_APPLY_GUIDE.md`
+- **重要**：生产环境需要手动应用此迁移才能修复问题
+
+### 2026-08-12
+
+#### 团队密码安全漏洞修复 (commit: 33e4abd)
+- **问题**：RLS 策略允许所有认证用户 SELECT teams 表所有列（包括密码），客户端获取所有团队数据在本地验证密码，导致所有团队密码暴露
+- **修复**：
+  - 创建数据库函数 `verify_team_password(identifier, password)` 在服务端验证密码（支持团队名或邀请码）
+  - 创建数据库函数 `get_team_with_password(team_id, password)` 用于找回邀请码场景
+  - 重构 `TeamService` 调用数据库函数而非客户端验证
+  - 修复 `Team.inviteCode` getter：移除 UUID 连字符后再取前 6 位
+- **安全影响**：团队密码不再通过 SELECT 查询暴露，所有密码验证在服务端完成
+- **迁移文件**：`supabase/migrations/20260812000001_secure_team_password.sql`
+
 ### 2026-08-09
 
 #### 旗子功能修复和优化 (commit: 33f3662, 185edb5, df3f39a, 140972d)
