@@ -33,13 +33,24 @@
 
 ### 2026-08-19
 
+#### 修复创建团队 RECORD 列访问错误 (commit: 2bff640)
+- **问题**：创建团队时报错 `PostgreSQL exception: could not identify column "id" in record data type, code: 42703`
+- **根因**：`create_team` 函数的 `RETURN QUERY SELECT (v_team).id` 无法识别 RECORD 类型中的列，PostgreSQL 不支持在 RETURN QUERY 中直接访问 RECORD 字段
+- **修复**：
+  - 改用 `RETURNING teams.id INTO v_team_id` 仅存储团队 ID 变量
+  - `RETURN QUERY` 直接从 `teams` 表 SELECT 完整数据
+  - 避免 RECORD 类型的字段访问问题
+- **影响**：创建团队功能恢复正常，返回完整的团队信息（ID、名称、创建时间、创建者ID）
+- **迁移文件**：`supabase/migrations/20260819000002_fix_create_team_return_columns.sql`
+- **应用指南**：`MIGRATION_APPLY_GUIDE.md`
+
 #### 修复生产环境团队读取问题 (commit: 95175d0)
 - **问题**：登录后 `currentUserDataProvider` 无法读取用户的 `team_id`，导致路由逻辑判断失败，用户无法正确进入 `/events` 页面
 - **根因**：`20260817000001_harden_team_security.sql` 安全加固时限制了 `users.team_id` 的 UPDATE 权限（防止绕过密码验证），但未明确授予 SELECT 权限
 - **修复**：创建迁移 `20260819000001_fix_users_select_permissions.sql`，明确授予 `authenticated` 角色对 `users` 表所有列的 SELECT 权限
 - **影响**：用户现在可以正常读取自己的 `team_id`，登录后能够正确路由到事件列表页面
 - **迁移文件**：`supabase/migrations/20260819000001_fix_users_select_permissions.sql`
-- **应用指南**：`supabase/MIGRATION_APPLY_GUIDE.md`
+- **应用指南**：`MIGRATION_APPLY_GUIDE.md`
 - **重要**：生产环境需要手动应用此迁移才能修复问题
 
 ### 2026-08-12
