@@ -38,34 +38,40 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
         await onboardingService.hasSeenOnboarding('event_selection');
 
     if (!hasSeenOnboarding && mounted) {
-      await showDialog(
-        context: context,
-        builder: (context) => OnboardingDialog(
-          title: '展会场次管理指南',
-          tips: const [
-            OnboardingTip(
-              icon: Icons.event_note,
-              title: '创建展会场次',
-              description: '点击右下角的 + 按钮创建新的展会场次，填写展会名称和开始日期',
-            ),
-            OnboardingTip(
-              icon: Icons.touch_app,
-              title: '进入场次管理',
-              description: '点击展会卡片进入该场次，可以管理摊位和拍摄照片',
-            ),
-            OnboardingTip(
-              icon: Icons.more_vert,
-              title: '编辑或删除场次',
-              description: '点击卡片右上角的三点菜单可以编辑或删除展会场次',
-            ),
-          ],
-          onDismiss: () {
-            onboardingService.markOnboardingSeen('event_selection');
-            Navigator.of(context).pop();
-          },
-        ),
-      );
+      await _showOnboarding(markAsSeen: true);
     }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '展会场次管理指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.event_note,
+            title: '创建展会场次',
+            description: '点击右下角的 + 按钮创建新的展会场次，填写展会名称和开始日期',
+          ),
+          OnboardingTip(
+            icon: Icons.touch_app,
+            title: '进入场次管理',
+            description: '点击展会卡片进入该场次，可以管理摊位和拍摄照片',
+          ),
+          OnboardingTip(
+            icon: Icons.more_vert,
+            title: '编辑或删除场次',
+            description: '点击卡片右上角的三点菜单可以编辑或删除展会场次',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref.read(onboardingServiceProvider).markOnboardingSeen('event_selection');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   void _showCreateEventDialog() {
@@ -370,6 +376,11 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       appBar: AppBar(
         title: Text(l10n.eventSelection),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showOnboarding(markAsSeen: false),
+            tooltip: '查看操作指南',
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push('/settings'),

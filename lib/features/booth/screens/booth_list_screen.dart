@@ -43,34 +43,40 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         await onboardingService.hasSeenOnboarding('booth_list');
 
     if (!hasSeenOnboarding && mounted) {
-      await showDialog(
-        context: context,
-        builder: (context) => OnboardingDialog(
-          title: '摊位管理操作指南',
-          tips: const [
-            OnboardingTip(
-              icon: Icons.add_business,
-              title: '添加摊位',
-              description: '点击右下角的 + 按钮可以创建新摊位，填写摊位编号和供应商信息',
-            ),
-            OnboardingTip(
-              icon: Icons.photo_camera,
-              title: '拍摄商品照片',
-              description: '点击摊位卡片进入照片管理页面，可以拍摄或上传商品照片',
-            ),
-            OnboardingTip(
-              icon: Icons.edit,
-              title: '编辑摊位信息',
-              description: '点击摊位卡片可以编辑摊位的基本信息和供应商详情',
-            ),
-          ],
-          onDismiss: () {
-            onboardingService.markOnboardingSeen('booth_list');
-            Navigator.of(context).pop();
-          },
-        ),
-      );
+      await _showOnboarding(markAsSeen: true);
     }
+  }
+
+  Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    await showDialog(
+      context: context,
+      builder: (context) => OnboardingDialog(
+        title: '摊位管理操作指南',
+        tips: const [
+          OnboardingTip(
+            icon: Icons.add_business,
+            title: '添加摊位',
+            description: '点击右下角的 + 按钮可以创建新摊位，填写摊位编号和供应商信息',
+          ),
+          OnboardingTip(
+            icon: Icons.photo_camera,
+            title: '拍摄商品照片',
+            description: '点击摊位卡片进入照片管理页面，可以拍摄或上传商品照片',
+          ),
+          OnboardingTip(
+            icon: Icons.edit,
+            title: '编辑摊位信息',
+            description: '点击摊位卡片可以编辑摊位的基本信息和供应商详情',
+          ),
+        ],
+        onDismiss: () {
+          if (markAsSeen) {
+            ref.read(onboardingServiceProvider).markOnboardingSeen('booth_list');
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   void _showCreateBoothDialog() async {
@@ -703,6 +709,11 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
               ],
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                onPressed: () => _showOnboarding(markAsSeen: false),
+                tooltip: '查看操作指南',
+              ),
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: _isCreating ? null : _showCreateBoothDialog,

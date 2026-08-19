@@ -33,6 +33,13 @@
 
 ### 2026-08-19
 
+#### create_team 函数返回类型修复 (commit: 7bca3bf)
+- **问题**：创建团队时报错 `structure of query does not match function result type, code: 42804, details: Returned type timestamp without time zone does not match expected type timestamp with time zone in column 3`
+- **根因**：`create_team` 函数的 `RETURNS TABLE` 声明 `created_at TIMESTAMPTZ`（带时区），但 `teams.created_at` 实际是 `TIMESTAMP`（不带时区），导致返回类型不匹配
+- **修复**：将函数返回类型改为 `TIMESTAMP`（不带时区），匹配实际表结构
+- **迁移文件**：`supabase/migrations/20260819000003_fix_create_team_timestamp_type.sql`
+- **应用指南**：`MIGRATION_APPLY_GUIDE.md`
+
 #### 修复创建团队 RECORD 列访问错误 (commit: 2bff640)
 - **问题**：创建团队时报错 `PostgreSQL exception: could not identify column "id" in record data type, code: 42703`
 - **根因**：`create_team` 函数的 `RETURN QUERY SELECT (v_team).id` 无法识别 RECORD 类型中的列，PostgreSQL 不支持在 RETURN QUERY 中直接访问 RECORD 字段

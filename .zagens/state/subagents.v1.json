@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "agents": [
+    {
+      "id": "agent_0b5425c3",
+      "agent_type": "explore",
+      "prompt": "你是代码审查员，对 Flutter 项目做只读审查（不要修改任何文件）。工作区：E:\\gemini_projects\\exhibition-buyer-app\n\n审查以下文件（用 read_file 逐个读，尽量并行）：\n- lib/features/dashboard/screens/web_dashboard_screen.dart\n- lib/features/booth/screens/booth_list_screen.dart\n- lib/features/booth/providers/booth_provider.dart\n- lib/features/event/providers/event_provider.dart\n- lib/features/event/models/event.dart\n- lib/features/booth/models/booth.dart\n- lib/features/photo/models/photo.dart\n- lib/features/flag/models/flag.dart\n- lib/features/formula/screens/formula_management_screen.dart\n- lib/features/formula/providers/formula_provider.dart\n- lib/features/formula/widgets/formula_input.dart\n- lib/features/photo/providers/photo_update_provider.dart\n- lib/features/auth/screens/login_screen.dart\n- lib/features/auth/screens/register_screen.dart\n- lib/features/auth/screens/reset_password_screen.dart\n- lib/features/splash/screens/splash_screen.dart\n\n重点找：\n1. 异步后使用 BuildContext 未检查 mounted（context 泄漏/use_build_context_synchronously lint）\n2. setState 滥用、StateNotifier 中在 dispose 后 setState\n3. Provider 泄漏：在 ConsumerState 中 ref.listen/ref.watch 用错、StreamSubscription 未取消\n4. 硬编码用户可见字符串（未走 AppLocalizations l10n）——列出来即可，标注语言（中/英）\n5. 明显的逻辑 bug（空指针风险、错误的分页、数据过滤错误）\n6. 重复代码（可提取公共 widget/service 的部分）\n7. 错误处理缺失（catch 吞异常、无用户提示）\n\n输出格式（务必精炼，每条一行）：\n[严重度: CRITICAL/HIGH/MEDIUM/LOW] file:line 描述\n最后附：总体评价（2-3 句）。不要写长分析，只列 findings。",
+      "assignment": {
+        "objective": "你是代码审查员，对 Flutter 项目做只读审查（不要修改任何文件）。工作区：E:\\gemini_projects\\exhibition-buyer-app\n\n审查以下文件（用 read_file 逐个读，尽量并行）：\n- lib/features/dashboard/screens/web_dashboard_screen.dart\n- lib/features/booth/screens/booth_list_screen.dart\n- lib/features/booth/providers/booth_provider.dart\n- lib/features/event/providers/event_provider.dart\n- lib/features/event/models/event.dart\n- lib/features/booth/models/booth.dart\n- lib/features/photo/models/photo.dart\n- lib/features/flag/models/flag.dart\n- lib/features/formula/screens/formula_management_screen.dart\n- lib/features/formula/providers/formula_provider.dart\n- lib/features/formula/widgets/formula_input.dart\n- lib/features/photo/providers/photo_update_provider.dart\n- lib/features/auth/screens/login_screen.dart\n- lib/features/auth/screens/register_screen.dart\n- lib/features/auth/screens/reset_password_screen.dart\n- lib/features/splash/screens/splash_screen.dart\n\n重点找：\n1. 异步后使用 BuildContext 未检查 mounted（context 泄漏/use_build_context_synchronously lint）\n2. setState 滥用、StateNotifier 中在 dispose 后 setState\n3. Provider 泄漏：在 ConsumerState 中 ref.listen/ref.watch 用错、StreamSubscription 未取消\n4. 硬编码用户可见字符串（未走 AppLocalizations l10n）——列出来即可，标注语言（中/英）\n5. 明显的逻辑 bug（空指针风险、错误的分页、数据过滤错误）\n6. 重复代码（可提取公共 widget/service 的部分）\n7. 错误处理缺失（catch 吞异常、无用户提示）\n\n输出格式（务必精炼，每条一行）：\n[严重度: CRITICAL/HIGH/MEDIUM/LOW] file:line 描述\n最后附：总体评价（2-3 句）。不要写长分析，只列 findings。",
+        "role": "explorer"
+      },
+      "model": "deepseek-v4-flash",
+      "nickname": "UI-review-A",
+      "status": "Completed",
+      "result": null,
+      "steps_taken": 9,
+      "duration_ms": 53956,
+      "tools_executed": 22,
+      "allowed_tools": [
+        "list_dir",
+        "read_file",
+        "grep_files",
+        "glob_files",
+        "file_search",
+        "web.run",
+        "web_search",
+        "note"
+      ],
+      "updated_at_ms": 1786970892129,
+      "session_boot_id": "boot_f5c10050-d65",
+      "completion_reason": "NaturalBreak",
+      "parent_thread_id": "thr_b96c7e4a",
+      "progress_status": "step 9/100: complete",
+      "max_steps": 100,
+      "step_timeout_ms": 600000
+    },
+    {
+      "id": "agent_19dee6a2",
+      "agent_type": "explore",
+      "prompt": "你是代码审查员，对 Flutter 项目做只读审查（不要修改任何文件）。工作区：E:\\gemini_projects\\exhibition-buyer-app\n\n审查以下文件（用 read_file 逐个读，尽量并行）：\n- lib/features/photo/screens/photo_grid_screen.dart\n- lib/features/photo/screens/photo_annotation_screen.dart\n- lib/features/photo/screens/photo_detail_screen.dart\n- lib/features/photo/widgets/photo_annotation_canvas.dart\n- lib/features/flag/widgets/flag_table.dart\n- lib/features/flag/widgets/user_color_legend.dart\n- lib/features/presence/providers/presence_provider.dart\n- lib/features/presence/mixins/presence_manager_mixin.dart\n- lib/features/presence/widgets/online_users_widget.dart\n- lib/features/presence/models/user_presence.dart\n- lib/features/flag/utils/user_color_mapper.dart\n- lib/features/settings/screens/settings_screen.dart\n- lib/features/formula/screens/formula_management_screen.dart（若已读可跳过）\n\n重点找：\n1. 异步后使用 BuildContext 未检查 mounted\n2. 旗子定位/坐标计算逻辑：photo_detail_screen 与 photo_annotation_canvas 中基于图片实际显示区域（BoxFit.contain）的计算是否正确（displayWidth/offsetX/offsetY），网格吸附实现\n3. 实时同步（realtime）channel 泄漏：订阅/取消订阅是否对称，dispose 是否正确\n4. 明显逻辑 bug（空指针、错误索引、状态不同步）\n5. 硬编码字符串（未走 l10n）\n6. 重复代码\n7. presence 心跳定时器泄漏\n\n输出格式（务必精炼，每条一行）：\n[严重度: CRITICAL/HIGH/MEDIUM/LOW] file:line 描述\n最后附：总体评价（2-3 句）。不要写长分析，只列 findings。",
+      "assignment": {
+        "objective": "你是代码审查员，对 Flutter 项目做只读审查（不要修改任何文件）。工作区：E:\\gemini_projects\\exhibition-buyer-app\n\n审查以下文件（用 read_file 逐个读，尽量并行）：\n- lib/features/photo/screens/photo_grid_screen.dart\n- lib/features/photo/screens/photo_annotation_screen.dart\n- lib/features/photo/screens/photo_detail_screen.dart\n- lib/features/photo/widgets/photo_annotation_canvas.dart\n- lib/features/flag/widgets/flag_table.dart\n- lib/features/flag/widgets/user_color_legend.dart\n- lib/features/presence/providers/presence_provider.dart\n- lib/features/presence/mixins/presence_manager_mixin.dart\n- lib/features/presence/widgets/online_users_widget.dart\n- lib/features/presence/models/user_presence.dart\n- lib/features/flag/utils/user_color_mapper.dart\n- lib/features/settings/screens/settings_screen.dart\n- lib/features/formula/screens/formula_management_screen.dart（若已读可跳过）\n\n重点找：\n1. 异步后使用 BuildContext 未检查 mounted\n2. 旗子定位/坐标计算逻辑：photo_detail_screen 与 photo_annotation_canvas 中基于图片实际显示区域（BoxFit.contain）的计算是否正确（displayWidth/offsetX/offsetY），网格吸附实现\n3. 实时同步（realtime）channel 泄漏：订阅/取消订阅是否对称，dispose 是否正确\n4. 明显逻辑 bug（空指针、错误索引、状态不同步）\n5. 硬编码字符串（未走 l10n）\n6. 重复代码\n7. presence 心跳定时器泄漏\n\n输出格式（务必精炼，每条一行）：\n[严重度: CRITICAL/HIGH/MEDIUM/LOW] file:line 描述\n最后附：总体评价（2-3 句）。不要写长分析，只列 findings。",
+        "role": "explorer"
+      },
+      "model": "deepseek-v4-flash",
+      "nickname": "UI-review-B",
+      "status": "Completed",
+      "result": "Now let me read the supporting files to verify channel subscriptions, layout helper, and flag provider behavior.",
+      "steps_taken": 6,
+      "duration_ms": 53951,
+      "tools_executed": 20,
+      "allowed_tools": [
+        "list_dir",
+        "read_file",
+        "grep_files",
+        "glob_files",
+        "file_search",
+        "web.run",
+        "web_search",
+        "note"
+      ],
+      "updated_at_ms": 1786970892129,
+      "session_boot_id": "boot_f5c10050-d65",
+      "completion_reason": "NaturalBreak",
+      "parent_thread_id": "thr_b96c7e4a",
+      "progress_status": "step 6/100: complete",
+      "max_steps": 100,
+      "step_timeout_ms": 600000
+    }
+  ]
+}

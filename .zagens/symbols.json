@@ -1,0 +1,272 @@
+{
+  "schema_version": 5,
+  "generated_at": "2026-08-17T12:18:15.730850200+00:00",
+  "files": {
+    "apply_migration.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "applyMigration",
+          "line": 15,
+          "source_mtime": 1785729247
+        }
+      ]
+    },
+    "apply_teams_fix.cjs": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "applyMigration",
+          "line": 10,
+          "source_mtime": 1785722486
+        }
+      ]
+    },
+    "check_policies.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "checkPolicies",
+          "line": 13,
+          "source_mtime": 1785729548
+        }
+      ]
+    },
+    "check_team_access.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "checkTeamAccess",
+          "line": 11,
+          "source_mtime": 1785722486
+        }
+      ]
+    },
+    "cleanup_database.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "cleanupDatabase",
+          "line": 8,
+          "source_mtime": 1785731800,
+          "calls": [
+            "listUsers"
+          ]
+        }
+      ]
+    },
+    "create_test_account.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "createTestAccount",
+          "line": 5,
+          "source_mtime": 1785895645
+        }
+      ]
+    },
+    "fix_rls_direct.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "fixRLS",
+          "line": 16,
+          "source_mtime": 1785722486
+        }
+      ]
+    },
+    "fix_rls_pgtemp.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "executeSQL",
+          "line": 30,
+          "source_mtime": 1785722486
+        }
+      ]
+    },
+    "fix_rls_policies.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "fixRLSPolicies",
+          "line": 13,
+          "source_mtime": 1785729411
+        }
+      ]
+    },
+    "fix_team_id_policy.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "fixTeamIdUpdatePolicy",
+          "line": 13,
+          "source_mtime": 1785729258
+        }
+      ]
+    },
+    "fix_users_update_simple.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "simplifyUsersUpdatePolicy",
+          "line": 13,
+          "source_mtime": 1785729453
+        }
+      ]
+    },
+    "list_users.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "listUsers",
+          "line": 11,
+          "source_mtime": 1785722486
+        }
+      ]
+    },
+    "reset_remote_password.cjs": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "resetRemotePassword",
+          "line": 9,
+          "source_mtime": 1785722487
+        }
+      ]
+    },
+    "supabase/apply_migration.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "applyMigration",
+          "line": 23,
+          "source_mtime": 1786204415
+        }
+      ]
+    },
+    "supabase/apply_teams_fix.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "applyMigration",
+          "line": 12,
+          "source_mtime": 1785722487
+        }
+      ]
+    },
+    "test_auth_flow.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "testLogin",
+          "line": 6,
+          "source_mtime": 1785895624
+        },
+        {
+          "kind": "fn",
+          "name": "testRegister",
+          "line": 29,
+          "source_mtime": 1785895624
+        },
+        {
+          "kind": "fn",
+          "name": "checkUser",
+          "line": 77,
+          "source_mtime": 1785895624,
+          "calls": [
+            "testLogin",
+            "testRegister"
+          ]
+        }
+      ]
+    },
+    "test_complete_flow.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "testCompleteFlow",
+          "line": 5,
+          "source_mtime": 1785895668
+        }
+      ]
+    },
+    "test_complete_simulation.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "simulateCompleteFlow",
+          "line": 5,
+          "source_mtime": 1785895740
+        }
+      ]
+    },
+    "test_rls_policies.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "testRLSPolicies",
+          "line": 5,
+          "source_mtime": 1785895770
+        }
+      ]
+    },
+    "test_service_role_update.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "testServiceRoleUpdate",
+          "line": 10,
+          "source_mtime": 1785729519
+        }
+      ]
+    },
+    "test_team_creation.js": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "testTeamCreation",
+          "line": 8,
+          "source_mtime": 1785729344
+        }
+      ]
+    },
+    "test_team_join_flow.cjs": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "testTeamJoinFlow",
+          "line": 16,
+          "source_mtime": 1785722487
+        },
+        {
+          "kind": "fn",
+          "name": "checkRLSPolicies",
+          "line": 100,
+          "source_mtime": 1785722487
+        },
+        {
+          "kind": "fn",
+          "name": "main",
+          "line": 121,
+          "source_mtime": 1785722487,
+          "calls": [
+            "checkRLSPolicies",
+            "testTeamJoinFlow"
+          ]
+        }
+      ]
+    },
+    "verify_and_fix_password.cjs": {
+      "symbols": [
+        {
+          "kind": "fn",
+          "name": "verifyAndFixPassword",
+          "line": 9,
+          "source_mtime": 1785722487
+        }
+      ]
+    }
+  },
+  "bridge_pairs": []
+}
