@@ -66,7 +66,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
         ],
         onDismiss: () {
           if (markAsSeen) {
-            ref.read(onboardingServiceProvider).markOnboardingSeen('event_selection');
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('event_selection');
           }
           Navigator.of(context).pop();
         },

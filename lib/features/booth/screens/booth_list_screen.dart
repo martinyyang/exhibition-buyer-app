@@ -71,7 +71,9 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
         ],
         onDismiss: () {
           if (markAsSeen) {
-            ref.read(onboardingServiceProvider).markOnboardingSeen('booth_list');
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('booth_list');
           }
           Navigator.of(context).pop();
         },

@@ -76,7 +76,9 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
         ],
         onDismiss: () {
           if (markAsSeen) {
-            ref.read(onboardingServiceProvider).markOnboardingSeen('photo_grid');
+            ref
+                .read(onboardingServiceProvider)
+                .markOnboardingSeen('photo_grid');
           }
           Navigator.of(context).pop();
         },
