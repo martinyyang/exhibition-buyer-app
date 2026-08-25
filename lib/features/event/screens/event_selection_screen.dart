@@ -77,8 +77,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   }
 
   void _showCreateEventDialog() {
-    // ignore: avoid_print
-    print('DEBUG: _showCreateEventDialog called, mounted=$mounted');
+    debugPrint('DEBUG BTN: _showCreateEventDialog called, mounted=$mounted');
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
     final formKey = GlobalKey<FormState>();
@@ -457,9 +456,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                             onPressed: _isCreating
                                 ? null
                                 : () {
-                                    // ignore: avoid_print
-                                    print(
-                                        'DEBUG: Create New Event button pressed, _isCreating=$_isCreating, mounted=$mounted');
+                                    debugPrint(
+                                        'DEBUG BTN: Create New Event pressed, isCreating=$_isCreating, mounted=$mounted');
                                     _showCreateEventDialog();
                                   },
                           ),
