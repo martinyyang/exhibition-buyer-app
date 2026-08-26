@@ -622,18 +622,21 @@ class _PhotoCard extends ConsumerWidget {
               Positioned(
                 top: 4,
                 right: 4,
-                child: Material(
-                  color: Colors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  child: InkWell(
-                    onTap: onLongPress,
+                child: Tooltip(
+                  message: l10n.delete,
+                  child: Material(
+                    color: Colors.black.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(16),
-                    child: const Padding(
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.more_vert,
-                        size: 16,
-                        color: Colors.white,
+                    child: InkWell(
+                      onTap: onLongPress,
+                      borderRadius: BorderRadius.circular(16),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.more_vert,
+                          size: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),

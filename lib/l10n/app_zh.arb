@@ -81,6 +81,8 @@
   "supplierInfo": "供应商信息",
   "supplierName": "供应商名称",
   "supplierNameHint": "例如：LV专柜",
+  "editSupplierName": "编辑供应商名称",
+  "supplierNameUpdated": "供应商名称已更新",
   "supplierLogoOptional": "供应商Logo（可选）",
   "uploadLogo": "上传Logo",
   "changeCover": "更换封面",
@@ -350,6 +352,8 @@
       "error": {"type": "String"}
     }
   },
+  "priceSaved": "价格已保存",
+  "targetPriceSaved": "目标价格已保存",
   "cameraButton": "拍照",
   "uploadPhotoButton": "上传照片",
   "takePhotoAction": "拍照",

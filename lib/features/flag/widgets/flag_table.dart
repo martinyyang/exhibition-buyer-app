@@ -142,11 +142,11 @@ class _FlagTableState extends State<FlagTable> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          headingRowHeight: isMobile ? 32 : 56,
-          dataRowHeight: isMobile ? 40 : 56,
+          headingRowHeight: isMobile ? 32 : 48,
+          dataRowHeight: isMobile ? 40 : 48,
           headingRowColor: MaterialStateProperty.all(Colors.grey[100]),
-          columnSpacing: isMobile ? 12 : 32,
-          horizontalMargin: isMobile ? 8 : 16,
+          columnSpacing: isMobile ? 10 : 16,
+          horizontalMargin: isMobile ? 8 : 12,
           columns: [
             DataColumn(
               label: Text(
@@ -244,7 +244,7 @@ class _FlagTableState extends State<FlagTable> {
                 if (!widget.isRemoteView)
                   DataCell(
                     SizedBox(
-                      width: isMobile ? 70 : 100,
+                      width: isMobile ? 60 : 80,
                       child: TextField(
                         controller: _priceControllers[flag.id],
                         keyboardType: TextInputType.number,
@@ -274,7 +274,7 @@ class _FlagTableState extends State<FlagTable> {
                 if (widget.isRemoteView)
                   DataCell(
                     SizedBox(
-                      width: isMobile ? 70 : 100,
+                      width: isMobile ? 60 : 80,
                       child: TextField(
                         controller: _priceControllers[flag.id],
                         keyboardType: TextInputType.number,
@@ -326,7 +326,7 @@ class _FlagTableState extends State<FlagTable> {
                 if (widget.isRemoteView)
                   DataCell(
                     SizedBox(
-                      width: isMobile ? 70 : 100,
+                      width: isMobile ? 60 : 80,
                       child: TextField(
                         controller: _targetPriceControllers[flag.id],
                         keyboardType: TextInputType.number,

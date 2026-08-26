@@ -22,6 +22,7 @@ import '../../../shared/widgets/safe_back_button.dart';
 import '../../../core/providers/last_viewed_provider.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
+import '../../../core/utils/error_handler.dart';
 
 class PhotoDetailScreen extends ConsumerStatefulWidget {
   final String photoId;
@@ -438,6 +439,15 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         priceRmb: price,
         priceConverted: priceConverted,
       );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.priceSaved),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
     } on FlagConflictException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -474,6 +484,15 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
             flag.targetPriceUpdatedAt != null ? flag.updatedAt : null,
         targetPrice: targetPrice,
       );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.targetPriceSaved),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
     } on FlagConflictException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -575,6 +594,60 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
         );
+      }
+    }
+  }
+
+  Future<void> _editSupplierName(Photo photo) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: photo.supplierName ?? '');
+
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.editSupplierName),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: l10n.supplierName,
+            hintText: l10n.supplierNameHint,
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+
+    if (newName == null || newName.isEmpty) return;
+    if (newName == photo.supplierName) return;
+
+    try {
+      final photoService = ref.read(photoServiceProvider);
+      await photoService.updatePhoto(
+        photoId: photo.id,
+        supplierName: newName,
+      );
+
+      // 刷新照片信息
+      ref.invalidate(photoProvider(widget.photoId));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.supplierNameUpdated)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.show(context, e);
       }
     }
   }
@@ -1013,9 +1086,25 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Center(
-                        child: Text(
-                          photo!.supplierName!,
-                          style: const TextStyle(fontSize: 14),
+                        child: InkWell(
+                          onTap: () => _editSupplierName(photo!),
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  photo!.supplierName!,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.edit,
+                                    size: 14, color: Colors.grey),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     );

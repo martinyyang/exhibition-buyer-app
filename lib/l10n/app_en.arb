@@ -81,6 +81,8 @@
   "supplierInfo": "Supplier Information",
   "supplierName": "Supplier Name",
   "supplierNameHint": "e.g., LV Counter",
+  "editSupplierName": "Edit Supplier Name",
+  "supplierNameUpdated": "Supplier name updated",
   "supplierLogoOptional": "Supplier Logo (Optional)",
   "uploadLogo": "Upload Logo",
   "changeCover": "Change Cover",
@@ -350,6 +352,8 @@
       "error": {"type": "String"}
     }
   },
+  "priceSaved": "Price saved",
+  "targetPriceSaved": "Target price saved",
   "cameraButton": "Camera",
   "uploadPhotoButton": "Upload Photo",
   "takePhotoAction": "Take Photo",
