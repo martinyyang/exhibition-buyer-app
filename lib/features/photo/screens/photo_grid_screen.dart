@@ -558,7 +558,7 @@ class _PhotoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final flagCountAsync = ref.watch(photoFlagCountProvider(photo.id));
+    final flagCount = ref.watch(photoFlagCountProvider(photo.id));
     final hasUpdatesAsync = ref.watch(photoHasUpdatesProvider(photo.id));
 
     return Badge(
@@ -604,27 +604,11 @@ class _PhotoCard extends ConsumerWidget {
                           children: [
                             const Icon(Icons.flag, size: 14),
                             const SizedBox(width: 4),
-                            flagCountAsync.when(
-                              data: (count) => Text(
-                                l10n.flagCount(count),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              loading: () => Text(
-                                '...',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              error: (_, __) => Text(
-                                l10n.flagCount(0),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
+                            Text(
+                              l10n.flagCount(flagCount),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
                               ),
                             ),
                           ],

@@ -467,9 +467,11 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
     final l10n = AppLocalizations.of(context)!;
     try {
       final flagService = ref.read(flagServiceProvider);
+      // 第一次更新目标价格时不检测冲突，避免与买家价格更新冲突
       await flagService.updateFlag(
         flagId: flag.id,
-        expectedUpdatedAt: flag.updatedAt,
+        expectedUpdatedAt:
+            flag.targetPriceUpdatedAt != null ? flag.updatedAt : null,
         targetPrice: targetPrice,
       );
     } on FlagConflictException catch (e) {

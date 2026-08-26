@@ -141,6 +141,12 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
             TextButton(
               onPressed: () {
                 if (formKey.currentState!.validate()) {
+                  if (startDate == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.pleaseSelectStartDate)),
+                    );
+                    return;
+                  }
                   Navigator.of(context).pop();
                   _createEvent(nameController.text, startDate);
                 }

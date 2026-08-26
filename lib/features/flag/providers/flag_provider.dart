@@ -152,10 +152,9 @@ final flagProvider = FutureProvider.family<Flag?, String>((ref, flagId) async {
   return await flagService.getFlag(flagId);
 });
 
-// 单张照片的旗子数量Provider
+// 单张照片的旗子数量Provider - 依赖 flagsProvider，支持实时同步和自动刷新
 final photoFlagCountProvider =
-    FutureProvider.family<int, String>((ref, photoId) async {
-  final flagService = ref.watch(flagServiceProvider);
-  final flags = await flagService.getFlags(photoId);
-  return flags.length;
+    Provider.family<int, String>((ref, photoId) {
+  final flagsAsync = ref.watch(flagsProvider(photoId));
+  return flagsAsync.valueOrNull?.length ?? 0;
 });
