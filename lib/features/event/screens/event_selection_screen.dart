@@ -77,7 +77,6 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   }
 
   void _showCreateEventDialog() {
-    debugPrint('DEBUG BTN: _showCreateEventDialog called, mounted=$mounted');
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
     final formKey = GlobalKey<FormState>();
@@ -442,30 +441,19 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          Listener(
-                            onPointerDown: (event) {
-                              debugPrint(
-                                  'DEBUG LISTENER: pointer down at (${event.position.dx}, ${event.position.dy}), local=(${event.localPosition.dx}, ${event.localPosition.dy})');
-                            },
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.add_circle_outline),
-                              label: Text(l10n.createNewEvent),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green.shade600,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 14,
-                                ),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.add_circle_outline),
+                            label: Text(l10n.createNewEvent),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 14,
                               ),
-                              onPressed: _isCreating
-                                  ? null
-                                  : () {
-                                      debugPrint(
-                                          'DEBUG BTN: Create New Event pressed, isCreating=$_isCreating, mounted=$mounted');
-                                      _showCreateEventDialog();
-                                    },
                             ),
+                            onPressed:
+                                _isCreating ? null : _showCreateEventDialog,
                           ),
                         ],
                       ),
