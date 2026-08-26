@@ -53,25 +53,26 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '照片管理操作指南',
-        tips: const [
+        title: l10n.onboardingTitlePhotoGrid,
+        tips: [
           OnboardingTip(
             icon: Icons.add_a_photo,
-            title: '添加照片',
-            description: '点击右下角的相机按钮可以拍照或从相册选择照片上传',
+            title: l10n.onboardingPhotoGridTip1Title,
+            description: l10n.onboardingPhotoGridTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.photo_library,
-            title: '批量上传',
-            description: '选择照片时可以一次性上传多张照片，提高工作效率',
+            title: l10n.onboardingPhotoGridTip2Title,
+            description: l10n.onboardingPhotoGridTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.more_vert,
-            title: '管理照片',
-            description: '点击照片右上角的三点菜单可以删除照片',
+            title: l10n.onboardingPhotoGridTip3Title,
+            description: l10n.onboardingPhotoGridTip3Desc,
           ),
         ],
         onDismiss: () {

@@ -47,21 +47,21 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
       context: context,
       builder: (context) => OnboardingDialog(
         title: l10n.onboardingTitleTeamCreate,
-        tips: const [
+        tips: [
           OnboardingTip(
             icon: Icons.business,
-            title: '设置团队名称',
-            description: '输入一个有意义的团队名称，方便团队成员识别',
+            title: l10n.onboardingTeamCreateTip1Title,
+            description: l10n.onboardingTeamCreateTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.lock,
-            title: '设置团队密码',
-            description: '设置一个安全的密码保护您的团队，密码将用于团队成员加入验证',
+            title: l10n.onboardingTeamCreateTip2Title,
+            description: l10n.onboardingTeamCreateTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.vpn_key,
-            title: '分享邀请码',
-            description: '创建成功后，将自动生成6位邀请码，分享给团队成员即可快速加入',
+            title: l10n.onboardingTeamCreateTip3Title,
+            description: l10n.onboardingTeamCreateTip3Desc,
           ),
         ],
         onDismiss: () {

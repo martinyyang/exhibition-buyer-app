@@ -49,21 +49,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       context: context,
       builder: (context) => OnboardingDialog(
         title: l10n.onboardingTitleRegister,
-        tips: const [
+        tips: [
           OnboardingTip(
             icon: Icons.email,
-            title: '邮箱注册',
-            description: '使用有效的邮箱地址注册账号，邮箱将作为登录凭证',
+            title: l10n.onboardingRegisterTip1Title,
+            description: l10n.onboardingRegisterTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.lock,
-            title: '设置安全密码',
-            description: '密码需至少8位，包含大小写字母和数字，确保账号安全',
+            title: l10n.onboardingRegisterTip2Title,
+            description: l10n.onboardingRegisterTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.people,
-            title: '选择角色',
-            description: '采购员可创建团队和标注照片，远程协助者仅可查看和协助',
+            title: l10n.onboardingRegisterTip3Title,
+            description: l10n.onboardingRegisterTip3Desc,
           ),
         ],
         onDismiss: () {

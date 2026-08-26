@@ -48,25 +48,26 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   }
 
   Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '摊位管理操作指南',
-        tips: const [
+        title: l10n.onboardingTitleBoothList,
+        tips: [
           OnboardingTip(
             icon: Icons.add_business,
-            title: '添加摊位',
-            description: '点击右下角的 + 按钮可以创建新摊位，填写摊位编号和供应商信息',
+            title: l10n.onboardingBoothTip1Title,
+            description: l10n.onboardingBoothTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.photo_camera,
-            title: '拍摄商品照片',
-            description: '点击摊位卡片进入照片管理页面，可以拍摄或上传商品照片',
+            title: l10n.onboardingBoothTip2Title,
+            description: l10n.onboardingBoothTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.edit,
-            title: '编辑摊位信息',
-            description: '点击摊位卡片可以编辑摊位的基本信息和供应商详情',
+            title: l10n.onboardingBoothTip3Title,
+            description: l10n.onboardingBoothTip3Desc,
           ),
         ],
         onDismiss: () {

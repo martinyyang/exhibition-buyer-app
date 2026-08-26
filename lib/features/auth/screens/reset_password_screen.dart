@@ -46,21 +46,21 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       context: context,
       builder: (context) => OnboardingDialog(
         title: l10n.onboardingTitleResetPassword,
-        tips: const [
+        tips: [
           OnboardingTip(
             icon: Icons.email,
-            title: '输入注册邮箱',
-            description: '输入您注册账号时使用的邮箱地址',
+            title: l10n.onboardingResetPwdTip1Title,
+            description: l10n.onboardingResetPwdTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.mark_email_read,
-            title: '查收重置邮件',
-            description: '系统将发送密码重置链接到您的邮箱，请检查收件箱和垃圾邮件',
+            title: l10n.onboardingResetPwdTip2Title,
+            description: l10n.onboardingResetPwdTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.lock_reset,
-            title: '设置新密码',
-            description: '点击邮件中的链接，按照提示设置新密码',
+            title: l10n.onboardingResetPwdTip3Title,
+            description: l10n.onboardingResetPwdTip3Desc,
           ),
         ],
         onDismiss: () {

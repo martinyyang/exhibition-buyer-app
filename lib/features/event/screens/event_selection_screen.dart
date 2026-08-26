@@ -43,25 +43,26 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
   }
 
   Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '展会场次管理指南',
-        tips: const [
+        title: l10n.onboardingTitleEventSelection,
+        tips: [
           OnboardingTip(
             icon: Icons.event_note,
-            title: '创建展会场次',
-            description: '点击右下角的 + 按钮创建新的展会场次，填写展会名称和开始日期',
+            title: l10n.onboardingEventTip1Title,
+            description: l10n.onboardingEventTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.touch_app,
-            title: '进入场次管理',
-            description: '点击展会卡片进入该场次，可以管理摊位和拍摄照片',
+            title: l10n.onboardingEventTip2Title,
+            description: l10n.onboardingEventTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.more_vert,
-            title: '编辑或删除场次',
-            description: '点击卡片右上角的三点菜单可以编辑或删除展会场次',
+            title: l10n.onboardingEventTip3Title,
+            description: l10n.onboardingEventTip3Desc,
           ),
         ],
         onDismiss: () {

@@ -46,21 +46,21 @@ class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
       context: context,
       builder: (context) => OnboardingDialog(
         title: l10n.onboardingTitleTeamRetrieve,
-        tips: const [
+        tips: [
           OnboardingTip(
             icon: Icons.security,
-            title: '安全验证',
-            description: '输入团队ID和密码进行验证，确保只有团队成员可以查看邀请码',
+            title: l10n.onboardingTeamRetrieveTip1Title,
+            description: l10n.onboardingTeamRetrieveTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.vpn_key,
-            title: '获取邀请码',
-            description: '验证成功后，系统将显示6位邀请码，可复制分享给新成员',
+            title: l10n.onboardingTeamRetrieveTip2Title,
+            description: l10n.onboardingTeamRetrieveTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.info_outline,
-            title: '团队ID获取',
-            description: '团队ID通常由团队创建者提供，或在团队设置中查看',
+            title: l10n.onboardingTeamRetrieveTip3Title,
+            description: l10n.onboardingTeamRetrieveTip3Desc,
           ),
         ],
         onDismiss: () {

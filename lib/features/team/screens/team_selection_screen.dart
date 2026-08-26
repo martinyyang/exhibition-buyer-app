@@ -46,21 +46,21 @@ class _TeamSelectionScreenState extends ConsumerState<TeamSelectionScreen> {
       context: context,
       builder: (context) => OnboardingDialog(
         title: l10n.onboardingTitleTeamSelection,
-        tips: const [
+        tips: [
           OnboardingTip(
             icon: Icons.group,
-            title: '加入现有团队',
-            description: '输入团队名称或邀请码和密码，即可加入现有团队开始协作',
+            title: l10n.onboardingTeamSelTip1Title,
+            description: l10n.onboardingTeamSelTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.group_add,
-            title: '创建新团队',
-            description: '点击底部"创建新团队"按钮，设置团队名称和密码创建自己的团队',
+            title: l10n.onboardingTeamSelTip2Title,
+            description: l10n.onboardingTeamSelTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.vpn_key,
-            title: '团队密码保护',
-            description: '每个团队都有密码保护，确保只有授权成员可以加入',
+            title: l10n.onboardingTeamSelTip3Title,
+            description: l10n.onboardingTeamSelTip3Desc,
           ),
         ],
         onDismiss: () {

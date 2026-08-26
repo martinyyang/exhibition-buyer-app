@@ -77,25 +77,26 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
   }
 
   Future<void> _showOnboarding({bool markAsSeen = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => OnboardingDialog(
-        title: '照片标注操作指南',
-        tips: const [
+        title: l10n.onboardingTitlePhotoDetail,
+        tips: [
           OnboardingTip(
             icon: Icons.touch_app,
-            title: '点击照片添加旗子',
-            description: '在照片上点击任意位置即可添加旗子标记，用于标注感兴趣的商品',
+            title: l10n.onboardingPhotoDetailTip1Title,
+            description: l10n.onboardingPhotoDetailTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.zoom_in,
-            title: '双指缩放查看细节',
-            description: '使用双指捏合手势可以放大照片，查看商品细节',
+            title: l10n.onboardingPhotoDetailTip2Title,
+            description: l10n.onboardingPhotoDetailTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.flag,
-            title: '管理旗子标记',
-            description: '在下方的旗子列表中可以编辑备注和价格，或删除不需要的旗子',
+            title: l10n.onboardingPhotoDetailTip3Title,
+            description: l10n.onboardingPhotoDetailTip3Desc,
           ),
         ],
         onDismiss: () {

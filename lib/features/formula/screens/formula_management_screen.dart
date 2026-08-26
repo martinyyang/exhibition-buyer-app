@@ -55,7 +55,7 @@ class FormulaManagementScreen extends ConsumerWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Only the team creator can modify the exchange formula.',
+                            l10n.formulaCreatorOnlyWarning,
                             style: TextStyle(
                               color: Colors.orange.shade900,
                               fontSize: 14,

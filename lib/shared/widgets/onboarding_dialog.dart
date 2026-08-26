@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OnboardingTip {
   final IconData icon;
@@ -48,7 +49,7 @@ class OnboardingDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onDismiss,
-          child: const Text('知道了'),
+          child: Text(AppLocalizations.of(context)!.onboardingGotIt),
         ),
       ],
     );

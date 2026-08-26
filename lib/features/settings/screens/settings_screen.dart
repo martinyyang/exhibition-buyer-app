@@ -151,21 +151,21 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       builder: (context) => OnboardingDialog(
         title: l10n.onboardingTitleSettings,
-        tips: const [
+        tips: [
           OnboardingTip(
             icon: Icons.group,
-            title: '团队管理',
-            description: '查看当前团队信息、复制邀请码或切换到其他团队',
+            title: l10n.onboardingSettingsTip1Title,
+            description: l10n.onboardingSettingsTip1Desc,
           ),
           OnboardingTip(
             icon: Icons.language,
-            title: '语言设置',
-            description: '切换应用界面语言（中文/English）',
+            title: l10n.onboardingSettingsTip2Title,
+            description: l10n.onboardingSettingsTip2Desc,
           ),
           OnboardingTip(
             icon: Icons.calculate,
-            title: '价格公式',
-            description: '配置团队级别的价格转换公式和汇率设置',
+            title: l10n.onboardingSettingsTip3Title,
+            description: l10n.onboardingSettingsTip3Desc,
           ),
         ],
         onDismiss: () {
