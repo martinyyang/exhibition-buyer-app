@@ -132,6 +132,7 @@
       "error": {"type": "String"}
     }
   },
+  "changeLogo": "更换Logo",
   "addFailed": "添加失败: {error}",
   "@addFailed": {
     "placeholders": {
@@ -185,6 +186,8 @@
       "eventName": {"type": "String"}
     }
   },
+  "editEvent": "编辑场次",
+  "eventUpdatedSuccess": "场次已更新",
   "boothDeletedSuccess": "已删除摊位\"{boothNumber}\"",
   "@boothDeletedSuccess": {
     "placeholders": {
@@ -222,6 +225,27 @@
       "count": {"type": "int"}
     }
   },
+  "forgotPassword": "忘记密码？",
+  "sendResetEmailFailed": "发送重置邮件失败: {error}",
+  "@sendResetEmailFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "resetPasswordTitle": "重置密码",
+  "forgotPasswordTitle": "忘记密码？",
+  "resetPasswordHint": "输入您的注册邮箱，我们将发送密码重置链接",
+  "sendResetEmail": "发送重置邮件",
+  "backToLogin": "返回登录",
+  "emailSentTitle": "邮件已发送！",
+  "resetEmailSentMessage": "我们已向 {email} 发送了密码重置链接。\n\n请检查您的邮箱并点击链接重置密码。",
+  "@resetEmailSentMessage": {
+    "placeholders": {
+      "email": {"type": "String"}
+    }
+  },
+  "resend": "重新发送",
+  "flagModifiedByOther": "此旗子已被他人修改，请刷新后重试",
   "flagCount": "{count, plural, =0{0个旗子} =1{1个旗子} other{{count}个旗子}}",
   "@flagCount": {
     "placeholders": {
@@ -365,6 +389,52 @@
     }
   },
   "resetView": "重置视图",
+  "viewGuide": "查看操作指南",
+  "zoomIn": "放大",
+  "zoomOut": "缩小",
+  "hideFlags": "隐藏旗子",
+  "showFlags": "显示旗子",
+  "refresh": "刷新",
+  "takeCoverPhoto": "拍摄封面（可选）",
+  "retakeCoverPhoto": "重新拍摄",
+  "onlineStatusSingle": "{name} 在线",
+  "@onlineStatusSingle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "onlineStatusFew": "{names} 在线",
+  "@onlineStatusFew": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "onlineStatusMany": "{names} 等 {count} 人在线",
+  "@onlineStatusMany": {
+    "placeholders": {
+      "names": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "viewingSingle": "{name} 正在查看",
+  "@viewingSingle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "viewingTwo": "{names} 正在查看",
+  "@viewingTwo": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "viewingMany": "{names} 等 {count} 人正在查看",
+  "@viewingMany": {
+    "placeholders": {
+      "names": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
   "formulaCalculationError": "公式错误: {error}",
   "@formulaCalculationError": {
     "placeholders": {

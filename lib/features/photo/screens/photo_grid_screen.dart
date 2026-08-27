@@ -435,7 +435,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(markAsSeen: false),
-            tooltip: '查看操作指南',
+            tooltip: l10n.helpGuide,
           ),
         ],
       ),

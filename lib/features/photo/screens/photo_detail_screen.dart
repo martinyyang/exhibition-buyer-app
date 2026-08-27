@@ -452,10 +452,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.message),
+            content: Text(l10n.flagModifiedByOther),
             backgroundColor: Colors.orange,
             action: SnackBarAction(
-              label: '刷新',
+              label: l10n.refresh,
               textColor: Colors.white,
               onPressed: () {
                 ref.invalidate(flagsProvider(widget.photoId));
@@ -497,10 +497,10 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.message),
+            content: Text(l10n.flagModifiedByOther),
             backgroundColor: Colors.orange,
             action: SnackBarAction(
-              label: '刷新',
+              label: l10n.refresh,
               textColor: Colors.white,
               onPressed: () {
                 ref.invalidate(flagsProvider(widget.photoId));
@@ -862,7 +862,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                       mini: true,
                       heroTag: 'zoom_in',
                       onPressed: _zoomIn,
-                      tooltip: '放大',
+                      tooltip: l10n.zoomIn,
                       child: const Icon(Icons.zoom_in, size: 20),
                     ),
                     const SizedBox(height: 8),
@@ -871,7 +871,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                       mini: true,
                       heroTag: 'zoom_out',
                       onPressed: _zoomOut,
-                      tooltip: '缩小',
+                      tooltip: l10n.zoomOut,
                       child: const Icon(Icons.zoom_out, size: 20),
                     ),
                     const SizedBox(height: 8),
@@ -885,7 +885,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                           _areFlagsVisible = !_areFlagsVisible;
                         });
                       },
-                      tooltip: _areFlagsVisible ? '隐藏旗子' : '显示旗子',
+                      tooltip:
+                          _areFlagsVisible ? l10n.hideFlags : l10n.showFlags,
                       child: Icon(
                         _areFlagsVisible
                             ? Icons.visibility_off
@@ -998,7 +999,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                           _areFlagsVisible = !_areFlagsVisible;
                         });
                       },
-                      tooltip: _areFlagsVisible ? '隐藏旗子' : '显示旗子',
+                      tooltip:
+                          _areFlagsVisible ? l10n.hideFlags : l10n.showFlags,
                       child: Icon(
                         _areFlagsVisible
                             ? Icons.visibility_off
@@ -1078,7 +1080,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(markAsSeen: false),
-            tooltip: '查看操作指南',
+            tooltip: l10n.helpGuide,
           ),
           photoAsync.whenOrNull(
                 data: (photo) {

@@ -182,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         : () {
                             context.push('/reset-password');
                           },
-                    child: const Text('忘记密码？'),
+                    child: Text(l10n.forgotPassword),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(

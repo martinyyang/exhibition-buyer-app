@@ -113,9 +113,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('发送重置邮件失败: ${e.toString()}'),
+            content: Text(l10n.sendResetEmailFailed(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -135,7 +136,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('重置密码'),
+        title: Text(l10n.resetPasswordTitle),
         leading: const SafeBackButton(fallbackPath: '/login'),
         actions: [
           IconButton(
@@ -170,7 +171,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            '忘记密码？',
+            l10n.forgotPasswordTitle,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -178,7 +179,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            '输入您的注册邮箱，我们将发送密码重置链接',
+            l10n.resetPasswordHint,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -207,15 +208,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: const Text(
-                '发送重置邮件',
-                style: TextStyle(fontSize: 16),
+              child: Text(
+                l10n.sendResetEmail,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           const SizedBox(height: 16),
           TextButton(
             onPressed: _isLoading ? null : () => context.go('/login'),
-            child: const Text('返回登录'),
+            child: Text(l10n.backToLogin),
           ),
         ],
       ),
@@ -223,6 +224,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }
 
   Widget _buildSuccessView() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -234,7 +236,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-          '邮件已发送！',
+          l10n.emailSentTitle,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
@@ -243,7 +245,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          '我们已向 ${_emailController.text} 发送了密码重置链接。\n\n请检查您的邮箱并点击链接重置密码。',
+          l10n.resetEmailSentMessage(_emailController.text),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.grey[600],
               ),
@@ -255,9 +257,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          child: const Text(
-            '返回登录',
-            style: TextStyle(fontSize: 16),
+          child: Text(
+            l10n.backToLogin,
+            style: const TextStyle(fontSize: 16),
           ),
         ),
         const SizedBox(height: 16),
@@ -267,7 +269,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               _emailSent = false;
             });
           },
-          child: const Text('重新发送'),
+          child: Text(l10n.resend),
         ),
       ],
     );

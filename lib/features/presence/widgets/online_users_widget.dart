@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/user_presence.dart';
 import '../providers/presence_provider.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -16,6 +17,7 @@ class OnlineUsersList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final presenceAsync = ref.watch(teamPresenceProvider(teamId));
+    final l10n = AppLocalizations.of(context)!;
 
     return presenceAsync.when(
       data: (presences) {
@@ -37,7 +39,7 @@ class OnlineUsersList extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  _buildPresenceText(presences),
+                  _buildPresenceText(presences, l10n),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.green.shade900,
@@ -54,7 +56,8 @@ class OnlineUsersList extends ConsumerWidget {
     );
   }
 
-  String _buildPresenceText(List<UserPresence> presences) {
+  String _buildPresenceText(
+      List<UserPresence> presences, AppLocalizations l10n) {
     if (presences.isEmpty) return '';
 
     final names = presences
@@ -63,11 +66,11 @@ class OnlineUsersList extends ConsumerWidget {
         .toList();
 
     if (presences.length == 1) {
-      return '${names[0]} 在线';
+      return l10n.onlineStatusSingle(names[0]);
     } else if (presences.length <= 3) {
-      return '${names.join('、')} 在线';
+      return l10n.onlineStatusFew(names.join(', '));
     } else {
-      return '${names.join('、')} 等 ${presences.length} 人在线';
+      return l10n.onlineStatusMany(names.join(', '), presences.length);
     }
   }
 }
@@ -93,6 +96,7 @@ class ScreenActivityIndicator extends ConsumerWidget {
       context: this.context,
     );
     final presenceAsync = ref.watch(screenPresenceProvider(params));
+    final l10n = AppLocalizations.of(context)!;
 
     return presenceAsync.when(
       data: (presences) {
@@ -121,7 +125,7 @@ class ScreenActivityIndicator extends ConsumerWidget {
               Icon(Icons.visibility, color: Colors.blue.shade700, size: 14),
               const SizedBox(width: 6),
               Text(
-                _buildActivityText(otherUsers),
+                _buildActivityText(otherUsers, l10n),
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.blue.shade900,
@@ -137,7 +141,8 @@ class ScreenActivityIndicator extends ConsumerWidget {
     );
   }
 
-  String _buildActivityText(List<UserPresence> presences) {
+  String _buildActivityText(
+      List<UserPresence> presences, AppLocalizations l10n) {
     if (presences.isEmpty) return '';
 
     final names = presences
@@ -146,11 +151,11 @@ class ScreenActivityIndicator extends ConsumerWidget {
         .toList();
 
     if (presences.length == 1) {
-      return '${names[0]} 正在查看';
+      return l10n.viewingSingle(names[0]);
     } else if (presences.length == 2) {
-      return '${names.join(' 和 ')} 正在查看';
+      return l10n.viewingTwo(names.join(' & '));
     } else {
-      return '${names.join('、')} 等 ${presences.length} 人正在查看';
+      return l10n.viewingMany(names.join(', '), presences.length);
     }
   }
 }

@@ -263,7 +263,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
             title: Text(l10n.edit),
             onTap: () {
               Navigator.pop(context);
-              // TODO: 编辑场次
+              _showEditEventDialog(event);
             },
           ),
           ListTile(
@@ -319,6 +319,118 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.setActiveFailed(e.toString()))),
+        );
+      }
+    }
+  }
+
+  void _showEditEventDialog(Event event) {
+    final l10n = AppLocalizations.of(context)!;
+    final nameController = TextEditingController(text: event.name);
+    final formKey = GlobalKey<FormState>();
+    DateTime? startDate = event.startDate;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(l10n.editEvent),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.eventName,
+                    hintText: l10n.eventNameHint,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.pleaseEnterEventName;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.startDate),
+                  subtitle: Text(
+                    startDate != null
+                        ? '${startDate!.year}-${startDate!.month.toString().padLeft(2, '0')}-${startDate!.day.toString().padLeft(2, '0')}'
+                        : l10n.tapToSelectDate,
+                  ),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: startDate ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2030),
+                    );
+                    if (date != null) {
+                      setState(() {
+                        startDate = date;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  if (startDate == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.pleaseSelectStartDate)),
+                    );
+                    return;
+                  }
+                  Navigator.of(context).pop();
+                  _updateEvent(event, nameController.text, startDate!);
+                }
+              },
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _updateEvent(
+      Event event, String name, DateTime startDate) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    try {
+      final eventService = ref.read(eventServiceProvider);
+      await eventService.updateEvent(
+        eventId: event.id,
+        name: name,
+        startDate: startDate,
+      );
+
+      // 手动刷新事件列表（防止 Realtime 未启用）
+      if (mounted) {
+        ref.invalidate(eventsProvider);
+        ref.invalidate(activeEventProvider);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.eventUpdatedSuccess)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
         );
       }
     }
@@ -388,7 +500,7 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(markAsSeen: false),
-            tooltip: '查看操作指南',
+            tooltip: l10n.helpGuide,
           ),
           IconButton(
             icon: const Icon(Icons.settings),

@@ -184,4 +184,44 @@ class BoothService {
     // 返回公共URL
     return _supabase.storage.from('photos').getPublicUrl(filePath);
   }
+
+  /// 上传摊位供应商Logo
+  Future<String> uploadSupplierLogo({
+    required XFile imageFile,
+    required String boothId,
+    required String teamId,
+  }) async {
+    // 压缩图片为 WebP
+    final bytes = await imageFile.readAsBytes();
+    final compressedBytes = await FlutterImageCompress.compressWithList(
+      bytes,
+      minWidth: 400,
+      minHeight: 400,
+      quality: 85,
+      format: CompressFormat.webp,
+    );
+
+    // 生成文件路径：booth-logos/{team_id}/{booth_id}_{timestamp}.webp
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final filePath = 'booth-logos/$teamId/${boothId}_$timestamp.webp';
+
+    // 上传到 Supabase Storage
+    await _supabase.storage
+        .from('photos')
+        .uploadBinary(
+          filePath,
+          compressedBytes,
+          fileOptions: const FileOptions(
+            contentType: 'image/webp',
+            upsert: true,
+          ),
+        )
+        .timeout(
+          NetworkConfig.mediumTimeout,
+          onTimeout: () => throw Exception('上传Logo超时'),
+        );
+
+    // 返回公共URL
+    return _supabase.storage.from('photos').getPublicUrl(filePath);
+  }
 }

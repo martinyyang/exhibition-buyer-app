@@ -13,6 +13,7 @@ import '../../../shared/widgets/safe_back_button.dart';
 import '../../photo/providers/photo_provider.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
+import '../../../core/utils/error_handler.dart';
 
 class BoothListScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -192,7 +193,9 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                     }
                   },
                   icon: const Icon(Icons.camera_alt),
-                  label: Text(dialogCoverImage == null ? '拍摄封面（可选）' : '重新拍摄'),
+                  label: Text(dialogCoverImage == null
+                      ? l10n.takeCoverPhoto
+                      : l10n.retakeCoverPhoto),
                 ),
               ],
             ),
@@ -557,60 +560,131 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
   void _showSupplierDialog(Booth booth) {
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: booth.supplierName);
+    String? logoUrl = booth.supplierLogoUrl;
+    bool isUploading = false;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.supplierInfo),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: l10n.supplierName,
-                hintText: l10n.supplierNameHint,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.supplierInfo),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: l10n.supplierName,
+                  hintText: l10n.supplierNameHint,
+                ),
               ),
+              const SizedBox(height: 16),
+              if (logoUrl != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    logoUrl!,
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.broken_image, size: 48),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+              Text(
+                l10n.supplierLogoOptional,
+                style: const TextStyle(fontSize: 12),
+              ),
+              const SizedBox(height: 8),
+              if (isUploading)
+                const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final image = await picker.pickImage(
+                      source: ImageSource.gallery,
+                      maxWidth: 800,
+                      maxHeight: 800,
+                      imageQuality: 85,
+                    );
+                    if (image == null) return;
+
+                    setDialogState(() {
+                      isUploading = true;
+                    });
+
+                    try {
+                      final userData =
+                          await ref.read(currentUserDataProvider.future);
+                      final teamId = userData?.teamId;
+                      if (teamId == null) {
+                        throw Exception(l10n.userNotInTeam);
+                      }
+                      final boothService = ref.read(boothServiceProvider);
+                      final url = await boothService.uploadSupplierLogo(
+                        imageFile: image,
+                        boothId: booth.id,
+                        teamId: teamId,
+                      );
+                      if (mounted) {
+                        setDialogState(() {
+                          logoUrl = url;
+                          isUploading = false;
+                        });
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        setDialogState(() {
+                          isUploading = false;
+                        });
+                        ErrorHandler.show(context, e);
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.upload),
+                  label:
+                      Text(logoUrl != null ? l10n.changeLogo : l10n.uploadLogo),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel),
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.supplierLogoOptional,
-              style: const TextStyle(fontSize: 12),
-            ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
+            TextButton(
               onPressed: () {
-                // TODO: 上传供应商Logo
+                Navigator.pop(context);
+                _updateSupplierInfo(booth, nameController.text,
+                    supplierLogoUrl: logoUrl);
               },
-              icon: const Icon(Icons.upload),
-              label: Text(l10n.uploadLogo),
+              child: Text(l10n.save),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _updateSupplierInfo(booth, nameController.text);
-            },
-            child: Text(l10n.save),
-          ),
-        ],
       ),
     );
   }
 
-  Future<void> _updateSupplierInfo(Booth booth, String supplierName) async {
+  Future<void> _updateSupplierInfo(
+    Booth booth,
+    String supplierName, {
+    String? supplierLogoUrl,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
     try {
       final boothService = ref.read(boothServiceProvider);
       await boothService.updateBooth(
         boothId: booth.id,
         supplierName: supplierName,
+        supplierLogoUrl: supplierLogoUrl,
       );
 
       if (mounted) {
@@ -715,7 +789,7 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
               IconButton(
                 icon: const Icon(Icons.help_outline),
                 onPressed: () => _showOnboarding(markAsSeen: false),
-                tooltip: '查看操作指南',
+                tooltip: l10n.helpGuide,
               ),
               IconButton(
                 icon: const Icon(Icons.add),

@@ -132,6 +132,7 @@
       "error": {"type": "String"}
     }
   },
+  "changeLogo": "Change Logo",
   "addFailed": "Add failed: {error}",
   "@addFailed": {
     "placeholders": {
@@ -185,6 +186,8 @@
       "eventName": {"type": "String"}
     }
   },
+  "editEvent": "Edit Event",
+  "eventUpdatedSuccess": "Event updated",
   "boothDeletedSuccess": "Deleted booth \"{boothNumber}\"",
   "@boothDeletedSuccess": {
     "placeholders": {
@@ -365,6 +368,72 @@
     }
   },
   "resetView": "Reset View",
+  "zoomIn": "Zoom In",
+  "zoomOut": "Zoom Out",
+  "hideFlags": "Hide Flags",
+  "showFlags": "Show Flags",
+  "refresh": "Refresh",
+  "takeCoverPhoto": "Take Cover Photo (Optional)",
+  "retakeCoverPhoto": "Retake",
+  "onlineStatusSingle": "{name} is online",
+  "@onlineStatusSingle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "onlineStatusFew": "{names} are online",
+  "@onlineStatusFew": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "onlineStatusMany": "{names} and {count} others are online",
+  "@onlineStatusMany": {
+    "placeholders": {
+      "names": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "viewingSingle": "{name} is viewing",
+  "@viewingSingle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "viewingTwo": "{names} are viewing",
+  "@viewingTwo": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "viewingMany": "{names} and {count} others are viewing",
+  "@viewingMany": {
+    "placeholders": {
+      "names": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "forgotPassword": "Forgot Password?",
+  "sendResetEmailFailed": "Failed to send reset email: {error}",
+  "@sendResetEmailFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "resetPasswordTitle": "Reset Password",
+  "forgotPasswordTitle": "Forgot Password?",
+  "resetPasswordHint": "Enter your registered email and we'll send a password reset link",
+  "sendResetEmail": "Send Reset Email",
+  "backToLogin": "Back to Login",
+  "emailSentTitle": "Email Sent!",
+  "resetEmailSentMessage": "We've sent a password reset link to {email}.\n\nPlease check your inbox and click the link to reset your password.",
+  "@resetEmailSentMessage": {
+    "placeholders": {
+      "email": {"type": "String"}
+    }
+  },
+  "resend": "Resend",
+  "flagModifiedByOther": "This flag has been modified by someone else. Please refresh and try again.",
   "formulaCalculationError": "Formula error: {error}",
   "@formulaCalculationError": {
     "placeholders": {
