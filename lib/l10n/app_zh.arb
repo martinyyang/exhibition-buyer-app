@@ -152,6 +152,10 @@
     }
   },
   "photoUploadSuccess": "照片上传成功",
+  "continuousShooting": "连续拍照",
+  "continuousShootingStarted": "连续拍照已开启，照片将自动连续上传",
+  "continuousShootingStopped": "连续拍照已关闭",
+  "stopContinuousShooting": "停止连续拍照",
   "supplierInfoUpdated": "供应商信息已更新",
   "photoDeleted": "照片已删除",
   "eventCreatedSuccess": "场次创建成功",

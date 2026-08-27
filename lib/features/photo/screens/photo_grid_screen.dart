@@ -33,6 +33,8 @@ class PhotoGridScreen extends ConsumerStatefulWidget {
 class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   bool _isUploading = false;
   double _uploadProgress = 0.0;
+  // 连续拍照模式：拍/选一张上传完成后自动再次打开相机或选择器
+  bool _continuousShooting = false;
 
   @override
   void initState() {
@@ -91,6 +93,16 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     // 检测是否是移动设备（包括移动浏览器）
     final isMobile = MediaQuery.of(context).size.width < 600;
 
+    if (_continuousShooting) {
+      // 连续拍照模式：跳过选择对话框，直接拍摄/选图上传，完成后自动继续
+      if (isMobile) {
+        await _pickImageFromCamera(autoContinue: true);
+      } else {
+        await _uploadSinglePhoto(autoContinue: true);
+      }
+      return;
+    }
+
     if (isMobile) {
       // 移动端（原生应用或移动浏览器）：显示相机/相册选择对话框
       await _showImageSourceDialog();
@@ -98,6 +110,24 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       // 桌面端 Web：直接打开文件选择器
       await _pickImageFromGallery();
     }
+  }
+
+  /// 切换连续拍照模式
+  void _toggleContinuousShooting() {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _continuousShooting = !_continuousShooting;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _continuousShooting
+              ? l10n.continuousShootingStarted
+              : l10n.continuousShootingStopped,
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   /// Web 端和移动端相册选择
@@ -133,7 +163,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   /// 单张照片上传
-  Future<void> _uploadSinglePhoto() async {
+  Future<void> _uploadSinglePhoto({bool autoContinue = false}) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
@@ -178,7 +208,8 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ErrorHandler.show(context, e, onRetry: _uploadSinglePhoto);
+        ErrorHandler.show(context, e,
+            onRetry: () => _uploadSinglePhoto(autoContinue: autoContinue));
       }
     } finally {
       if (mounted) {
@@ -186,6 +217,13 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           _isUploading = false;
           _uploadProgress = 0.0;
         });
+      }
+      // 连续拍照模式：上传完成后自动再次拍摄
+      if (autoContinue && _continuousShooting && mounted) {
+        await Future.delayed(const Duration(milliseconds: 400));
+        if (_continuousShooting && mounted) {
+          await _takePhoto();
+        }
       }
     }
   }
@@ -255,7 +293,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   /// 移动端：相机拍照
-  Future<void> _pickImageFromCamera() async {
+  Future<void> _pickImageFromCamera({bool autoContinue = false}) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
@@ -300,7 +338,8 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ErrorHandler.show(context, e, onRetry: _pickImageFromCamera);
+        ErrorHandler.show(context, e,
+            onRetry: () => _pickImageFromCamera(autoContinue: autoContinue));
       }
     } finally {
       if (mounted) {
@@ -308,6 +347,13 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           _isUploading = false;
           _uploadProgress = 0.0;
         });
+      }
+      // 连续拍照模式：上传完成后自动再次拍摄
+      if (autoContinue && _continuousShooting && mounted) {
+        await Future.delayed(const Duration(milliseconds: 400));
+        if (_continuousShooting && mounted) {
+          await _takePhoto();
+        }
       }
     }
   }
@@ -504,42 +550,66 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           ),
         ),
       ),
-      floatingActionButton: _isUploading
-          ? FloatingActionButton(
-              onPressed: null,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator(
-                      value: _uploadProgress,
-                      strokeWidth: 3,
-                      backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                  Text(
-                    '${(_uploadProgress * 100).toInt()}%',
-                    style: const TextStyle(
-                        fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            )
-          : Builder(
-              builder: (context) {
-                final isMobile = MediaQuery.of(context).size.width < 600;
-                return FloatingActionButton(
-                  onPressed: _takePhoto,
-                  tooltip:
-                      isMobile ? l10n.cameraButton : l10n.uploadPhotoButton,
-                  child: Icon(isMobile ? Icons.camera_alt : Icons.upload_file),
-                );
-              },
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // 连续拍照模式切换按钮
+          FloatingActionButton.small(
+            heroTag: 'continuous_btn',
+            onPressed: _toggleContinuousShooting,
+            tooltip: _continuousShooting
+                ? l10n.stopContinuousShooting
+                : l10n.continuousShooting,
+            backgroundColor: _continuousShooting ? Colors.redAccent : null,
+            child: Icon(
+              _continuousShooting ? Icons.stop : Icons.photo_camera,
+              color: _continuousShooting ? Colors.white : null,
             ),
+          ),
+          const SizedBox(height: 12),
+          _isUploading
+              ? FloatingActionButton(
+                  heroTag: 'main_fab',
+                  onPressed: null,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CircularProgressIndicator(
+                          value: _uploadProgress,
+                          strokeWidth: 3,
+                          backgroundColor: Colors.white.withOpacity(0.3),
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      Text(
+                        '${(_uploadProgress * 100).toInt()}%',
+                        style: const TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                )
+              : Builder(
+                  builder: (context) {
+                    final isMobile = MediaQuery.of(context).size.width < 600;
+                    return FloatingActionButton(
+                      heroTag: 'main_fab',
+                      onPressed: _takePhoto,
+                      tooltip:
+                          isMobile ? l10n.cameraButton : l10n.uploadPhotoButton,
+                      child:
+                          Icon(isMobile ? Icons.camera_alt : Icons.upload_file),
+                    );
+                  },
+                ),
+        ],
+      ),
     );
   }
 }

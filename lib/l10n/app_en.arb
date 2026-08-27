@@ -152,6 +152,10 @@
     }
   },
   "photoUploadSuccess": "Photo uploaded successfully",
+  "continuousShooting": "Continuous Shooting",
+  "continuousShootingStarted": "Continuous shooting started. Photos will upload automatically one after another.",
+  "continuousShootingStopped": "Continuous shooting stopped.",
+  "stopContinuousShooting": "Stop Continuous Shooting",
   "supplierInfoUpdated": "Supplier info updated",
   "photoDeleted": "Photo deleted",
   "eventCreatedSuccess": "Event created successfully",

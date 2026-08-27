@@ -271,6 +271,11 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
       if (coverImage != null) {
         _uploadBoothCoverInBackground(booth.id, teamId, coverImage);
       }
+
+      // 创建成功后直接跳转到照片页面，方便现场买手立即拍照上传
+      if (mounted) {
+        context.go('/events/${widget.eventId}/booths/${booth.id}/photos');
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
