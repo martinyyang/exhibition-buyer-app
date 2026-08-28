@@ -35,6 +35,11 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   double _uploadProgress = 0.0;
   // 连续拍照模式：拍/选一张上传完成后自动再次打开相机或选择器
   bool _continuousShooting = false;
+  // 连续拍照节流：两次拍摄之间的最小间隔
+  static const Duration _continuousShotMinInterval =
+      Duration(milliseconds: 1000);
+  // 上次上传完成时间（用于节流计算）
+  DateTime? _lastUploadCompletedAt;
 
   @override
   void initState() {
@@ -90,6 +95,17 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _takePhoto() async {
+    // 防重入：同一时刻只允许一个上传流程
+    if (_isUploading) return;
+
+    // 连续拍照节流：确保两次拍摄之间至少间隔一段时间
+    if (_continuousShooting && _lastUploadCompletedAt != null) {
+      final elapsed = DateTime.now().difference(_lastUploadCompletedAt!);
+      if (elapsed < _continuousShotMinInterval) {
+        await Future.delayed(_continuousShotMinInterval - elapsed);
+      }
+    }
+
     // 检测是否是移动设备（包括移动浏览器）
     final isMobile = MediaQuery.of(context).size.width < 600;
 
@@ -218,9 +234,10 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           _uploadProgress = 0.0;
         });
       }
-      // 连续拍照模式：上传完成后自动再次拍摄
+      // 连续拍照模式：记录完成时间并自动继续拍摄（_takePhoto 内部会做节流等待）
       if (autoContinue && _continuousShooting && mounted) {
-        await Future.delayed(const Duration(milliseconds: 400));
+        _lastUploadCompletedAt = DateTime.now();
+        await Future.delayed(const Duration(milliseconds: 300));
         if (_continuousShooting && mounted) {
           await _takePhoto();
         }
@@ -348,9 +365,10 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           _uploadProgress = 0.0;
         });
       }
-      // 连续拍照模式：上传完成后自动再次拍摄
+      // 连续拍照模式：记录完成时间并自动继续拍摄（_takePhoto 内部会做节流等待）
       if (autoContinue && _continuousShooting && mounted) {
-        await Future.delayed(const Duration(milliseconds: 400));
+        _lastUploadCompletedAt = DateTime.now();
+        await Future.delayed(const Duration(milliseconds: 300));
         if (_continuousShooting && mounted) {
           await _takePhoto();
         }
