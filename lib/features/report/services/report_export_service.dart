@@ -1,4 +1,5 @@
-import 'dart:html' as html;
+import 'report_download_helper_stub.dart'
+    if (dart.library.html) 'report_download_helper_web.dart' as download;
 import '../../booth/models/booth.dart';
 import '../../photo/models/photo.dart';
 import '../../flag/models/flag.dart';
@@ -205,14 +206,6 @@ class ReportExportService {
       .replaceAll('>', '&gt;');
 
   void _downloadHtml(String content, String fileName) {
-    final blob = html.Blob([content], 'text/html;charset=utf-8');
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.AnchorElement(href: url)
-      ..download = fileName
-      ..style.display = 'none';
-    html.document.body!.children.add(anchor);
-    anchor.click();
-    anchor.remove();
-    html.Url.revokeObjectUrl(url);
+    download.downloadHtmlFile(content, fileName);
   }
 }
