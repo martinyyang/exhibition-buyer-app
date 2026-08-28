@@ -11,7 +11,9 @@ import '../../event/providers/event_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/safe_back_button.dart';
 import '../../photo/providers/photo_provider.dart';
+import '../../flag/providers/flag_provider.dart';
 import '../../../core/providers/onboarding_provider.dart';
+import '../../report/services/report_export_service.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
 import '../../../core/utils/error_handler.dart';
 
@@ -743,6 +745,57 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
     }
   }
 
+  bool _isExporting = false;
+
+  /// 导出整场复盘报告（HTML，含照片+旗子标注）
+  Future<void> _exportReport() async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _isExporting = true;
+    });
+    try {
+      final userData = await ref.read(currentUserDataProvider.future);
+      final teamId = userData?.teamId;
+      if (teamId == null) {
+        throw Exception(l10n.userNotInTeam);
+      }
+
+      final event = await ref.read(eventProvider(widget.eventId).future);
+      final boothService = ref.read(boothServiceProvider);
+      final booths = await boothService.getBooths(
+        eventId: widget.eventId,
+        teamId: teamId,
+      );
+
+      final reportService = ReportExportService();
+      await reportService.exportEventReport(
+        eventName: event?.name ?? 'report',
+        booths: booths,
+        loadPhotos: (boothId) =>
+            ref.read(photoServiceProvider).getPhotos(boothId),
+        loadFlags: (photoId) => ref.read(flagServiceProvider).getFlags(photoId),
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.reportExported)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.reportExportFailed(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isExporting = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -795,6 +848,11 @@ class _BoothListScreenState extends ConsumerState<BoothListScreen> {
                 icon: const Icon(Icons.help_outline),
                 onPressed: () => _showOnboarding(markAsSeen: false),
                 tooltip: l10n.helpGuide,
+              ),
+              IconButton(
+                icon: const Icon(Icons.file_download),
+                onPressed: _isExporting ? null : _exportReport,
+                tooltip: l10n.exportReport,
               ),
               IconButton(
                 icon: const Icon(Icons.add),

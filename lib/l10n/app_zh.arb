@@ -152,6 +152,26 @@
     }
   },
   "photoUploadSuccess": "照片上传成功",
+  "exportReport": "导出报告",
+  "reportExported": "报告已导出，请在浏览器下载查看",
+  "reportExportFailed": "导出失败：{error}",
+  "@reportExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "photoQueuedOffline": "网络异常，照片已暂存，联网后自动上传",
+  "offlineDetected": "网络已断开，照片将暂存，联网后自动上传",
+  "pendingUploads": "待补传 {count} 张",
+  "@pendingUploads": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "continuousShooting": "连续拍照",
   "continuousShootingStarted": "连续拍照已开启，照片将自动连续上传",
   "continuousShootingStopped": "连续拍照已关闭",

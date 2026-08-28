@@ -152,6 +152,26 @@
     }
   },
   "photoUploadSuccess": "Photo uploaded successfully",
+  "exportReport": "Export Report",
+  "reportExported": "Report exported",
+  "reportExportFailed": "Export failed: {error}",
+  "@reportExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "photoQueuedOffline": "Network error - photo saved locally, will auto-upload when back online",
+  "offlineDetected": "You are offline - photos will be saved locally and uploaded automatically when back online",
+  "pendingUploads": "{count} photo(s) waiting to upload",
+  "@pendingUploads": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "continuousShooting": "Continuous Shooting",
   "continuousShootingStarted": "Continuous shooting started. Photos will upload automatically one after another.",
   "continuousShootingStopped": "Continuous shooting stopped.",

@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'dart:typed_data';
+import '../../upload/providers/offline_upload_provider.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/error_handler.dart';
@@ -185,12 +187,16 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       _isUploading = true;
     });
 
+    Uint8List? pickedBytes;
     try {
       final pickedFile = await imageHelper.pickImage(
         source: ImageSource.gallery,
       );
 
       if (pickedFile != null) {
+        try {
+          pickedBytes = await pickedFile.readAsBytes();
+        } catch (_) {}
         final photoService = ref.read(photoServiceProvider);
         final userData = await ref.read(currentUserDataProvider.future);
         final authState = ref.read(currentUserProvider);
@@ -226,6 +232,10 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       if (mounted) {
         ErrorHandler.show(context, e,
             onRetry: () => _uploadSinglePhoto(autoContinue: autoContinue));
+      }
+      // 上传失败/断网时，将照片暂存到离线上传队列，联网后自动补传
+      if (pickedBytes != null) {
+        await _enqueueOfflineUpload(pickedBytes);
       }
     } finally {
       if (mounted) {
@@ -316,12 +326,16 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       _isUploading = true;
     });
 
+    Uint8List? pickedBytes;
     try {
       final pickedFile = await imageHelper.pickImage(
         source: ImageSource.camera,
       );
 
       if (pickedFile != null) {
+        try {
+          pickedBytes = await pickedFile.readAsBytes();
+        } catch (_) {}
         final photoService = ref.read(photoServiceProvider);
         final userData = await ref.read(currentUserDataProvider.future);
         final authState = ref.read(currentUserProvider);
@@ -357,6 +371,10 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       if (mounted) {
         ErrorHandler.show(context, e,
             onRetry: () => _pickImageFromCamera(autoContinue: autoContinue));
+      }
+      // 上传失败/断网时，将照片暂存到离线上传队列，联网后自动补传
+      if (pickedBytes != null) {
+        await _enqueueOfflineUpload(pickedBytes);
       }
     } finally {
       if (mounted) {
@@ -472,6 +490,69 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     }
   }
 
+  /// 把失败/断网的照片暂存到离线上传队列（联网后自动补传）
+  Future<void> _enqueueOfflineUpload(Uint8List bytes) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final userData = await ref.read(currentUserDataProvider.future);
+      final teamId = userData?.teamId;
+      if (teamId == null) return;
+      await ref.read(offlineUploadProvider.notifier).addPending(
+            boothId: widget.boothId,
+            teamId: teamId,
+            fileName: '${DateTime.now().millisecondsSinceEpoch}.webp',
+            bytes: bytes,
+          );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.photoQueuedOffline)),
+        );
+      }
+    } catch (_) {}
+  }
+
+  /// 顶部提示条：断网或存在待补传照片时显示
+  Widget _buildOfflineBanner() {
+    final l10n = AppLocalizations.of(context)!;
+    final offlineState = ref.watch(offlineUploadProvider);
+    final offline = !offlineState.isOnline;
+    if (offlineState.pendingCount == 0 && !offline) {
+      return const SizedBox.shrink();
+    }
+    final color = offline ? Colors.orange : Colors.blue;
+    final message = offline
+        ? l10n.offlineDetected
+        : l10n.pendingUploads(offlineState.pendingCount);
+    return Material(
+      color: color.withOpacity(0.10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        child: Row(
+          children: [
+            Icon(
+              offline ? Icons.wifi_off : Icons.sync,
+              size: 18,
+              color: color,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(fontSize: 13, color: color),
+              ),
+            ),
+            if (!offline && offlineState.pendingCount > 0)
+              TextButton(
+                onPressed: () =>
+                    ref.read(offlineUploadProvider.notifier).flush(),
+                child: Text(l10n.retry),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -503,70 +584,78 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           ),
         ],
       ),
-      body: photosAsync.when(
-        data: (photos) => photos.isEmpty
-            ? Center(
+      body: Column(
+        children: [
+          _buildOfflineBanner(),
+          Expanded(
+            child: photosAsync.when(
+              data: (photos) => photos.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.photo_camera,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.noPhotos,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.takePhotoHint,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: Responsive.getGridColumns(context),
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.75,
+                      ),
+                      itemCount: photos.length,
+                      itemBuilder: (context, index) {
+                        final photo = photos[index];
+                        return _PhotoCard(
+                          photo: photo,
+                          onTap: () => _onPhotoTap(photo),
+                          onLongPress: () => _onPhotoLongPress(photo),
+                        );
+                      },
+                    ),
+              loading: () => const Center(child: LoadingIndicator()),
+              error: (err, stack) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.photo_camera,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
+                    const Icon(Icons.error, size: 48, color: Colors.red),
                     const SizedBox(height: 16),
-                    Text(
-                      l10n.noPhotos,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.takePhotoHint,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[500],
-                      ),
+                    Text(l10n.loadFailed(err.toString())),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          ref.refresh(photosProvider(widget.boothId)),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
-              )
-            : GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: Responsive.getGridColumns(context),
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: photos.length,
-                itemBuilder: (context, index) {
-                  final photo = photos[index];
-                  return _PhotoCard(
-                    photo: photo,
-                    onTap: () => _onPhotoTap(photo),
-                    onLongPress: () => _onPhotoLongPress(photo),
-                  );
-                },
               ),
-        loading: () => const Center(child: LoadingIndicator()),
-        error: (err, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error, size: 48, color: Colors.red),
-              const SizedBox(height: 16),
-              Text(l10n.loadFailed(err.toString())),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(photosProvider(widget.boothId)),
-                child: Text(l10n.retry),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Column(
