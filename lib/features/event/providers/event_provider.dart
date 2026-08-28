@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/event_service.dart';
 import '../models/event.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../core/services/realtime_service.dart';
 
 // EventService Provider
 final eventServiceProvider = Provider((ref) {
@@ -20,30 +20,19 @@ final eventsRealtimeFamilyProvider =
     return;
   }
 
-  final supabase = ref.watch(supabaseServiceProvider);
+  final realtimeService = ref.watch(realtimeServiceProvider);
   final controller = StreamController<void>();
 
-  // 订阅 events 表的变化，仅监听当前团队
-  final channel = supabase.client
-      .channel('events_changes_$teamId')
-      .onPostgresChanges(
-        event: PostgresChangeEvent.all,
-        schema: 'public',
-        table: 'events',
-        filter: PostgresChangeFilter(
-          type: PostgresChangeFilterType.eq,
-          column: 'team_id',
-          value: teamId,
-        ),
-        callback: (payload) {
-          // 当当前团队的 events 表有变化时，触发刷新
-          controller.add(null);
-        },
-      )
-      .subscribe();
+  // 通过 RealtimeService 统一管理订阅（订阅与清理保持一致）
+  // 仅监听当前团队的 events 表变化
+  final channel = realtimeService.subscribeToEvents(teamId, (payload) {
+    // 当当前团队的 events 表有变化时，触发刷新
+    controller.add(null);
+  });
 
   ref.onDispose(() {
-    channel.unsubscribe();
+    // 统一走 RealtimeService.unsubscribe：removeChannel 并从内部列表移除
+    realtimeService.unsubscribe(channel);
     controller.close();
   });
 

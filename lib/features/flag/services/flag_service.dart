@@ -62,6 +62,39 @@ class FlagService {
     return result.map((json) => Flag.fromJson(json)).toList();
   }
 
+  /// 轻量查询：获取照片的旗子数量（只查 id 列，不拉全量数据，供网格概览使用）
+  /// 避免在照片网格页为每张照片建立 Realtime 订阅
+  Future<int> getFlagCount(String photoId) async {
+    final result = await _supabase
+        .from('flags')
+        .select('id')
+        .eq('photo_id', photoId)
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('获取旗子数量超时'),
+        );
+
+    return (result as List).length;
+  }
+
+  /// 轻量查询：获取照片最近一次旗子更新时间（供"有新更新"红点判断）
+  Future<DateTime?> getLatestFlagUpdatedAt(String photoId) async {
+    final result = await _supabase
+        .from('flags')
+        .select('updated_at')
+        .eq('photo_id', photoId)
+        .order('updated_at', ascending: false)
+        .limit(1)
+        .maybeSingle()
+        .timeout(
+          NetworkConfig.shortTimeout,
+          onTimeout: () => throw Exception('获取旗子更新时间超时'),
+        );
+
+    if (result == null || result['updated_at'] == null) return null;
+    return DateTime.parse(result['updated_at'] as String);
+  }
+
   /// 获取单个旗子详情
   Future<Flag?> getFlag(String flagId) async {
     try {

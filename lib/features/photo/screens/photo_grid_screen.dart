@@ -646,7 +646,9 @@ class _PhotoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final flagCount = ref.watch(photoFlagCountProvider(photo.id));
+    // 轻量计数查询（非实时订阅），减少网格页的 Realtime 订阅量
+    final flagCountAsync = ref.watch(photoFlagCountProvider(photo.id));
+    final flagCount = flagCountAsync.valueOrNull ?? 0;
     final hasUpdatesAsync = ref.watch(photoHasUpdatesProvider(photo.id));
 
     return Badge(

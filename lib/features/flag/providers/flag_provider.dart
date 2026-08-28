@@ -152,8 +152,12 @@ final flagProvider = FutureProvider.family<Flag?, String>((ref, flagId) async {
   return await flagService.getFlag(flagId);
 });
 
-// 单张照片的旗子数量Provider - 依赖 flagsProvider，支持实时同步和自动刷新
-final photoFlagCountProvider = Provider.family<int, String>((ref, photoId) {
-  final flagsAsync = ref.watch(flagsProvider(photoId));
-  return flagsAsync.valueOrNull?.length ?? 0;
+// 单张照片的旗子数量Provider - 轻量计数查询（非实时订阅）
+// 照片网格页每张卡片使用此Provider显示旗子数概览；
+// 它只做一次性 count 查询，不建立 Realtime 订阅，
+// 从而避免网格页为每张照片维持大量旗子订阅（详情页才订阅实时更新）。
+final photoFlagCountProvider =
+    FutureProvider.family<int, String>((ref, photoId) async {
+  final flagService = ref.watch(flagServiceProvider);
+  return await flagService.getFlagCount(photoId);
 });
