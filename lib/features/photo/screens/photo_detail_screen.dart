@@ -49,6 +49,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
   ui.Image? _loadedImage;
   bool _areFlagsVisible = true; // 旗子显示状态
   bool _isCreatingFlag = false; // 防止连续点击创建重复旗子
+  late bool _isRemoteView = widget.isRemoteView; // 视角：true=远程（标注/报价/决策），false=现场（最终成交状态）
 
   @override
   String get screenIdentifier => 'photo_detail';
@@ -925,7 +926,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                 )
               : FlagTable(
                   flags: flags,
-                  isRemoteView: widget.isRemoteView,
+                  isRemoteView: _isRemoteView,
                   onRowTap: (flag) => _onFlagRowTap(flag),
                   onPriceUpdate: (flag, price) => _updateFlagPrice(flag, price),
                   onTargetPriceUpdate: (flag, targetPrice) =>
@@ -1045,7 +1046,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                       )
                     : FlagTable(
                         flags: flags,
-                        isRemoteView: widget.isRemoteView,
+                        isRemoteView: _isRemoteView,
                         onRowTap: (flag) => _onFlagRowTap(flag),
                         onPriceUpdate: (flag, price) =>
                             _updateFlagPrice(flag, price),
@@ -1053,6 +1054,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
                             _updateFlagTargetPrice(flag, targetPrice),
                         onPurchaseStatusChange: (flag, status) =>
                             _updatePurchaseStatus(flag, status),
+                        onFinalStatusChange: (flag, status) =>
+                            _updateFinalStatus(flag, status),
                         onDelete: (flag) => _deleteFlag(flag),
                         // TODO: 暂时移除转换价格功能
                         // onConvertedPriceTap: () => context.push('/formula'),
@@ -1075,12 +1078,21 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
       appBar: AppBar(
         leading: const SafeBackButton(fallbackPath: '/events'),
         title:
-            Text(widget.isRemoteView ? l10n.annotateProducts : l10n.viewQuotes),
+            Text(_isRemoteView ? l10n.annotateProducts : l10n.viewQuotes),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showOnboarding(markAsSeen: false),
             tooltip: l10n.helpGuide,
+          ),
+          Tooltip(
+            message: l10n.switchViewModeTooltip,
+            child: TextButton.icon(
+              onPressed: () => setState(() => _isRemoteView = !_isRemoteView),
+              icon: Icon(_isRemoteView ? Icons.storefront : Icons.visibility),
+              label: Text(
+                  _isRemoteView ? l10n.onSiteViewMode : l10n.remoteViewMode),
+            ),
           ),
           photoAsync.whenOrNull(
                 data: (photo) {
