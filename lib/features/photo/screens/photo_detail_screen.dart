@@ -49,7 +49,8 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
   ui.Image? _loadedImage;
   bool _areFlagsVisible = true; // 旗子显示状态
   bool _isCreatingFlag = false; // 防止连续点击创建重复旗子
-  late bool _isRemoteView = widget.isRemoteView; // 视角：true=远程（标注/报价/决策），false=现场（最终成交状态）
+  late bool _isRemoteView =
+      widget.isRemoteView; // 视角：true=远程（标注/报价/决策），false=现场（最终成交状态）
 
   @override
   String get screenIdentifier => 'photo_detail';
@@ -1077,8 +1078,7 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen>
     return Scaffold(
       appBar: AppBar(
         leading: const SafeBackButton(fallbackPath: '/events'),
-        title:
-            Text(_isRemoteView ? l10n.annotateProducts : l10n.viewQuotes),
+        title: Text(_isRemoteView ? l10n.annotateProducts : l10n.viewQuotes),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
