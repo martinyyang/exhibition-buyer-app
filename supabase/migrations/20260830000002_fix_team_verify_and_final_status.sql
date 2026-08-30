@@ -1,14 +1,18 @@
--- Migration: 修复团队密码验证函数 + flags.final_status 列
+-- Migration: 修复团队密码验证函数 + flags.final_status 列（修正版）
 -- 问题：
 --   1. verify_team_password 返回 created_at TIMESTAMPTZ，但 teams.created_at 是 TIMESTAMP WITHOUT TIME ZONE
 --      → 一旦匹配到行即报 42804（column "created_at" is of type timestamp without time zone but expression is of type timestamp with time zone）
+--      → 返回类型改动需先 DROP（42P13: cannot change return type of existing function）
 --   2. get_team_with_password 函数不存在，但应用 team_service.dart 调用它（RPC 404 → 查看邀请码功能静默失败）
---   3. flags.final_status 列缺失（现场买手最终成交状态：购买/已售/放弃），迁移 20260807000001 未在数据库生效
+--   3. flags.final_status 列缺失（现场买手最终成交状态：购买/已售/放弃）
 --
--- 执行方式：Supabase Dashboard → SQL Editor → 粘贴本文件全部内容 → Run（预期显示 Success. No rows returned）
+-- 执行方式：Supabase Dashboard → SQL Editor → 粘贴本文件全部内容 → Run
+-- 幂等：可重复执行（已建的对象不会报错，重复 DROP+CREATE 也安全）
 
--- ========== 1. 修复 verify_team_password：返回类型与 teams.created_at 对齐 ==========
-CREATE OR REPLACE FUNCTION public.verify_team_password(p_identifier text, p_password text)
+-- ========== 1. 修复 verify_team_password：先 DROP 再 CREATE（返回类型与 teams.created_at 对齐） ==========
+DROP FUNCTION IF EXISTS public.verify_team_password(text, text);
+
+CREATE FUNCTION public.verify_team_password(p_identifier text, p_password text)
  RETURNS TABLE(id uuid, name text, created_at timestamp without time zone, creator_id uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
