@@ -97,29 +97,17 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   Future<void> _takePhoto() async {
-    // 防重入：同一时刻只允许一个上传流程
-    if (_isUploading) return;
-
-    // 连续拍照节流：确保两次拍摄之间至少间隔一段时间
-    if (_continuousShooting && _lastUploadCompletedAt != null) {
-      final elapsed = DateTime.now().difference(_lastUploadCompletedAt!);
-      if (elapsed < _continuousShotMinInterval) {
-        await Future.delayed(_continuousShotMinInterval - elapsed);
-      }
+    // 连续拍照模式：拍照/选图后立即加入后台上传队列，不阻塞，可连续拍下一张
+    if (_continuousShooting) {
+      await _continuousCaptureAndQueue();
+      return;
     }
+
+    // 防重入：非连续模式下同一时刻只允许一个上传流程
+    if (_isUploading) return;
 
     // 检测是否是移动设备（包括移动浏览器）
     final isMobile = MediaQuery.of(context).size.width < 600;
-
-    if (_continuousShooting) {
-      // 连续拍照模式：跳过选择对话框，直接拍摄/选图上传，完成后自动继续
-      if (isMobile) {
-        await _pickImageFromCamera(autoContinue: true);
-      } else {
-        await _uploadSinglePhoto(autoContinue: true);
-      }
-      return;
-    }
 
     if (isMobile) {
       // 移动端（原生应用或移动浏览器）：显示相机/相册选择对话框
@@ -127,6 +115,77 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     } else {
       // 桌面端 Web：直接打开文件选择器
       await _pickImageFromGallery();
+    }
+  }
+
+  /// 连续拍照模式：拍照/选图后立即把照片加入后台上传队列
+  ///
+  /// 照片进入队列后由后台依次上传，本方法立即返回，
+  /// 拍照按钮始终保持可用，方便现场快速连拍供远程人员查看。
+  Future<void> _continuousCaptureAndQueue() async {
+    final l10n = AppLocalizations.of(context)!;
+    // 检测是否是移动设备（包括移动浏览器）——需在 async gap 前读取
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    // 连续拍照节流：确保两次拍摄之间至少间隔一段时间
+    if (_lastUploadCompletedAt != null) {
+      final elapsed = DateTime.now().difference(_lastUploadCompletedAt!);
+      if (elapsed < _continuousShotMinInterval) {
+        await Future.delayed(_continuousShotMinInterval - elapsed);
+      }
+    }
+
+    final XFile? pickedFile;
+    try {
+      pickedFile = await imageHelper.pickImage(
+        source: isMobile ? ImageSource.camera : ImageSource.gallery,
+      );
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.show(context, e);
+      }
+      return;
+    }
+
+    if (pickedFile == null) {
+      // 用户取消选择：不记录节流，可立即再次拍摄
+      return;
+    }
+
+    try {
+      final bytes = await pickedFile.readAsBytes();
+      final userData = await ref.read(currentUserDataProvider.future);
+      final teamId = userData?.teamId;
+      if (teamId == null) {
+        throw Exception(l10n.userNotInTeam);
+      }
+
+      // 生成唯一文件名并加入后台上传队列（不等待上传完成）
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecondsSinceEpoch}.webp';
+      await ref.read(offlineUploadProvider.notifier).addPendingAndFlush(
+            boothId: widget.boothId,
+            teamId: teamId,
+            fileName: fileName,
+            bytes: bytes,
+          );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.photoQueuedForUpload),
+            duration: const Duration(milliseconds: 1200),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.show(context, e,
+            onRetry: () => _continuousCaptureAndQueue());
+      }
+    } finally {
+      // 记录本次拍摄完成时间（用于节流下次拍摄）
+      _lastUploadCompletedAt = DateTime.now();
     }
   }
 
@@ -181,7 +240,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   /// 单张照片上传
-  Future<void> _uploadSinglePhoto({bool autoContinue = false}) async {
+  Future<void> _uploadSinglePhoto() async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
@@ -230,8 +289,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ErrorHandler.show(context, e,
-            onRetry: () => _uploadSinglePhoto(autoContinue: autoContinue));
+        ErrorHandler.show(context, e, onRetry: _uploadSinglePhoto);
       }
       // 上传失败/断网时，将照片暂存到离线上传队列，联网后自动补传
       if (pickedBytes != null) {
@@ -243,14 +301,6 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           _isUploading = false;
           _uploadProgress = 0.0;
         });
-      }
-      // 连续拍照模式：记录完成时间并自动继续拍摄（_takePhoto 内部会做节流等待）
-      if (autoContinue && _continuousShooting && mounted) {
-        _lastUploadCompletedAt = DateTime.now();
-        await Future.delayed(const Duration(milliseconds: 300));
-        if (_continuousShooting && mounted) {
-          await _takePhoto();
-        }
       }
     }
   }
@@ -320,7 +370,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
   }
 
   /// 移动端：相机拍照
-  Future<void> _pickImageFromCamera({bool autoContinue = false}) async {
+  Future<void> _pickImageFromCamera() async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isUploading = true;
@@ -369,8 +419,7 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ErrorHandler.show(context, e,
-            onRetry: () => _pickImageFromCamera(autoContinue: autoContinue));
+        ErrorHandler.show(context, e, onRetry: _pickImageFromCamera);
       }
       // 上传失败/断网时，将照片暂存到离线上传队列，联网后自动补传
       if (pickedBytes != null) {
@@ -382,14 +431,6 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
           _isUploading = false;
           _uploadProgress = 0.0;
         });
-      }
-      // 连续拍照模式：记录完成时间并自动继续拍摄（_takePhoto 内部会做节流等待）
-      if (autoContinue && _continuousShooting && mounted) {
-        _lastUploadCompletedAt = DateTime.now();
-        await Future.delayed(const Duration(milliseconds: 300));
-        if (_continuousShooting && mounted) {
-          await _takePhoto();
-        }
       }
     }
   }
@@ -676,45 +717,68 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _isUploading
-              ? FloatingActionButton(
-                  heroTag: 'main_fab',
-                  onPressed: null,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        width: 32,
-                        height: 32,
-                        child: CircularProgressIndicator(
-                          value: _uploadProgress,
-                          strokeWidth: 3,
-                          backgroundColor: Colors.white.withOpacity(0.3),
-                          valueColor:
-                              const AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                      Text(
-                        '${(_uploadProgress * 100).toInt()}%',
-                        style: const TextStyle(
-                            fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                )
-              : Builder(
+          _continuousShooting
+              ? Builder(
                   builder: (context) {
                     final isMobile = MediaQuery.of(context).size.width < 600;
+                    // 连续拍照模式：按钮始终可用；队列角标提示后台上传中的照片数
+                    final queueCount =
+                        ref.watch(offlineUploadProvider).pendingCount;
                     return FloatingActionButton(
                       heroTag: 'main_fab',
                       onPressed: _takePhoto,
                       tooltip:
                           isMobile ? l10n.cameraButton : l10n.uploadPhotoButton,
-                      child:
-                          Icon(isMobile ? Icons.camera_alt : Icons.upload_file),
+                      child: Badge(
+                        isLabelVisible: queueCount > 0,
+                        label: Text('$queueCount'),
+                        child: Icon(
+                            isMobile ? Icons.camera_alt : Icons.upload_file),
+                      ),
                     );
                   },
-                ),
+                )
+              : _isUploading
+                  ? FloatingActionButton(
+                      heroTag: 'main_fab',
+                      onPressed: null,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: CircularProgressIndicator(
+                              value: _uploadProgress,
+                              strokeWidth: 3,
+                              backgroundColor: Colors.white.withOpacity(0.3),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
+                          ),
+                          Text(
+                            '${(_uploadProgress * 100).toInt()}%',
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Builder(
+                      builder: (context) {
+                        final isMobile =
+                            MediaQuery.of(context).size.width < 600;
+                        return FloatingActionButton(
+                          heroTag: 'main_fab',
+                          onPressed: _takePhoto,
+                          tooltip: isMobile
+                              ? l10n.cameraButton
+                              : l10n.uploadPhotoButton,
+                          child: Icon(
+                              isMobile ? Icons.camera_alt : Icons.upload_file),
+                        );
+                      },
+                    ),
         ],
       ),
     );

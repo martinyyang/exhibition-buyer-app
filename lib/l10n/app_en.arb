@@ -166,6 +166,7 @@
     }
   },
   "photoQueuedOffline": "Network error - photo saved locally, will auto-upload when back online",
+  "photoQueuedForUpload": "Photo added to upload queue - keep shooting",
   "offlineDetected": "You are offline - photos will be saved locally and uploaded automatically when back online",
   "pendingUploads": "{count} photo(s) waiting to upload",
   "@pendingUploads": {

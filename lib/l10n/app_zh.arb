@@ -166,6 +166,7 @@
     }
   },
   "photoQueuedOffline": "网络异常，照片已暂存，联网后自动上传",
+  "photoQueuedForUpload": "照片已加入上传队列，可继续拍照",
   "offlineDetected": "网络已断开，照片将暂存，联网后自动上传",
   "pendingUploads": "待补传 {count} 张",
   "@pendingUploads": {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -88,7 +89,33 @@ class OfflineUploadController extends StateNotifier<OfflineUploadState> {
     );
   }
 
+  /// 入队并立即后台上传（用于连续拍照模式）
+  ///
+  /// 拍照/选图后立即把照片加入上传队列，不阻塞拍照流程；
+  /// 若当前没有正在进行的上传，则立即触发 flush 后台上传。
+  /// 若 flush 已在进行中，则本轮 flush 的 while 循环会把新照片一并处理。
+  Future<void> addPendingAndFlush({
+    required String boothId,
+    required String teamId,
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    await _service.addPending(
+      boothId: boothId,
+      teamId: teamId,
+      fileName: fileName,
+      bytes: bytes,
+    );
+    if (!state.isFlushing) {
+      // 不 await，让上传在后台进行，立即返回给用户继续拍照
+      unawaited(flush());
+    }
+  }
+
   /// 立即尝试补传队列中的所有照片
+  ///
+  /// 使用 while 循环持续处理，直到队列清空或本轮无任何进展（避免死循环）。
+  /// 连续拍照模式在 flush 进行中不断加入新照片，也会被后续轮次一并处理。
   Future<void> flush() async {
     if (state.isFlushing) return;
     final pending = await _service.getAllPending();
@@ -104,26 +131,35 @@ class OfflineUploadController extends StateNotifier<OfflineUploadState> {
 
       final photoService = _ref.read(photoServiceProvider);
 
-      for (final item in pending) {
-        if (item.teamId != teamId) continue; // 只补传当前团队的照片
-        try {
-          final xfile = XFile.fromData(
-            item.bytes,
-            name: item.fileName,
-            mimeType: 'image/webp',
-          );
-          await photoService.uploadPhoto(
-            photoFile: xfile,
-            boothId: item.boothId,
-            teamId: teamId,
-            uploadedBy: user.id,
-          );
-          await _service.removePending(item.id);
-          // 刷新对应摊位的照片列表
-          _ref.read(photosProvider(item.boothId).notifier).refresh();
-        } catch (_) {
-          // 单张补传失败不阻塞队列，留给下次重试
+      while (true) {
+        final batch = await _service.getAllPending();
+        if (batch.isEmpty) break;
+
+        var removedAny = false;
+        for (final item in batch) {
+          if (item.teamId != teamId) continue; // 只补传当前团队的照片
+          try {
+            final xfile = XFile.fromData(
+              item.bytes,
+              name: item.fileName,
+              mimeType: 'image/webp',
+            );
+            await photoService.uploadPhoto(
+              photoFile: xfile,
+              boothId: item.boothId,
+              teamId: teamId,
+              uploadedBy: user.id,
+            );
+            await _service.removePending(item.id);
+            removedAny = true;
+            // 刷新对应摊位的照片列表
+            _ref.read(photosProvider(item.boothId).notifier).refresh();
+          } catch (_) {
+            // 单张补传失败不阻塞队列，留给下次重试
+          }
         }
+        // 本轮无任何成功移除（全部失败或无可处理），退出避免死循环
+        if (!removedAny) break;
       }
     } catch (e) {
       state = state.copyWith(lastError: e.toString());
