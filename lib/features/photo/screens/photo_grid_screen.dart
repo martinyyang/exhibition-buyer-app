@@ -464,8 +464,14 @@ class _PhotoGridScreenState extends ConsumerState<PhotoGridScreen> {
     );
   }
 
-  void _onPhotoTap(Photo photo) {
-    context.push('/photos/${photo.id}');
+  Future<void> _onPhotoTap(Photo photo) async {
+    await context.push('/photos/${photo.id}');
+    // 从详情页返回：刷新该照片的旗子计数与更新红点
+    // （详情页内创建/删除/修改旗子后，网格页的一次性计数查询需失效重查）
+    if (mounted) {
+      ref.invalidate(photoFlagCountProvider(photo.id));
+      ref.invalidate(photoHasUpdatesProvider(photo.id));
+    }
   }
 
   void _onPhotoLongPress(Photo photo) {
