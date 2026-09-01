@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/flag.dart';
 import '../utils/user_color_mapper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -120,7 +121,9 @@ class _UserColorLegendState extends State<UserColorLegend> {
         runSpacing: 8,
         children: uniqueUserIds.map((userId) {
           final color = UserColorMapper.getColorForUser(userId);
-          final name = _userNames[userId] ?? 'Unknown';
+          final l10n = AppLocalizations.of(context)!;
+          final rawName = _userNames[userId] ?? 'Unknown';
+          final name = rawName == 'Unknown' ? l10n.unknownUser : rawName;
 
           return Row(
             mainAxisSize: MainAxisSize.min,

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ErrorDialog {
   static void show(BuildContext context, String message) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('错误'),
+        title: Text(l10n.errorTitle),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('确定'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -22,22 +24,23 @@ class ErrorDialog {
     required String message,
     required VoidCallback onRetry,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('错误'),
+        title: Text(l10n.errorTitle),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               onRetry();
             },
-            child: const Text('重试'),
+            child: Text(l10n.retry),
           ),
         ],
       ),

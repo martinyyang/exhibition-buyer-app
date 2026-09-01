@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/services/network_status_service.dart';
 
 /// 网络状态指示器组件
@@ -10,6 +11,7 @@ class NetworkStatusIndicator extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final networkStatus = ref.watch(networkStatusServiceProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     // 只在网络状态不佳时显示
     if (networkStatus.isConnected && networkStatus.latencyMs < 500) {
@@ -38,7 +40,9 @@ class NetworkStatusIndicator extends ConsumerWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            networkStatus.isConnected ? '${networkStatus.latencyMs}ms' : '断线',
+            networkStatus.isConnected
+                ? '${networkStatus.latencyMs}ms'
+                : l10n.disconnected,
             style: TextStyle(
               fontSize: 12,
               color: networkStatus.connectionColor,
@@ -64,6 +68,7 @@ class NetworkStatusBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final networkStatus = ref.watch(networkStatusServiceProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
@@ -77,10 +82,10 @@ class NetworkStatusBanner extends ConsumerWidget {
               children: [
                 const Icon(Icons.wifi_off, color: Colors.white, size: 20),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    '网络连接已断开，请检查网络设置',
-                    style: TextStyle(
+                    l10n.networkDisconnectedMsg,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -93,7 +98,7 @@ class NetworkStatusBanner extends ConsumerWidget {
                   onPressed: () {
                     networkStatus.refresh();
                   },
-                  tooltip: '重试',
+                  tooltip: l10n.retry,
                 ),
               ],
             ),
@@ -112,7 +117,7 @@ class NetworkStatusBanner extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '网络连接较慢 (${networkStatus.latencyMs}ms)，操作可能延迟',
+                    l10n.networkSlowMsg(networkStatus.latencyMs),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,

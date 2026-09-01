@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:exhibition_buyer_app/features/splash/screens/splash_screen.dart';
@@ -189,30 +190,33 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
 
     // 错误页面
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text(
-              '页面未找到',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.error?.toString() ?? '未知错误',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/events'),
-              child: const Text('返回首页'),
-            ),
-          ],
+    errorBuilder: (context, state) {
+      final l10n = AppLocalizations.of(context)!;
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                l10n.pageNotFound,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                state.error?.toString() ?? l10n.unknownError,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => context.go('/events'),
+                child: Text(l10n.backToHome),
+              ),
+            ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
 });

@@ -17,7 +17,9 @@
   "loginFailed": "Login failed: {error}",
   "@loginFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "registerAccount": "Register Account",
@@ -25,7 +27,9 @@
   "registerFailed": "Registration failed: {error}",
   "@registerFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "teamName": "Team Name",
@@ -120,38 +124,50 @@
   "loadFailed": "Load failed: {error}",
   "@loadFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "createFailed": "Create failed: {error}",
   "@createFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "uploadFailed": "Upload failed: {error}",
   "@uploadFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "changeLogo": "Change Logo",
   "addFailed": "Add failed: {error}",
   "@addFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "deleteFailed": "Delete failed: {error}",
   "@deleteFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "setActiveFailed": "Set active failed: {error}",
   "@setActiveFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "photoUploadSuccess": "Photo uploaded successfully",
@@ -186,32 +202,42 @@
   "boothCreatedSuccess": "Booth {boothNumber} created successfully",
   "@boothCreatedSuccess": {
     "placeholders": {
-      "boothNumber": {"type": "String"}
+      "boothNumber": {
+        "type": "String"
+      }
     }
   },
   "confirmDeleteEventMessage": "Are you sure you want to delete \"{eventName}\"?\nThis action cannot be undone.",
   "@confirmDeleteEventMessage": {
     "placeholders": {
-      "eventName": {"type": "String"}
+      "eventName": {
+        "type": "String"
+      }
     }
   },
   "confirmDeleteBoothMessage": "Are you sure you want to delete booth \"{boothNumber}\"?\nAll photos and annotations will also be deleted.",
   "@confirmDeleteBoothMessage": {
     "placeholders": {
-      "boothNumber": {"type": "String"}
+      "boothNumber": {
+        "type": "String"
+      }
     }
   },
   "confirmDeletePhotoMessage": "Are you sure you want to delete this photo?\nAll annotations will also be deleted.",
   "confirmDeleteFlagMessage": "Are you sure you want to delete flag #{flagNumber}?",
   "@confirmDeleteFlagMessage": {
     "placeholders": {
-      "flagNumber": {"type": "int"}
+      "flagNumber": {
+        "type": "int"
+      }
     }
   },
-  "eventDeletedSuccess": "Deleted \"{eventName}\"",
+  "eventDeletedSuccess": "\"{eventName}\" deleted",
   "@eventDeletedSuccess": {
     "placeholders": {
-      "eventName": {"type": "String"}
+      "eventName": {
+        "type": "String"
+      }
     }
   },
   "editEvent": "Edit Event",
@@ -219,77 +245,87 @@
   "boothDeletedSuccess": "Deleted booth \"{boothNumber}\"",
   "@boothDeletedSuccess": {
     "placeholders": {
-      "boothNumber": {"type": "String"}
+      "boothNumber": {
+        "type": "String"
+      }
     }
   },
   "flagDeletedSuccess": "Deleted flag #{flagNumber}",
   "@flagDeletedSuccess": {
     "placeholders": {
-      "flagNumber": {"type": "int"}
+      "flagNumber": {
+        "type": "int"
+      }
     }
   },
   "eventSetActiveSuccess": "Set \"{eventName}\" as active event",
   "@eventSetActiveSuccess": {
     "placeholders": {
-      "eventName": {"type": "String"}
+      "eventName": {
+        "type": "String"
+      }
     }
   },
   "startDateRequired": "Please select start date",
   "boothLabel": "Booth {boothNumber}",
   "@boothLabel": {
     "placeholders": {
-      "boothNumber": {"type": "String"}
+      "boothNumber": {
+        "type": "String"
+      }
     }
   },
   "boothNumberLabel": "Booth No: {boothId}",
   "@boothNumberLabel": {
     "placeholders": {
-      "boothId": {"type": "String"}
+      "boothId": {
+        "type": "String"
+      }
     }
   },
   "photoCount": "{count, plural, =0{0 photos} =1{1 photo} other{{count} photos}}",
   "@photoCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "flagCount": "{count, plural, =0{0 flags} =1{1 flag} other{{count} flags}}",
   "@flagCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "annotationCount": "{count} annotations",
   "@annotationCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "photoCountLabel": "{count} photos",
   "@photoCountLabel": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "settings": "Settings",
   "language": "Language",
   "languageEnglish": "English",
   "languageChinese": "中文",
-  "eventSelection": "Select Event",
-  "pleaseEnterEventName": "Please enter event name",
-  "tapToSelectDate": "Tap to select date",
-  "pleaseSelectStartDate": "Please select start date",
   "userNotInTeam": "User is not part of a team",
   "setActiveEventSuccess": "Set \"{eventName}\" as active event",
   "@setActiveEventSuccess": {
     "placeholders": {
-      "eventName": {"type": "String"}
-    }
-  },
-  "eventDeletedSuccess": "\"{eventName}\" deleted",
-  "@eventDeletedSuccess": {
-    "placeholders": {
-      "eventName": {"type": "String"}
+      "eventName": {
+        "type": "String"
+      }
     }
   },
   "tapToCreateFirst": "Tap + in the top right to create your first event",
@@ -305,7 +341,9 @@
   "logoutFailed": "Logout failed: {error}",
   "@logoutFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "currentTeamPrefix": "Current Team: ",
@@ -320,7 +358,9 @@
   "inviteCodeCopied": "Invite code copied: {code}",
   "@inviteCodeCopied": {
     "placeholders": {
-      "code": {"type": "String"}
+      "code": {
+        "type": "String"
+      }
     }
   },
   "noEventsRemoteTip": "If you are a remote support member, please make sure you have joined the buyer's team.",
@@ -329,13 +369,17 @@
   "teamJoinSuccess": "Successfully joined \"{name}\" team, data synced.",
   "@teamJoinSuccess": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "teamJoinFailed": "Failed to join team: {error}",
   "@teamJoinFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "registerTeamNameHint": "Enter team name or 6-digit invite code",
@@ -355,14 +399,18 @@
   "loadHistoryFailed": "Failed to load history: {error}",
   "@loadHistoryFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "formulaSavedSuccess": "Formula saved successfully",
   "saveFailed": "Save failed: {error}",
   "@saveFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "formulaInstructions": "Formula Instructions",
@@ -374,13 +422,17 @@
   "updatePriceFailed": "Update price failed: {error}",
   "@updatePriceFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "updateTargetPriceFailed": "Update target price failed: {error}",
   "@updateTargetPriceFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "priceSaved": "Price saved",
@@ -392,7 +444,9 @@
   "uploadPhotoFailed": "Photo capture failed: {error}",
   "@uploadPhotoFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetView": "Reset View",
@@ -406,46 +460,64 @@
   "onlineStatusSingle": "{name} is online",
   "@onlineStatusSingle": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "onlineStatusFew": "{names} are online",
   "@onlineStatusFew": {
     "placeholders": {
-      "names": {"type": "String"}
+      "names": {
+        "type": "String"
+      }
     }
   },
   "onlineStatusMany": "{names} and {count} others are online",
   "@onlineStatusMany": {
     "placeholders": {
-      "names": {"type": "String"},
-      "count": {"type": "int"}
+      "names": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
     }
   },
   "viewingSingle": "{name} is viewing",
   "@viewingSingle": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "viewingTwo": "{names} are viewing",
   "@viewingTwo": {
     "placeholders": {
-      "names": {"type": "String"}
+      "names": {
+        "type": "String"
+      }
     }
   },
   "viewingMany": "{names} and {count} others are viewing",
   "@viewingMany": {
     "placeholders": {
-      "names": {"type": "String"},
-      "count": {"type": "int"}
+      "names": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
     }
   },
   "forgotPassword": "Forgot Password?",
   "sendResetEmailFailed": "Failed to send reset email: {error}",
   "@sendResetEmailFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetPasswordTitle": "Reset Password",
@@ -457,7 +529,9 @@
   "resetEmailSentMessage": "We've sent a password reset link to {email}.\n\nPlease check your inbox and click the link to reset your password.",
   "@resetEmailSentMessage": {
     "placeholders": {
-      "email": {"type": "String"}
+      "email": {
+        "type": "String"
+      }
     }
   },
   "resend": "Resend",
@@ -465,7 +539,9 @@
   "formulaCalculationError": "Formula error: {error}",
   "@formulaCalculationError": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "formulaExamples": "Examples:",
@@ -500,7 +576,9 @@
   "joinTeamFailed": "Failed to join team: {error}",
   "@joinTeamFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "enterTeamNameOrInviteCode": "Enter team name or 6-digit invite code",
@@ -518,14 +596,20 @@
   "photosUploadSuccess": "Successfully uploaded {uploaded} / {total} photos",
   "@photosUploadSuccess": {
     "placeholders": {
-      "uploaded": {"type": "int"},
-      "total": {"type": "int"}
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "pickImageFailed": "Failed to pick image: {error}",
   "@pickImageFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "createNewTeamHint": "Create your first team",
@@ -533,7 +617,9 @@
   "teamCreatedWithCode": "Team created successfully! Invite code: {code}",
   "@teamCreatedWithCode": {
     "placeholders": {
-      "code": {"type": "String"}
+      "code": {
+        "type": "String"
+      }
     }
   },
   "helpGuide": "View Guide",
@@ -608,5 +694,31 @@
   "onboardingResetPwdTip2Desc": "A password reset link will be sent to your email, check inbox and spam folder",
   "onboardingResetPwdTip3Title": "Set New Password",
   "onboardingResetPwdTip3Desc": "Click the link in the email and follow the prompts to set a new password",
-  "formulaCreatorOnlyWarning": "Only the team creator can modify the exchange formula."
+  "formulaCreatorOnlyWarning": "Only the team creator can modify the exchange formula.",
+  "errorTitle": "Error",
+  "networkTimeoutMsg": "Network timeout. Please check your connection and try again.",
+  "networkFailedMsg": "Network connection failed. Please check your connection and try again.",
+  "dataExistsMsg": "Data already exists",
+  "tableNotFoundMsg": "Table not found. Please contact the administrator.",
+  "noPermissionMsg": "No permission to access this resource",
+  "dataSaveFailedMsg": "Failed to save data. Please try again later.",
+  "fileTooLargeMsg": "File size exceeds the limit",
+  "fileNotFoundMsg": "File not found",
+  "fileUploadFailedMsg": "File upload failed. Please try again later.",
+  "operationTimeoutMsg": "Operation timed out. Please check your connection and try again.",
+  "operationFailedMsg": "Operation failed. Please try again later.",
+  "disconnected": "Offline",
+  "networkDisconnectedMsg": "Connection lost. Please check your network settings.",
+  "networkSlowMsg": "Slow connection ({ms}ms), operations may be delayed",
+  "@networkSlowMsg": {
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "pageNotFound": "Page not found",
+  "unknownError": "Unknown error",
+  "backToHome": "Back to Home",
+  "unknownUser": "Unknown"
 }
