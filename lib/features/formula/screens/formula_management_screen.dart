@@ -5,6 +5,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/formula_provider.dart';
 import '../widgets/formula_input.dart';
 import '../../../shared/widgets/safe_back_button.dart';
+import '../../../core/utils/error_handler.dart';
 
 class FormulaManagementScreen extends ConsumerWidget {
   const FormulaManagementScreen({super.key});
@@ -112,7 +113,8 @@ class FormulaManagementScreen extends ConsumerWidget {
                         },
                         loading: () => const CircularProgressIndicator(),
                         error: (err, stack) => Text(
-                          l10n.loadFailed(err.toString()),
+                          l10n.loadFailed(
+                              ErrorHandler.getErrorMessage(context, err)),
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
@@ -142,8 +144,8 @@ class FormulaManagementScreen extends ConsumerWidget {
                   enabled: isTeamCreator,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) =>
-                    Text(l10n.loadHistoryFailed(err.toString())),
+                error: (err, stack) => Text(l10n.loadHistoryFailed(
+                    ErrorHandler.getErrorMessage(context, err))),
               ),
             ],
           ),
@@ -196,7 +198,9 @@ class FormulaManagementScreen extends ConsumerWidget {
       print('[_saveFormula] Stack trace: $stackTrace');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.saveFailed(e.toString()))),
+          SnackBar(
+              content: Text(
+                  l10n.saveFailed(ErrorHandler.getErrorMessage(context, e)))),
         );
       }
     }

@@ -12,6 +12,7 @@ import '../../auth/models/user.dart' as app_user;
 import '../../event/providers/event_provider.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
+import '../../../core/utils/error_handler.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -92,7 +93,7 @@ class SettingsScreen extends ConsumerWidget {
             error: (error, stack) => ListTile(
               leading: const Icon(Icons.error_outline, color: Colors.red),
               title: Text(l10n.loadFailed('User info')),
-              subtitle: Text(error.toString()),
+              subtitle: Text(ErrorHandler.getErrorMessage(context, error)),
             ),
           ),
           const Divider(),
@@ -345,7 +346,9 @@ class SettingsScreen extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.teamJoinFailed(e.toString()))),
+                    SnackBar(
+                        content: Text(l10n.teamJoinFailed(
+                            ErrorHandler.getErrorMessage(context, e)))),
                   );
                 }
               }
@@ -403,7 +406,9 @@ class SettingsScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.logoutFailed(e.toString()))),
+          SnackBar(
+              content: Text(
+                  l10n.logoutFailed(ErrorHandler.getErrorMessage(context, e)))),
         );
       }
     }

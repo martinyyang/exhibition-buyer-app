@@ -6,6 +6,7 @@ import '../providers/team_provider.dart';
 import '../../auth/models/team.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
+import '../../../core/utils/error_handler.dart';
 
 /// 通过密码找回团队邀请码的界面
 class TeamRetrieveScreen extends ConsumerStatefulWidget {
@@ -118,7 +119,8 @@ class _TeamRetrieveScreenState extends ConsumerState<TeamRetrieveScreen> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: ${e.toString()}'),
+            content: Text(
+                '${l10n.error}: ${ErrorHandler.getErrorMessage(context, e)}'),
             backgroundColor: Colors.red,
           ),
         );

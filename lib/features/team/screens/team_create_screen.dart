@@ -7,6 +7,7 @@ import '../providers/team_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
+import '../../../core/utils/error_handler.dart';
 
 class TeamCreateScreen extends ConsumerStatefulWidget {
   const TeamCreateScreen({super.key});
@@ -122,7 +123,8 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.createFailed(e.toString())}'),
+            content: Text(
+                '${l10n.createFailed(ErrorHandler.getErrorMessage(context, e))}'),
             backgroundColor: Colors.red,
           ),
         );

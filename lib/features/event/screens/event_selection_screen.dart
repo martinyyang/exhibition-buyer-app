@@ -12,6 +12,7 @@ import '../../presence/widgets/online_users_widget.dart';
 import '../../auth/models/user.dart' as app_user;
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/onboarding_dialog.dart';
+import '../../../core/utils/error_handler.dart';
 
 class EventSelectionScreen extends ConsumerStatefulWidget {
   const EventSelectionScreen({super.key});
@@ -215,7 +216,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.createFailed(e.toString())),
+            content: Text(
+                l10n.createFailed(ErrorHandler.getErrorMessage(context, e))),
             duration: const Duration(seconds: 5),
           ),
         );
@@ -318,7 +320,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.setActiveFailed(e.toString()))),
+          SnackBar(
+              content: Text(l10n
+                  .setActiveFailed(ErrorHandler.getErrorMessage(context, e)))),
         );
       }
     }
@@ -430,7 +434,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
+          SnackBar(
+              content: Text(
+                  l10n.deleteFailed(ErrorHandler.getErrorMessage(context, e)))),
         );
       }
     }
@@ -481,7 +487,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.deleteFailed(e.toString()))),
+          SnackBar(
+              content: Text(
+                  l10n.deleteFailed(ErrorHandler.getErrorMessage(context, e)))),
         );
       }
     }
@@ -660,7 +668,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                     const Icon(Icons.error_outline,
                         size: 64, color: Colors.red),
                     const SizedBox(height: 16),
-                    Text(l10n.loadFailed(error.toString())),
+                    Text(l10n.loadFailed(
+                        ErrorHandler.getErrorMessage(context, error))),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => ref.refresh(eventsProvider),
@@ -897,7 +906,8 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(l10n.createFailed(e.toString())),
+                              content: Text(l10n.createFailed(
+                                  ErrorHandler.getErrorMessage(context, e))),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -1025,7 +1035,9 @@ class _EventSelectionScreenState extends ConsumerState<EventSelectionScreen> {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.teamJoinFailed(e.toString()))),
+                    SnackBar(
+                        content: Text(l10n.teamJoinFailed(
+                            ErrorHandler.getErrorMessage(context, e)))),
                   );
                 }
               }

@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../providers/auth_provider.dart';
+import '../../../core/utils/error_handler.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -76,7 +77,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.loginFailed(e.toString()))),
+          SnackBar(
+              content: Text(
+                  l10n.loginFailed(ErrorHandler.getErrorMessage(context, e)))),
         );
       }
     } finally {
